@@ -1,0 +1,61 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider     = "prisma-client"
+  output       = "./client"
+  moduleFormat = "esm"
+}
+
+generator pothos {
+  provider          = "prisma-pothos-types"
+  clientOutput      = "./client"
+  output            = "./generated.ts"
+  generateDatamodel = true
+}
+
+model User {
+  id            Int       @id @default(autoincrement())
+  email         String    @unique
+  name          String?
+  image         String?
+  emailVerified DateTime?
+  role          Role      @default(PUBLIC)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts Account[]
+  sessions Session[]
+}
+
+model Account {
+  id                Int     @id @default(autoincrement())
+  userId            Int
+  provider          String
+  providerAccountId String
+  access_token      String?
+  expires_at        Int?
+  id_token          String?
+  scope             String?
+  token_type        String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           Int      @id @default(autoincrement())
+  sessionToken String   @unique
+  userId       Int
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum Role {
+  PUBLIC
+  COLLABORATOR
+  ADMIN
+}

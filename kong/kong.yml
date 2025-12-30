@@ -1,0 +1,20 @@
+_format_version: "3.0"
+
+services:
+  - name: frontend
+    url: http://host.docker.internal:3000
+    routes:
+      - name: frontend-root
+        preserve_host: true
+        paths:
+          - /
+        strip_path: false
+
+  - name: api
+    url: http://host.docker.internal:8000
+    routes:
+      - name: api-route
+        preserve_host: true
+        paths:
+          - /api
+        strip_path: false
