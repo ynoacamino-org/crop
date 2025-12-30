@@ -3,6 +3,7 @@ import PrismaPlugin from "@pothos/plugin-prisma";
 import ScopeAuthPlugin from "@pothos/plugin-scope-auth";
 import ValidationPlugin from "@pothos/plugin-validation";
 import { DateTimeResolver } from "graphql-scalars";
+import type { User } from "../prisma/client/client";
 import type PrismaTypes from "../prisma/generated";
 import { getDatamodel } from "../prisma/generated";
 
@@ -27,10 +28,7 @@ export const builder = new SchemaBuilder<{
     };
   };
   Context: {
-    user?: {
-      id: number;
-      role: "PUBLIC" | "COLLABORATOR" | "ADMIN";
-    };
+    user?: User;
   };
 }>({
   defaults: "v3",
