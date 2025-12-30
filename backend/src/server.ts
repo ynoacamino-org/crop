@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import { auth } from "./auth";
+import { PORT } from "./config/env";
 import { yoga } from "./yoga";
 
 const app = new Hono();
@@ -13,6 +14,6 @@ app.all("/graphql", (c) => {
 });
 
 export default {
-  port: 8000,
+  port: Number(PORT),
   fetch: app.fetch,
 };

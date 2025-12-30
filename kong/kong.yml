@@ -11,10 +11,10 @@ services:
         strip_path: false
 
   - name: api
-    url: http://host.docker.internal:8000
+    url: http://host.docker.internal:7000
     routes:
       - name: api-route
         preserve_host: true
         paths:
           - /api
-        strip_path: false
+        strip_path: true
