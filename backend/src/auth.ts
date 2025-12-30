@@ -1,6 +1,7 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import {
+  BACKEND_URL,
   BETTER_AUTH_SECRET,
   GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET,
@@ -12,13 +13,11 @@ export const auth = betterAuth({
     provider: "postgresql",
   }),
   secret: BETTER_AUTH_SECRET,
+  baseURL: BACKEND_URL,
+  basePath: "/api/auth",
+  trustedOrigins: [BACKEND_URL],
   user: {
-    additionalFields: {
-      role: {
-        type: "string",
-        defaultValue: "PUBLIC",
-      },
-    },
+    modelName: "User",
   },
   socialProviders: {
     google: {
