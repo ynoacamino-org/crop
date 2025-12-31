@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.2.0/schema.json",
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "vcs": {
     "enabled": true,
     "clientKind": "git",
@@ -7,7 +7,15 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["**", "!node_modules", "!.next", "!dist", "!build"]
+    "includes": [
+      "**",
+      "!node_modules",
+      "!.next",
+      "!dist",
+      "!build",
+      "!public",
+      "!src/gql/generated/*.ts"
+    ]
   },
   "formatter": {
     "enabled": true,
@@ -17,9 +25,49 @@
   "linter": {
     "enabled": true,
     "rules": {
+      "security": {
+        "noDangerouslySetInnerHtml": "off"
+      },
       "recommended": true,
+      "a11y": {
+        "useSemanticElements": "off",
+        "useMediaCaption": "off"
+      },
       "suspicious": {
-        "noUnknownAtRules": "off"
+        "noUnknownAtRules": "off",
+        "noConsole": "warn",
+        "noExplicitAny": "warn",
+        "noShadowRestrictedNames": "error",
+        "noArrayIndexKey": "off"
+      },
+      "correctness": {
+        "noUnusedVariables": "error",
+        "noUnusedImports": "error"
+      },
+      "style": {
+        "useConst": "error",
+        "noNegationElse": "warn",
+        "useImportType": "error"
+      },
+      "nursery": {
+        "useSortedClasses": {
+          "level": "error",
+          "fix": "safe",
+          "options": {
+            "attributes": [
+              "classList"
+            ],
+            "functions": [
+              "clsx",
+              "cva",
+              "tw",
+              "tw.*"
+            ]
+          }
+        }
+      },
+      "performance": {
+        "noImgElement": "off"
       }
     },
     "domains": {
@@ -30,7 +78,8 @@
   "assist": {
     "actions": {
       "source": {
-        "organizeImports": "on"
+        "organizeImports": "on",
+        "useSortedProperties": "on"
       }
     }
   }

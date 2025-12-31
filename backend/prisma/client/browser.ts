@@ -32,3 +32,8 @@ export type Account = Prisma.AccountModel
  * 
  */
 export type Session = Prisma.SessionModel
+/**
+ * Model Post
+ * 
+ */
+export type Post = Prisma.PostModel

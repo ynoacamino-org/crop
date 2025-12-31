@@ -1,8 +1,9 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { auth } from "./auth";
 import { BACKEND_URL, PORT } from "./config/env";
-import { yoga } from "./yoga";
+import authRoutes from "./routes/auth";
+
+import graphqlRoutes from "./routes/graphql";
 
 const app = new Hono();
 
@@ -18,13 +19,8 @@ app.use(
   }),
 );
 
-app.all("/auth/**", (c) => {
-  return auth.handler(c.req.raw);
-});
-
-app.all("/graphql", (c) => {
-  return yoga.fetch(c.req.raw);
-});
+app.route("/auth", authRoutes);
+app.route("/graphql", graphqlRoutes);
 
 export default {
   port: Number(PORT),

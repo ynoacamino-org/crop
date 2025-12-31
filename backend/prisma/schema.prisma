@@ -54,6 +54,16 @@ model Session {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+model Post {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  image       String?
+  userId      Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
 enum Role {
   PUBLIC
   COLLABORATOR
