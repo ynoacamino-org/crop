@@ -8,16 +8,13 @@ builder.enumType(Role, { name: "Role" });
 export const User = builder.prismaObject("User", {
   fields: (t) => ({
     id: t.exposeID("id"),
-    email: t.exposeString("email"),
     name: t.exposeString("name", { nullable: true }),
+    email: t.exposeString("email"),
+    emailVerified: t.exposeBoolean("emailVerified"),
     image: t.exposeString("image", { nullable: true }),
-    emailVerified: t.expose("emailVerified", {
-      type: "DateTime",
-      nullable: true,
-    }),
-    role: t.expose("role", { type: Role }),
     createdAt: t.expose("createdAt", { type: "DateTime" }),
     updatedAt: t.expose("updatedAt", { type: "DateTime" }),
+    role: t.expose("role", { type: Role }),
   }),
 });
 
@@ -31,6 +28,9 @@ builder.queryField("me", (t) =>
       return db.user.findUnique({
         where: { id: ctx.user.id },
       });
+    },
+    authScopes: {
+      collaborator: true,
     },
   }),
 );
@@ -140,7 +140,7 @@ builder.mutationField("updateUser", (t) =>
     resolve: async (query, _root, { id, input }) => {
       return db.user.update({
         ...query,
-        where: { id: Number(id) },
+        where: { id: id },
         data: {
           name: input.name ?? undefined,
           image: input.image ?? undefined,
@@ -172,7 +172,7 @@ builder.mutationField("deleteUser", (t) =>
   t.prismaField({
     type: "User",
     args: {
-      id: t.arg.id({ required: true }),
+      id: t.arg.id({ required: true, validate: z.string().min(1) }),
     },
     authScopes: {
       admin: true,
@@ -180,7 +180,7 @@ builder.mutationField("deleteUser", (t) =>
     resolve: async (query, _root, { id }) => {
       return db.user.delete({
         ...query,
-        where: { id: Number(id) },
+        where: { id },
       });
     },
   }),

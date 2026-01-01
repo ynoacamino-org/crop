@@ -17,4 +17,4 @@ services:
         preserve_host: true
         paths:
           - /api
-        strip_path: true
+        strip_path: false

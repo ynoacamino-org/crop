@@ -138,6 +138,7 @@ export type User = {
   __typename?: 'User';
   createdAt: Scalars['DateTime']['output'];
   email: Scalars['String']['output'];
+  emailVerified: Scalars['Boolean']['output'];
   id: Scalars['ID']['output'];
   image?: Maybe<Scalars['String']['output']>;
   name?: Maybe<Scalars['String']['output']>;
@@ -194,11 +195,6 @@ export type DeleteUserMutationVariables = Exact<{
 
 export type DeleteUserMutation = { __typename?: 'Mutation', deleteUser: { __typename?: 'User', id: string, email: string } };
 
-export type MeQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type MeQuery = { __typename?: 'Query', me?: { __typename?: 'User', name?: string | null, email: string, role: Role, createdAt: Date } | null };
-
 export type PostsQueryVariables = Exact<{
   take?: InputMaybe<Scalars['Int']['input']>;
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -223,6 +219,11 @@ export type UsersQueryVariables = Exact<{
 
 
 export type UsersQuery = { __typename?: 'Query', users: Array<{ __typename?: 'User', id: string, email: string, name?: string | null, image?: string | null, role: Role, createdAt: Date, updatedAt: Date }> };
+
+export type MeQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MeQuery = { __typename?: 'Query', me?: { __typename?: 'User', id: string, name?: string | null, email: string, emailVerified: boolean, role: Role, image?: string | null, createdAt: Date, updatedAt: Date } | null };
 
 
 export const CreatePostDocument = gql`
@@ -327,20 +328,6 @@ export const DeleteUserDocument = gql`
 export function useDeleteUserMutation() {
   return Urql.useMutation<DeleteUserMutation, DeleteUserMutationVariables>(DeleteUserDocument);
 };
-export const MeDocument = gql`
-    query me {
-  me {
-    name
-    email
-    role
-    createdAt
-  }
-}
-    `;
-
-export function useMeQuery(options?: Omit<Urql.UseQueryArgs<MeQueryVariables>, 'query'>) {
-  return Urql.useQuery<MeQuery, MeQueryVariables>({ query: MeDocument, ...options });
-};
 export const PostsDocument = gql`
     query posts($take: Int, $skip: Int, $search: String) {
   posts(take: $take, skip: $skip, search: $search) {
@@ -389,4 +376,22 @@ export const UsersDocument = gql`
 
 export function useUsersQuery(options?: Omit<Urql.UseQueryArgs<UsersQueryVariables>, 'query'>) {
   return Urql.useQuery<UsersQuery, UsersQueryVariables>({ query: UsersDocument, ...options });
+};
+export const MeDocument = gql`
+    query me {
+  me {
+    id
+    name
+    email
+    emailVerified
+    role
+    image
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+export function useMeQuery(options?: Omit<Urql.UseQueryArgs<MeQueryVariables>, 'query'>) {
+  return Urql.useQuery<MeQuery, MeQueryVariables>({ query: MeDocument, ...options });
 };

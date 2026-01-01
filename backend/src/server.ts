@@ -19,8 +19,8 @@ app.use(
   }),
 );
 
-app.route("/auth", authRoutes);
-app.route("/graphql", graphqlRoutes);
+app.route("/api/auth", authRoutes);
+app.route("/api/graphql", graphqlRoutes);
 
 export default {
   port: Number(PORT),

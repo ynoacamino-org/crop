@@ -13,33 +13,14 @@ async function main() {
 
   let users = await prisma.user.findMany();
 
-  if (users.length === 0) {
-    console.log("📝 No users found. Creating a demo user...");
-    
-    const demoUser = await prisma.user.create({
-      data: {
-        email: faker.internet.email(),
-        name: faker.person.fullName(),
-        image: faker.image.avatar(),
-        role: "PUBLIC",
-      },
-    });
-
-    users = [demoUser];
-    console.log(`✅ Created demo user: ${demoUser.name} (${demoUser.email})`);
-  }
-
   console.log(`✅ Found ${users.length} users`);
 
   const posts = [];
   for (let i = 0; i < 100; i++) {
-    const randomUser = users[Math.floor(Math.random() * users.length)] as User;
-
     posts.push({
       title: faker.lorem.sentence({ min: 3, max: 8 }),
       description: faker.lorem.paragraphs({ min: 1, max: 3 }),
       image: faker.image.url({ width: 1200, height: 800 }),
-      userId: randomUser.id,
     });
   }
 

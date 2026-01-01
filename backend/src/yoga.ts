@@ -6,19 +6,16 @@ import { schema } from "./schema";
 export const yoga = createYoga({
   schema,
   plugins: [useCookies()],
-  graphqlEndpoint: "/graphql",
+  graphqlEndpoint: "/api/graphql",
   context: async ({ request }) => {
+    console.log("Creating context for request:", request.headers);
+
     const session = await auth.api.getSession({ headers: request.headers });
 
+    console.log("Session in context:", session);
+
     return {
-      user: session?.user
-        ? {
-            ...session.user,
-            id: Number(session.user.id),
-            // role: session.user.role as "PUBLIC" | "COLLABORATOR" | "ADMIN",
-            role: session.user?.
-          }
-        : undefined,
+      user: session?.user || null,
     };
   },
 });

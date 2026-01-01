@@ -18,9 +18,18 @@ export const auth = betterAuth({
   trustedOrigins: [BACKEND_URL],
   user: {
     modelName: "User",
+    additionalFields: {
+      role: {
+        type: "string",
+        enumValues: ["ADMIN", "COLLABORATOR", "PUBLIC"],
+        defaultValue: "PUBLIC",
+        input: false,
+      },
+    },
   },
   socialProviders: {
     google: {
+      prompt: "select_account",
       clientId: GOOGLE_CLIENT_ID,
       clientSecret: GOOGLE_CLIENT_SECRET,
     },

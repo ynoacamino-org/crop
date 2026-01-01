@@ -111,7 +111,6 @@ builder.mutationField("createPost", (t) =>
           title: args.input.title,
           description: args.input.description,
           image: args.input.image,
-          userId: ctx.user.id,
         },
       });
     },
@@ -158,9 +157,6 @@ builder.mutationField("updatePost", (t) =>
       });
 
       if (!post) throw new Error("Post not found");
-      if (post.userId !== ctx.user.id && ctx.user.role !== "ADMIN") {
-        throw new Error("Forbidden: You can only update your own posts");
-      }
 
       return db.post.update({
         ...query,
@@ -190,9 +186,6 @@ builder.mutationField("deletePost", (t) =>
       });
 
       if (!post) throw new Error("Post not found");
-      if (post.userId !== ctx.user.id && ctx.user.role !== "ADMIN") {
-        throw new Error("Forbidden: You can only delete your own posts");
-      }
 
       return db.post.delete({
         ...query,

@@ -38,10 +38,9 @@ export const builder = new SchemaBuilder<{
     dmmf: getDatamodel(),
   },
   authScopes: (context) => ({
-    public: !!context.user,
+    public: true,
     admin: context.user?.role === "ADMIN",
-    collaborator:
-      context.user?.role === "COLLABORATOR" || context.user?.role === "ADMIN",
+    collaborator: !!context.user,
   }),
 });
 
