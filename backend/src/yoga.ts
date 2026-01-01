@@ -15,7 +15,8 @@ export const yoga = createYoga({
         ? {
             ...session.user,
             id: Number(session.user.id),
-            role: session.user.role as "PUBLIC" | "COLLABORATOR" | "ADMIN",
+            // role: session.user.role as "PUBLIC" | "COLLABORATOR" | "ADMIN",
+            role: session.user?.
           }
         : undefined,
     };

@@ -1,11 +1,10 @@
 import { Hono } from "hono";
 import { yoga } from "../yoga";
 
-export const graphqlRoutes = new Hono();
+export const graphqlRouter = new Hono();
 
-graphqlRoutes.all("/", (c) => {
+graphqlRouter.all("/", (c) => {
   return yoga.fetch(c.req.raw);
 });
 
-export type AppType = typeof graphqlRoutes;
-export default graphqlRoutes;
+export default graphqlRouter;

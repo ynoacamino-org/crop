@@ -1,0 +1,23 @@
+# Query to get a list of posts
+query posts($take: Int, $skip: Int, $search: String) {
+  posts(take: $take, skip: $skip, search: $search) {
+    id
+    title
+    description
+    image
+    createdAt
+    updatedAt
+  }
+}
+
+# Query to get a single post by ID
+query post($id: ID!) {
+  post(id: $id) {
+    id
+    title
+    description
+    image
+    createdAt
+    updatedAt
+  }
+}

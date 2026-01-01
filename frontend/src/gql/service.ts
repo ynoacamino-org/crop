@@ -1,7 +1,8 @@
 import { cacheExchange, fetchExchange, Client as Service } from "urql";
 import { BASE_URL } from "@/shared/config/env";
+import { dateExchange } from "./exchanges/date";
 
 export const service = new Service({
   url: `${BASE_URL}/graphql`,
-  exchanges: [cacheExchange, fetchExchange],
+  exchanges: [cacheExchange, dateExchange, fetchExchange],
 });

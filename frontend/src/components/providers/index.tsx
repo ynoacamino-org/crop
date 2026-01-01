@@ -1,7 +1,10 @@
-"use client";
-
+import { ServerUserProvider } from "./server-providers";
 import { UrqlProvider } from "./urql";
 
 export function Providers({ children }: { children: React.ReactNode }) {
-  return <UrqlProvider>{children}</UrqlProvider>;
+  return (
+    <ServerUserProvider>
+      <UrqlProvider>{children}</UrqlProvider>
+    </ServerUserProvider>
+  );
 }

@@ -1,11 +1,12 @@
 import { Hono } from "hono";
-import { auth } from "../auth";
+import { type AuthType, auth } from "../auth";
 
-export const authRoutes = new Hono();
+export const authRouter = new Hono<{ Bindings: AuthType }>({
+  strict: false,
+});
 
-authRoutes.all("/**", (c) => {
+authRouter.on(["POST", "GET"], "/**", (c) => {
   return auth.handler(c.req.raw);
 });
 
-export type AppType = typeof authRoutes;
-export default authRoutes;
+export default authRouter;
