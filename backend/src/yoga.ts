@@ -4,18 +4,14 @@ import { auth } from "./auth";
 import { schema } from "./schema";
 
 export const yoga = createYoga({
-  schema,
-  plugins: [useCookies()],
-  graphqlEndpoint: "/api/graphql",
-  context: async ({ request }) => {
-    console.log("Creating context for request:", request.headers);
+	schema,
+	plugins: [useCookies()],
+	graphqlEndpoint: "/api/graphql",
+	context: async ({ request }) => {
+		const session = await auth.api.getSession({ headers: request.headers });
 
-    const session = await auth.api.getSession({ headers: request.headers });
-
-    console.log("Session in context:", session);
-
-    return {
-      user: session?.user || null,
-    };
-  },
+		return {
+			user: session?.user || null,
+		};
+	},
 });
