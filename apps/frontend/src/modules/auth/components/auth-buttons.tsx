@@ -11,7 +11,10 @@ export function AuthButtons() {
       <p>Signed in as {user.email}</p>
       <button
         type="button"
-        onClick={() => signOut()}
+        onClick={() => {
+          signOut();
+          window.location.href = "/iniciar-sesion";
+        }}
         className="rounded-full bg-red-500 px-4 py-2 text-white hover:bg-red-600"
       >
         Sign Out

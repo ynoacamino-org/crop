@@ -1,24 +1,14 @@
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { MeDocument } from "@/gql/generated/gql.node";
-import { service } from "@/gql/service";
+import { getService } from "@/gql/service.server";
 import { UserProvider } from "./user-provider";
 
-export async function UserServerProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const userMe = await service.query(MeDocument, {});
+export async function UserServerProvider({ children }: { children: React.ReactNode }) {
+  const service = await getService();
+  const userMe = await service.query(MeDocument, {}).toPromise();
 
   if (userMe.error || !userMe.data?.me) {
-    const cookieStore = await cookies();
-
-    cookieStore.getAll().forEach((cookie) => {
-      cookieStore.delete(cookie.name);
-    });
-
-    redirect("/login");
+    redirect("/iniciar-sesion");
   }
 
   return <UserProvider user={userMe.data?.me}>{children}</UserProvider>;

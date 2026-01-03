@@ -7,7 +7,7 @@
     "build": "bun build src/server.ts --outdir dist --target bun",
     "dev": "bun run --hot src/server.ts",
     "start": "bun run dist/server.js",
-    "codegen": "graphql-codegen --config codegen.ts",
+    "codegen": "graphql-codegen --config codegen.ts && bun scripts/post-codegen.ts",
     "seed": "bun run prisma/seed.ts",
     "check-types": "tsc --noEmit"
   },

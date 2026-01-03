@@ -1,14 +1,25 @@
 import dotenv from "dotenv";
 
-const envFile = process.env.NODE_ENV === "production" ? ".env" : ".env.dev";
+dotenv.config({ path: ".env" });
 
-dotenv.config({ path: envFile });
+if (process.env.NODE_ENV !== "production") {
+  dotenv.config({ path: ".env.dev" });
+}
 
 export const {
   DATABASE_URL = "",
   GOOGLE_CLIENT_ID = "",
   GOOGLE_CLIENT_SECRET = "",
   BETTER_AUTH_SECRET = "",
-  PORT = "5000",
-  BACKEND_URL = "http://localhost:5000",
+  PORT = "",
+  BACKEND_URL = "",
 } = process.env;
+
+console.log({
+  DATABASE_URL,
+  GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET,
+  BETTER_AUTH_SECRET,
+  PORT,
+  BACKEND_URL,
+});
