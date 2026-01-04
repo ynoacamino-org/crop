@@ -1,4 +1,9 @@
-import z from "zod";
+import {
+  DeleteUserPayloadSchema,
+  UpdateMePayloadSchema,
+  UpdateUserPayloadSchema,
+  UsersPayloadSchema,
+} from "@repo/schemas";
 import { Role } from "../../prisma/client/enums";
 import { builder } from "../builder";
 import { db } from "../db";
@@ -43,18 +48,18 @@ builder.queryField("users", (t) =>
         required: false,
         description: "Number of users to take",
         defaultValue: 10,
-        validate: z.number().min(1).max(100),
+        validate: UsersPayloadSchema.shape.take,
       }),
       skip: t.arg.int({
         required: false,
         description: "Number of users to skip",
         defaultValue: 0,
-        validate: z.number().min(0),
+        validate: UsersPayloadSchema.shape.skip,
       }),
       search: t.arg.string({
         required: false,
         description: "Search term for user name or email",
-        validate: z.string().min(3).max(50),
+        validate: UsersPayloadSchema.shape.search,
       }),
     },
     authScopes: {
@@ -90,16 +95,32 @@ builder.queryField("users", (t) =>
 
 const UpdateUserInput = builder.inputType("UpdateUserInput", {
   fields: (t) => ({
-    name: t.string({ required: false }),
-    image: t.string({ required: false }),
+    name: t.string({
+      required: false,
+      validate: UpdateMePayloadSchema.shape.input.shape.name,
+    }),
+    image: t.string({
+      required: false,
+      validate: UpdateMePayloadSchema.shape.input.shape.image,
+    }),
   }),
 });
 
 const AdminUpdateUserInput = builder.inputType("AdminUpdateUserInput", {
   fields: (t) => ({
-    name: t.string({ required: false }),
-    image: t.string({ required: false }),
-    role: t.field({ type: Role, required: false }),
+    name: t.string({
+      required: false,
+      validate: UpdateUserPayloadSchema.shape.input.shape.name,
+    }),
+    image: t.string({
+      required: false,
+      validate: UpdateUserPayloadSchema.shape.input.shape.image,
+    }),
+    role: t.field({
+      type: Role,
+      required: false,
+      validate: UpdateUserPayloadSchema.shape.input.shape.role,
+    }),
   }),
 });
 
@@ -131,7 +152,10 @@ builder.mutationField("updateUser", (t) =>
   t.prismaField({
     type: "User",
     args: {
-      id: t.arg.id({ required: true }),
+      id: t.arg.id({
+        required: true,
+        validate: UpdateUserPayloadSchema.shape.id,
+      }),
       input: t.arg({ type: AdminUpdateUserInput, required: true }),
     },
     authScopes: {
@@ -172,7 +196,10 @@ builder.mutationField("deleteUser", (t) =>
   t.prismaField({
     type: "User",
     args: {
-      id: t.arg.id({ required: true, validate: z.string().min(1) }),
+      id: t.arg.id({
+        required: true,
+        validate: DeleteUserPayloadSchema.shape.id,
+      }),
     },
     authScopes: {
       admin: true,

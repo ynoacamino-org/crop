@@ -2,8 +2,12 @@
   "name": "@repo/schemas",
   "version": "0.0.0",
   "private": true,
+  "main": "./index.ts",
+  "types": "./index.ts",
   "exports": {
-    "./*": "./src/*.ts"
+    ".": "./index.ts",
+    "./post": "./post/schemas.ts",
+    "./user": "./user/schemas.ts"
   },
   "dependencies": {
     "zod": "^4.2.1"

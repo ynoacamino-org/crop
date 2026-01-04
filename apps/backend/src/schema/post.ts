@@ -1,4 +1,10 @@
-import z from "zod";
+import {
+  CreatePostPayloadSchema,
+  DeletePostPayloadSchema,
+  PostPayloadSchema,
+  PostsPayloadSchema,
+  UpdatePostPayloadSchema,
+} from "@repo/schemas";
 import { builder } from "../builder";
 import { db } from "../db";
 
@@ -21,18 +27,18 @@ builder.queryField("posts", (t) =>
         required: false,
         description: "Number of posts to take",
         defaultValue: 10,
-        validate: z.number().min(1).max(100),
+        validate: PostsPayloadSchema.shape.take,
       }),
       skip: t.arg.int({
         required: false,
         description: "Number of posts to skip",
         defaultValue: 0,
-        validate: z.number().min(0).max(100),
+        validate: PostsPayloadSchema.shape.skip,
       }),
       search: t.arg.string({
         required: false,
         description: "Search term for post title or description",
-        validate: z.string().min(3).max(100),
+        validate: PostsPayloadSchema.shape.search,
       }),
     },
     resolve: async (query, _root, args) => {
@@ -61,7 +67,11 @@ builder.queryField("post", (t) =>
     type: "Post",
     nullable: true,
     args: {
-      id: t.arg.id({ required: true }),
+      id: t.arg.id({
+        required: true,
+        description: "ID of the post",
+        validate: PostPayloadSchema.shape.id,
+      }),
     },
     resolve: async (query, _root, args) => {
       return db.post.findUnique({
@@ -77,17 +87,17 @@ const CreatePostInput = builder.inputType("CreatePostInput", {
     title: t.string({
       required: true,
       description: "Title of the post",
-      validate: z.string().min(3).max(100),
+      validate: CreatePostPayloadSchema.shape.input.shape.title,
     }),
     description: t.string({
       required: false,
       description: "Description of the post",
-      validate: z.string().max(500),
+      validate: CreatePostPayloadSchema.shape.input.shape.description,
     }),
     image: t.string({
       required: false,
       description: "Image URL of the post",
-      validate: z.url(),
+      validate: CreatePostPayloadSchema.shape.input.shape.image,
     }),
   }),
 });
@@ -100,6 +110,7 @@ builder.mutationField("createPost", (t) =>
       input: t.arg({
         type: CreatePostInput,
         required: true,
+        validate: CreatePostPayloadSchema.shape.input,
       }),
     },
     resolve: async (query, _root, args, ctx) => {
@@ -123,17 +134,17 @@ const UpdatePostInput = builder.inputType("UpdatePostInput", {
     title: t.string({
       required: false,
       description: "Title of the post",
-      validate: z.string().min(3).max(100),
+      validate: UpdatePostPayloadSchema.shape.input.shape.title,
     }),
     description: t.string({
       required: false,
       description: "Description of the post",
-      validate: z.string().max(500),
+      validate: UpdatePostPayloadSchema.shape.input.shape.description,
     }),
     image: t.string({
       required: false,
       description: "Image URL of the post",
-      validate: z.url(),
+      validate: UpdatePostPayloadSchema.shape.input.shape.image,
     }),
   }),
 });
@@ -147,6 +158,7 @@ builder.mutationField("updatePost", (t) =>
       input: t.arg({
         type: UpdatePostInput,
         required: true,
+        validate: UpdatePostPayloadSchema.shape.input,
       }),
     },
     resolve: async (query, _root, args, ctx) => {
@@ -176,7 +188,11 @@ builder.mutationField("deletePost", (t) =>
     type: "Post",
     authScopes: { public: true },
     args: {
-      id: t.arg.id({ required: true }),
+      id: t.arg.id({
+        required: true,
+        description: "ID of the post to delete",
+        validate: DeletePostPayloadSchema.shape.id,
+      }),
     },
     resolve: async (query, _root, args, ctx) => {
       if (!ctx.user) throw new Error("Unauthorized");
