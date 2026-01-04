@@ -7,7 +7,9 @@ export default function IniciarSesionPage() {
   return (
     <div>
       Iniciar Sesion Page
-      <Button onClick={() => signIn.social({ provider: "google" })}>Hola</Button>
+      <Button onClick={() => signIn.social({ provider: "google" })}>
+        Hola
+      </Button>
     </div>
   );
 }

@@ -23,7 +23,8 @@
     "@types/bun": "latest",
     "@types/pg": "^8.16.0",
     "dotenv": "^17.2.3",
-    "prisma": "^7.2.0"
+    "prisma": "^7.2.0",
+    "@repo/biome-config": "workspace:^"
   },
   "peerDependencies": {
     "typescript": "^5"

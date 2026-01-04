@@ -3,7 +3,11 @@ import { MeDocument } from "@/gql/generated/gql.node";
 import { getService } from "@/gql/service.server";
 import { UserProvider } from "./user-provider";
 
-export async function UserServerProvider({ children }: { children: React.ReactNode }) {
+export async function UserServerProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const service = await getService();
   const userMe = await service.query(MeDocument, {}).toPromise();
 

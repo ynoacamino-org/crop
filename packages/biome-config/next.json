@@ -2,15 +2,13 @@
   "$schema": "https://biomejs.dev/schemas/2.3.10/schema.json",
   "root": false,
   "files": {
-    "includes": [
-      "**",
-      "!node_modules",
-      "!.next",
-      "!dist",
-      "!build",
-      "!public",
-      "!src/gql/generated/*.ts"
-    ]
+    "ignoreUnknown": true,
+    "includes": ["**", "!node_modules", "!.next", "!dist", "!build", "!public", "!src/gql/generated/*.ts"]
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
+    }
   },
   "linter": {
     "rules": {

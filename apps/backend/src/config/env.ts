@@ -14,12 +14,3 @@ export const {
   PORT = "",
   BACKEND_URL = "",
 } = process.env;
-
-console.log({
-  DATABASE_URL,
-  GOOGLE_CLIENT_ID,
-  GOOGLE_CLIENT_SECRET,
-  BETTER_AUTH_SECRET,
-  PORT,
-  BACKEND_URL,
-});
