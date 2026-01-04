@@ -30,6 +30,7 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "@repo/schemas": "workspace:^",
     "@graphql-codegen/cli": "^6.1.0",
     "@pothos/core": "^4.10.1",
     "@pothos/plugin-prisma": "^4.14.1",

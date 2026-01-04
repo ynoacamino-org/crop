@@ -5,5 +5,7 @@
   "exports": {
     "./*": "./src/*.ts"
   },
-  "dependencies": {}
+  "dependencies": {
+    "zod": "^4.2.1"
+  }
 }

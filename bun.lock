@@ -121,6 +121,9 @@
     "packages/schemas": {
       "name": "@repo/schemas",
       "version": "0.0.0",
+      "dependencies": {
+        "zod": "^4.2.1",
+      },
     },
   },
   "packages": {
