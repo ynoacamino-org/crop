@@ -5,6 +5,8 @@ import {
   PostsPayloadSchema,
   UpdatePostPayloadSchema,
 } from "@repo/schemas";
+import { GraphQLError } from "graphql";
+import { Prisma } from "../../prisma/client/client";
 import { builder } from "../builder";
 import { db } from "../db";
 
@@ -162,23 +164,56 @@ builder.mutationField("updatePost", (t) =>
       }),
     },
     resolve: async (query, _root, args, ctx) => {
-      if (!ctx.user) throw new Error("Unauthorized");
+      if (!ctx.user) {
+        throw new GraphQLError("No estás autenticado", {
+          extensions: {
+            code: "UNAUTHORIZED",
+          },
+        });
+      }
 
       const post = await db.post.findUnique({
         where: { id: Number(args.id) },
       });
 
-      if (!post) throw new Error("Post not found");
+      if (!post) {
+        throw new GraphQLError("El post que intestas modificar no existe.", {
+          extensions: {
+            code: "NOT_FOUND",
+          },
+        });
+      }
+      try {
+        return db.post.update({
+          ...query,
+          where: { id: Number(args.id) },
+          data: {
+            title: args.input.title ?? undefined,
+            description: args.input.description ?? undefined,
+            image: args.input.image ?? undefined,
+          },
+        });
+      } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          if (error.code === "P2002") {
+            const campos = (error.meta?.target as string[])?.join(", ");
 
-      return db.post.update({
-        ...query,
-        where: { id: Number(args.id) },
-        data: {
-          title: args.input.title ?? undefined,
-          description: args.input.description ?? undefined,
-          image: args.input.image ?? undefined,
-        },
-      });
+            throw new GraphQLError(
+              `Ya existe un post con el mismo valor en: ${campos}`,
+              {
+                extensions: {
+                  code: "DUPLICATE_FIELD",
+                  fields: campos,
+                },
+              },
+            );
+          }
+        }
+
+        throw new GraphQLError("Error interno del servidor", {
+          extensions: { code: "INTERNAL_SERVER_ERROR" },
+        });
+      }
     },
   }),
 );
