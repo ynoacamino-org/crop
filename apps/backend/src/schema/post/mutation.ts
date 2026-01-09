@@ -34,6 +34,7 @@ builder.mutationField("createPost", (t) =>
             title: input.title,
             description: input.description,
             image: input.image,
+            authorId: ctx.user.id,
           },
         });
       } catch (error) {

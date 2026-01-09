@@ -8,5 +8,8 @@ export const Post = builder.prismaObject("Post", {
     image: t.exposeString("image", { nullable: true }),
     createdAt: t.expose("createdAt", { type: "DateTime" }),
     updatedAt: t.expose("updatedAt", { type: "DateTime" }),
+    author: t.relation("author", {
+      nullable: false,
+    }),
   }),
 });
