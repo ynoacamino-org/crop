@@ -35,3 +35,6 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 
 # OpenAPI generated files
 openapi/
+
+# Generated GraphQL schema
+schema.graphql

@@ -7,6 +7,7 @@ import {
 import { builder } from "@/builder";
 import { db } from "@/db";
 import { UNAUTHORIZED_ERROR } from "@/lib/errors";
+import { sanitize } from "@/lib/sanitize";
 import { CreatePostInput, UpdatePostInput } from "./inputs";
 
 builder.mutationField("createPost", (t) =>
@@ -17,19 +18,22 @@ builder.mutationField("createPost", (t) =>
       input: t.arg({
         type: CreatePostInput,
         required: true,
+        description: "Data for creating a new post",
         validate: CreatePostPayloadSchema.shape.input,
       }),
     },
-    resolve: async (query, _root, args, ctx) => {
+    resolve: async (query, _root, rawArgs, ctx) => {
       if (!ctx.user) throw new UNAUTHORIZED_ERROR();
+
+      const { input } = sanitize(rawArgs);
 
       try {
         return await db.post.create({
           ...query,
           data: {
-            title: args.input.title,
-            description: args.input.description,
-            image: args.input.image,
+            title: input.title,
+            description: input.description,
+            image: input.image,
           },
         });
       } catch (error) {
@@ -48,27 +52,31 @@ builder.mutationField("updatePost", (t) =>
     args: {
       id: t.arg.id({
         required: true,
+        description: "ID of the post to update",
         validate: UpdatePostPayloadSchema.shape.id,
       }),
       input: t.arg({
         type: UpdatePostInput,
         required: true,
+        description: "Data for updating the post",
         validate: UpdatePostPayloadSchema.shape.input,
       }),
     },
-    resolve: async (query, _root, args, ctx) => {
+    resolve: async (query, _root, rawArgs, ctx) => {
       if (!ctx.user) {
         throw new UNAUTHORIZED_ERROR();
       }
 
+      const { id, input } = sanitize(rawArgs);
+
       try {
         return await db.post.update({
           ...query,
-          where: { id: args.id },
+          where: { id },
           data: {
-            title: args.input.title ?? undefined,
-            description: args.input.description ?? undefined,
-            image: args.input.image ?? undefined,
+            title: input.title,
+            description: input.description,
+            image: input.image,
           },
         });
       } catch (error) {
@@ -92,13 +100,15 @@ builder.mutationField("deletePost", (t) =>
         validate: DeletePostPayloadSchema.shape.id,
       }),
     },
-    resolve: async (query, _root, args, ctx) => {
+    resolve: async (query, _root, rawArgs, ctx) => {
       if (!ctx.user) throw new UNAUTHORIZED_ERROR();
+
+      const { id } = sanitize(rawArgs);
 
       try {
         return await db.post.delete({
           ...query,
-          where: { id: args.id },
+          where: { id },
         });
       } catch (error) {
         handlePrismaError(error, {

@@ -2,6 +2,7 @@ import { handlePrismaError } from "@prisma/lib/error-handler";
 import { PostPayloadSchema, PostsPayloadSchema } from "@repo/schemas";
 import { builder } from "@/builder";
 import { db } from "@/db";
+import { sanitize } from "@/lib/sanitize";
 
 builder.queryField("posts", (t) =>
   t.prismaField({
@@ -25,22 +26,22 @@ builder.queryField("posts", (t) =>
         validate: PostsPayloadSchema.shape.search,
       }),
     },
-    resolve: async (query, _root, args) => {
+    resolve: async (query, _root, rawArgs) => {
+      const args = sanitize(rawArgs);
+
       try {
         return await db.post.findMany({
           ...query,
-          take: args.take ?? undefined,
-          skip: args.skip ?? undefined,
-          where: args.search
-            ? {
-                OR: [
-                  { title: { contains: args.search, mode: "insensitive" } },
-                  {
-                    description: { contains: args.search, mode: "insensitive" },
-                  },
-                ],
-              }
-            : undefined,
+          take: args.take,
+          skip: args.skip,
+          where: {
+            OR: [
+              { title: { contains: args.search, mode: "insensitive" } },
+              {
+                description: { contains: args.search, mode: "insensitive" },
+              },
+            ],
+          },
           orderBy: { createdAt: "desc" },
         });
       } catch (error) {

@@ -2,6 +2,7 @@ import { handlePrismaError } from "@prisma/lib/error-handler";
 import { UsersPayloadSchema } from "@repo/schemas";
 import { builder } from "@/builder";
 import { db } from "@/db";
+import { sanitize } from "@/lib/sanitize";
 
 builder.queryField("me", (t) =>
   t.prismaField({
@@ -51,12 +52,14 @@ builder.queryField("users", (t) =>
     authScopes: {
       admin: true,
     },
-    resolve: async (query, _root, args) => {
+    resolve: async (query, _root, rawArgs) => {
+      const args = sanitize(rawArgs);
+
       try {
         return await db.user.findMany({
           ...query,
-          take: args.take ?? undefined,
-          skip: args.skip ?? undefined,
+          take: args.take,
+          skip: args.skip,
           where: args.search
             ? {
                 OR: [

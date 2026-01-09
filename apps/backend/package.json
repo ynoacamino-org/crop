@@ -7,7 +7,8 @@
     "build": "bun build src/server.ts --outdir dist --target bun",
     "dev": "bun run --hot src/server.ts",
     "start": "bun run dist/server.js",
-    "codegen": "graphql-codegen --config codegen.ts && bun scripts/post-codegen.ts",
+    "gen-schema": "bun run scripts/gen-schema.ts",
+    "codegen": "bun run gen-schema && graphql-codegen --config codegen.ts && bun scripts/post-codegen.ts",
     "seed": "bun run prisma/seed.ts",
     "check-types": "tsc --noEmit"
   },
@@ -20,11 +21,11 @@
     "@graphql-codegen/typescript-operations": "^5.0.7",
     "@graphql-codegen/typescript-urql": "^4.0.1",
     "@rcmade/hono-docs": "^1.0.31",
+    "@repo/biome-config": "workspace:^",
     "@types/bun": "latest",
     "@types/pg": "^8.16.0",
     "dotenv": "^17.2.3",
-    "prisma": "^7.2.0",
-    "@repo/biome-config": "workspace:^"
+    "prisma": "^7.2.0"
   },
   "peerDependencies": {
     "typescript": "^5"

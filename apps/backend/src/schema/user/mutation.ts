@@ -6,27 +6,34 @@ import {
 import { builder } from "@/builder";
 import { db } from "@/db";
 import { UNAUTHORIZED_ERROR } from "@/lib/errors";
+import { sanitize } from "@/lib/sanitize";
 import { AdminUpdateUserInput, UpdateUserInput } from "./inputs";
 
 builder.mutationField("updateMe", (t) =>
   t.prismaField({
     type: "User",
     args: {
-      input: t.arg({ type: UpdateUserInput, required: true }),
+      input: t.arg({
+        type: UpdateUserInput,
+        required: true,
+        description: "Data for updating current user profile",
+      }),
     },
     authScopes: {
       public: true,
     },
-    resolve: async (query, _root, { input }, ctx) => {
+    resolve: async (query, _root, rawArgs, ctx) => {
       if (!ctx.user) throw new UNAUTHORIZED_ERROR();
+
+      const { input } = sanitize(rawArgs);
 
       try {
         return await db.user.update({
           ...query,
           where: { id: ctx.user.id },
           data: {
-            name: input.name ?? undefined,
-            image: input.image ?? undefined,
+            name: input.name,
+            image: input.image,
           },
         });
       } catch (error) {
@@ -45,22 +52,29 @@ builder.mutationField("updateUser", (t) =>
     args: {
       id: t.arg.id({
         required: true,
+        description: "ID of the user to update",
         validate: UpdateUserPayloadSchema.shape.id,
       }),
-      input: t.arg({ type: AdminUpdateUserInput, required: true }),
+      input: t.arg({
+        type: AdminUpdateUserInput,
+        required: true,
+        description: "Data for updating the user (admin only)",
+      }),
     },
     authScopes: {
       admin: true,
     },
-    resolve: async (query, _root, { id, input }) => {
+    resolve: async (query, _root, rawArgs) => {
+      const { id, input } = sanitize(rawArgs);
+
       try {
         return await db.user.update({
           ...query,
           where: { id: id },
           data: {
-            name: input.name ?? undefined,
-            image: input.image ?? undefined,
-            role: input.role ?? undefined,
+            name: input.name,
+            image: input.image,
+            role: input.role,
           },
         });
       } catch (error) {
@@ -105,12 +119,15 @@ builder.mutationField("deleteUser", (t) =>
       id: t.arg.id({
         required: true,
         validate: DeleteUserPayloadSchema.shape.id,
+        description: "ID of the user to delete",
       }),
     },
     authScopes: {
       admin: true,
     },
-    resolve: async (query, _root, { id }) => {
+    resolve: async (query, _root, rawArgs) => {
+      const { id } = sanitize(rawArgs);
+
       try {
         return await db.user.delete({
           ...query,
