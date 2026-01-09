@@ -1,42 +1,12 @@
-import { Role } from "@prisma/client/enums";
+import { handlePrismaError } from "@prisma/lib/error-handler";
 import {
   DeleteUserPayloadSchema,
-  UpdateMePayloadSchema,
   UpdateUserPayloadSchema,
 } from "@repo/schemas";
 import { builder } from "@/builder";
 import { db } from "@/db";
-
-const UpdateUserInput = builder.inputType("UpdateUserInput", {
-  fields: (t) => ({
-    name: t.string({
-      required: false,
-      validate: UpdateMePayloadSchema.shape.input.shape.name,
-    }),
-    image: t.string({
-      required: false,
-      validate: UpdateMePayloadSchema.shape.input.shape.image,
-    }),
-  }),
-});
-
-const AdminUpdateUserInput = builder.inputType("AdminUpdateUserInput", {
-  fields: (t) => ({
-    name: t.string({
-      required: false,
-      validate: UpdateUserPayloadSchema.shape.input.shape.name,
-    }),
-    image: t.string({
-      required: false,
-      validate: UpdateUserPayloadSchema.shape.input.shape.image,
-    }),
-    role: t.field({
-      type: Role,
-      required: false,
-      validate: UpdateUserPayloadSchema.shape.input.shape.role,
-    }),
-  }),
-});
+import { UNAUTHORIZED_ERROR } from "@/lib/errors";
+import { AdminUpdateUserInput, UpdateUserInput } from "./inputs";
 
 builder.mutationField("updateMe", (t) =>
   t.prismaField({
@@ -48,16 +18,23 @@ builder.mutationField("updateMe", (t) =>
       public: true,
     },
     resolve: async (query, _root, { input }, ctx) => {
-      if (!ctx.user) throw new Error("Not authenticated");
+      if (!ctx.user) throw new UNAUTHORIZED_ERROR();
 
-      return db.user.update({
-        ...query,
-        where: { id: ctx.user.id },
-        data: {
-          name: input.name ?? undefined,
-          image: input.image ?? undefined,
-        },
-      });
+      try {
+        return await db.user.update({
+          ...query,
+          where: { id: ctx.user.id },
+          data: {
+            name: input.name ?? undefined,
+            image: input.image ?? undefined,
+          },
+        });
+      } catch (error) {
+        handlePrismaError(error, {
+          notFound: "Usuario no encontrado",
+          duplicate: "Ya existe un usuario con los mismos valores en",
+        });
+      }
     },
   }),
 );
@@ -76,15 +53,22 @@ builder.mutationField("updateUser", (t) =>
       admin: true,
     },
     resolve: async (query, _root, { id, input }) => {
-      return db.user.update({
-        ...query,
-        where: { id: id },
-        data: {
-          name: input.name ?? undefined,
-          image: input.image ?? undefined,
-          role: input.role ?? undefined,
-        },
-      });
+      try {
+        return await db.user.update({
+          ...query,
+          where: { id: id },
+          data: {
+            name: input.name ?? undefined,
+            image: input.image ?? undefined,
+            role: input.role ?? undefined,
+          },
+        });
+      } catch (error) {
+        handlePrismaError(error, {
+          notFound: "El usuario que intenta actualizar no existe",
+          duplicate: "Ya existe un usuario con los mismos valores en",
+        });
+      }
     },
   }),
 );
@@ -96,12 +80,20 @@ builder.mutationField("deleteMe", (t) =>
       public: true,
     },
     resolve: async (query, _root, _args, ctx) => {
-      if (!ctx.user) throw new Error("Not authenticated");
+      if (!ctx.user) throw new UNAUTHORIZED_ERROR();
 
-      return db.user.delete({
-        ...query,
-        where: { id: ctx.user.id },
-      });
+      try {
+        return await db.user.delete({
+          ...query,
+          where: { id: ctx.user.id },
+        });
+      } catch (error) {
+        handlePrismaError(error, {
+          notFound: "Usuario no encontrado",
+          foreignKey:
+            "No se puede eliminar el usuario porque tiene datos relacionados",
+        });
+      }
     },
   }),
 );
@@ -119,10 +111,18 @@ builder.mutationField("deleteUser", (t) =>
       admin: true,
     },
     resolve: async (query, _root, { id }) => {
-      return db.user.delete({
-        ...query,
-        where: { id },
-      });
+      try {
+        return await db.user.delete({
+          ...query,
+          where: { id },
+        });
+      } catch (error) {
+        handlePrismaError(error, {
+          notFound: "El usuario que intenta eliminar no existe",
+          foreignKey:
+            "No se puede eliminar el usuario porque tiene datos relacionados",
+        });
+      }
     },
   }),
 );

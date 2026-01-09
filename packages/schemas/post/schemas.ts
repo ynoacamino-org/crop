@@ -19,7 +19,7 @@ const PostsPayloadSchema = z.object({
 });
 
 const PostPayloadSchema = z.object({
-  id: z.number({ message: "Se espera que el identificador sea un número, no una cadena de texto" }),
+  id: z.number({ message: "Se espera que el identificador sea un CUID válido" }),
 });
 
 const CreatePostPayloadSchema = z.object({
@@ -40,7 +40,7 @@ const CreatePostPayloadSchema = z.object({
 });
 
 const UpdatePostPayloadSchema = z.object({
-  id: z.number({ message: "Se espera que el identificador sea un número, no una cadena de texto" }),
+  id: z.number({ message: "Se espera que el identificador sea un CUID válido" }),
   input: z.object({
     title: z
       .string({ message: "Se espera que el título sea una cadena de texto, no un número" })
@@ -59,7 +59,7 @@ const UpdatePostPayloadSchema = z.object({
 });
 
 const DeletePostPayloadSchema = z.object({
-  id: z.number({ message: "Se espera que el identificador sea un número, no una cadena de texto" }),
+  id: z.cuid({ message: "Se espera que el identificador sea un CUID válido" }),
 });
 
 export {

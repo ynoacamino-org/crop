@@ -1,108 +1,13 @@
-import { Prisma } from "@prisma/client/client";
+import { handlePrismaError } from "@prisma/lib/error-handler";
 import {
   CreatePostPayloadSchema,
   DeletePostPayloadSchema,
-  PostPayloadSchema,
-  PostsPayloadSchema,
   UpdatePostPayloadSchema,
 } from "@repo/schemas";
-import { GraphQLError } from "graphql";
 import { builder } from "@/builder";
 import { db } from "@/db";
-
-export const Post = builder.prismaObject("Post", {
-  fields: (t) => ({
-    id: t.exposeID("id"),
-    title: t.exposeString("title"),
-    description: t.exposeString("description", { nullable: true }),
-    image: t.exposeString("image", { nullable: true }),
-    createdAt: t.expose("createdAt", { type: "DateTime" }),
-    updatedAt: t.expose("updatedAt", { type: "DateTime" }),
-  }),
-});
-
-builder.queryField("posts", (t) =>
-  t.prismaField({
-    type: ["Post"],
-    args: {
-      take: t.arg.int({
-        required: false,
-        description: "Number of posts to take",
-        defaultValue: 10,
-        validate: PostsPayloadSchema.shape.take,
-      }),
-      skip: t.arg.int({
-        required: false,
-        description: "Number of posts to skip",
-        defaultValue: 0,
-        validate: PostsPayloadSchema.shape.skip,
-      }),
-      search: t.arg.string({
-        required: false,
-        description: "Search term for post title or description",
-        validate: PostsPayloadSchema.shape.search,
-      }),
-    },
-    resolve: async (query, _root, args) => {
-      return db.post.findMany({
-        ...query,
-        take: args.take ?? undefined,
-        skip: args.skip ?? undefined,
-        where: args.search
-          ? {
-              OR: [
-                { title: { contains: args.search, mode: "insensitive" } },
-                {
-                  description: { contains: args.search, mode: "insensitive" },
-                },
-              ],
-            }
-          : undefined,
-        orderBy: { createdAt: "desc" },
-      });
-    },
-  }),
-);
-
-builder.queryField("post", (t) =>
-  t.prismaField({
-    type: "Post",
-    nullable: true,
-    args: {
-      id: t.arg.id({
-        required: true,
-        description: "ID of the post",
-        validate: PostPayloadSchema.shape.id,
-      }),
-    },
-    resolve: async (query, _root, args) => {
-      return db.post.findUnique({
-        ...query,
-        where: { id: Number(args.id) },
-      });
-    },
-  }),
-);
-
-const CreatePostInput = builder.inputType("CreatePostInput", {
-  fields: (t) => ({
-    title: t.string({
-      required: true,
-      description: "Title of the post",
-      validate: CreatePostPayloadSchema.shape.input.shape.title,
-    }),
-    description: t.string({
-      required: false,
-      description: "Description of the post",
-      validate: CreatePostPayloadSchema.shape.input.shape.description,
-    }),
-    image: t.string({
-      required: false,
-      description: "Image URL of the post",
-      validate: CreatePostPayloadSchema.shape.input.shape.image,
-    }),
-  }),
-});
+import { UNAUTHORIZED_ERROR } from "@/lib/errors";
+import { CreatePostInput, UpdatePostInput } from "./inputs";
 
 builder.mutationField("createPost", (t) =>
   t.prismaField({
@@ -116,47 +21,35 @@ builder.mutationField("createPost", (t) =>
       }),
     },
     resolve: async (query, _root, args, ctx) => {
-      if (!ctx.user) throw new Error("Unauthorized");
+      if (!ctx.user) throw new UNAUTHORIZED_ERROR();
 
-      return db.post.create({
-        ...query,
-        data: {
-          title: args.input.title,
-          description: args.input.description,
-          image: args.input.image,
-        },
-      });
+      try {
+        return await db.post.create({
+          ...query,
+          data: {
+            title: args.input.title,
+            description: args.input.description,
+            image: args.input.image,
+          },
+        });
+      } catch (error) {
+        handlePrismaError(error, {
+          duplicate: "Ya existe un post con los mismos valores en",
+        });
+      }
     },
   }),
 );
 
-// Mutation: Update post
-const UpdatePostInput = builder.inputType("UpdatePostInput", {
-  fields: (t) => ({
-    title: t.string({
-      required: false,
-      description: "Title of the post",
-      validate: UpdatePostPayloadSchema.shape.input.shape.title,
-    }),
-    description: t.string({
-      required: false,
-      description: "Description of the post",
-      validate: UpdatePostPayloadSchema.shape.input.shape.description,
-    }),
-    image: t.string({
-      required: false,
-      description: "Image URL of the post",
-      validate: UpdatePostPayloadSchema.shape.input.shape.image,
-    }),
-  }),
-});
-
 builder.mutationField("updatePost", (t) =>
   t.prismaField({
     type: "Post",
-    authScopes: { public: true },
+    authScopes: { collaborator: true },
     args: {
-      id: t.arg.id({ required: true }),
+      id: t.arg.id({
+        required: true,
+        validate: UpdatePostPayloadSchema.shape.id,
+      }),
       input: t.arg({
         type: UpdatePostInput,
         required: true,
@@ -165,28 +58,13 @@ builder.mutationField("updatePost", (t) =>
     },
     resolve: async (query, _root, args, ctx) => {
       if (!ctx.user) {
-        throw new GraphQLError("No estás autenticado", {
-          extensions: {
-            code: "UNAUTHORIZED",
-          },
-        });
+        throw new UNAUTHORIZED_ERROR();
       }
 
-      const post = await db.post.findUnique({
-        where: { id: Number(args.id) },
-      });
-
-      if (!post) {
-        throw new GraphQLError("El post que intestas modificar no existe.", {
-          extensions: {
-            code: "NOT_FOUND",
-          },
-        });
-      }
       try {
-        return db.post.update({
+        return await db.post.update({
           ...query,
-          where: { id: Number(args.id) },
+          where: { id: args.id },
           data: {
             title: args.input.title ?? undefined,
             description: args.input.description ?? undefined,
@@ -194,24 +72,9 @@ builder.mutationField("updatePost", (t) =>
           },
         });
       } catch (error) {
-        if (error instanceof Prisma.PrismaClientKnownRequestError) {
-          if (error.code === "P2002") {
-            const campos = (error.meta?.target as string[])?.join(", ");
-
-            throw new GraphQLError(
-              `Ya existe un post con el mismo valor en: ${campos}`,
-              {
-                extensions: {
-                  code: "DUPLICATE_FIELD",
-                  fields: campos,
-                },
-              },
-            );
-          }
-        }
-
-        throw new GraphQLError("Error interno del servidor", {
-          extensions: { code: "INTERNAL_SERVER_ERROR" },
+        handlePrismaError(error, {
+          duplicate: "El post tiene campos duplicados en",
+          notFound: "El post que intenta actualizar no existe",
         });
       }
     },
@@ -230,18 +93,18 @@ builder.mutationField("deletePost", (t) =>
       }),
     },
     resolve: async (query, _root, args, ctx) => {
-      if (!ctx.user) throw new Error("Unauthorized");
+      if (!ctx.user) throw new UNAUTHORIZED_ERROR();
 
-      const post = await db.post.findUnique({
-        where: { id: Number(args.id) },
-      });
-
-      if (!post) throw new Error("Post not found");
-
-      return db.post.delete({
-        ...query,
-        where: { id: Number(args.id) },
-      });
+      try {
+        return await db.post.delete({
+          ...query,
+          where: { id: args.id },
+        });
+      } catch (error) {
+        handlePrismaError(error, {
+          notFound: "El post que intenta eliminar no existe",
+        });
+      }
     },
   }),
 );

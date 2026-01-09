@@ -1,3 +1,4 @@
+import { handlePrismaError } from "@prisma/lib/error-handler";
 import { PostPayloadSchema, PostsPayloadSchema } from "@repo/schemas";
 import { builder } from "@/builder";
 import { db } from "@/db";
@@ -25,22 +26,26 @@ builder.queryField("posts", (t) =>
       }),
     },
     resolve: async (query, _root, args) => {
-      return db.post.findMany({
-        ...query,
-        take: args.take ?? undefined,
-        skip: args.skip ?? undefined,
-        where: args.search
-          ? {
-              OR: [
-                { title: { contains: args.search, mode: "insensitive" } },
-                {
-                  description: { contains: args.search, mode: "insensitive" },
-                },
-              ],
-            }
-          : undefined,
-        orderBy: { createdAt: "desc" },
-      });
+      try {
+        return await db.post.findMany({
+          ...query,
+          take: args.take ?? undefined,
+          skip: args.skip ?? undefined,
+          where: args.search
+            ? {
+                OR: [
+                  { title: { contains: args.search, mode: "insensitive" } },
+                  {
+                    description: { contains: args.search, mode: "insensitive" },
+                  },
+                ],
+              }
+            : undefined,
+          orderBy: { createdAt: "desc" },
+        });
+      } catch (error) {
+        handlePrismaError(error);
+      }
     },
   }),
 );
@@ -57,10 +62,16 @@ builder.queryField("post", (t) =>
       }),
     },
     resolve: async (query, _root, args) => {
-      return db.post.findUnique({
-        ...query,
-        where: { id: Number(args.id) },
-      });
+      try {
+        return await db.post.findUnique({
+          ...query,
+          where: { id: args.id },
+        });
+      } catch (error) {
+        handlePrismaError(error, {
+          notFound: "El post solicitado no existe",
+        });
+      }
     },
   }),
 );

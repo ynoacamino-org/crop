@@ -1,3 +1,4 @@
+import { handlePrismaError } from "@prisma/lib/error-handler";
 import { UsersPayloadSchema } from "@repo/schemas";
 import { builder } from "@/builder";
 import { db } from "@/db";
@@ -9,9 +10,15 @@ builder.queryField("me", (t) =>
     resolve: async (_query, _root, _args, ctx) => {
       if (!ctx.user) return null;
 
-      return db.user.findUnique({
-        where: { id: ctx.user.id },
-      });
+      try {
+        return await db.user.findUnique({
+          where: { id: ctx.user.id },
+        });
+      } catch (error) {
+        handlePrismaError(error, {
+          notFound: "Usuario no encontrado",
+        });
+      }
     },
     authScopes: {
       collaborator: true,
@@ -45,29 +52,33 @@ builder.queryField("users", (t) =>
       admin: true,
     },
     resolve: async (query, _root, args) => {
-      return db.user.findMany({
-        ...query,
-        take: args.take ?? undefined,
-        skip: args.skip ?? undefined,
-        where: args.search
-          ? {
-              OR: [
-                {
-                  name: {
-                    contains: args.search,
-                    mode: "insensitive",
+      try {
+        return await db.user.findMany({
+          ...query,
+          take: args.take ?? undefined,
+          skip: args.skip ?? undefined,
+          where: args.search
+            ? {
+                OR: [
+                  {
+                    name: {
+                      contains: args.search,
+                      mode: "insensitive",
+                    },
                   },
-                },
-                {
-                  email: {
-                    contains: args.search,
-                    mode: "insensitive",
+                  {
+                    email: {
+                      contains: args.search,
+                      mode: "insensitive",
+                    },
                   },
-                },
-              ],
-            }
-          : undefined,
-      });
+                ],
+              }
+            : undefined,
+        });
+      } catch (error) {
+        handlePrismaError(error);
+      }
     },
   }),
 );
