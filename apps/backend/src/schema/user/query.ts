@@ -8,6 +8,9 @@ builder.queryField("me", (t) =>
   t.prismaField({
     type: "User",
     nullable: true,
+    authScopes: {
+      collaborator: true,
+    },
     resolve: async (_query, _root, _args, ctx) => {
       if (!ctx.user) return null;
 
@@ -20,9 +23,6 @@ builder.queryField("me", (t) =>
           notFound: "Usuario no encontrado",
         });
       }
-    },
-    authScopes: {
-      collaborator: true,
     },
   }),
 );

@@ -22,8 +22,11 @@ export type Scalars = {
 };
 
 export type AdminUpdateUserInput = {
+  /** Profile image URL of the user */
   image?: InputMaybe<Scalars['String']['input']>;
+  /** Name of the user */
   name?: InputMaybe<Scalars['String']['input']>;
+  /** Role of the user (admin only) */
   role?: InputMaybe<Role>;
 };
 
@@ -81,6 +84,7 @@ export type MutationUpdateUserArgs = {
 
 export type Post = {
   __typename?: 'Post';
+  author: User;
   createdAt: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
@@ -132,7 +136,9 @@ export type UpdatePostInput = {
 };
 
 export type UpdateUserInput = {
+  /** Profile image URL of the user */
   image?: InputMaybe<Scalars['String']['input']>;
+  /** Name of the user */
   name?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -144,6 +150,7 @@ export type User = {
   id: Scalars['ID']['output'];
   image?: Maybe<Scalars['String']['output']>;
   name?: Maybe<Scalars['String']['output']>;
+  posts: Array<Post>;
   role: Role;
   updatedAt: Scalars['DateTime']['output'];
 };
@@ -153,7 +160,7 @@ export type CreatePostMutationVariables = Exact<{
 }>;
 
 
-export type CreatePostMutation = { __typename?: 'Mutation', createPost: { __typename?: 'Post', id: string, title: string, description?: string | null, image?: string | null, createdAt: Date, updatedAt: Date } };
+export type CreatePostMutation = { __typename?: 'Mutation', createPost: { __typename?: 'Post', id: string, title: string, description?: string | null, image?: string | null, createdAt: Date, updatedAt: Date, author: { __typename?: 'User', id: string, name?: string | null, email: string, image?: string | null } } };
 
 export type UpdatePostMutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -161,7 +168,7 @@ export type UpdatePostMutationVariables = Exact<{
 }>;
 
 
-export type UpdatePostMutation = { __typename?: 'Mutation', updatePost: { __typename?: 'Post', id: string, title: string, description?: string | null, image?: string | null, createdAt: Date, updatedAt: Date } };
+export type UpdatePostMutation = { __typename?: 'Mutation', updatePost: { __typename?: 'Post', id: string, title: string, description?: string | null, image?: string | null, createdAt: Date, updatedAt: Date, author: { __typename?: 'User', id: string, name?: string | null, email: string, image?: string | null } } };
 
 export type DeletePostMutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -204,14 +211,14 @@ export type PostsQueryVariables = Exact<{
 }>;
 
 
-export type PostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', id: string, title: string, description?: string | null, image?: string | null, createdAt: Date, updatedAt: Date }> };
+export type PostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', id: string, title: string, description?: string | null, image?: string | null, createdAt: Date, updatedAt: Date, author: { __typename?: 'User', id: string, name?: string | null, email: string, image?: string | null } }> };
 
 export type PostQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
 
-export type PostQuery = { __typename?: 'Query', post?: { __typename?: 'Post', id: string, title: string, description?: string | null, image?: string | null, createdAt: Date, updatedAt: Date } | null };
+export type PostQuery = { __typename?: 'Query', post?: { __typename?: 'Post', id: string, title: string, description?: string | null, image?: string | null, createdAt: Date, updatedAt: Date, author: { __typename?: 'User', id: string, name?: string | null, email: string, image?: string | null } } | null };
 
 export type UsersQueryVariables = Exact<{
   take?: InputMaybe<Scalars['Int']['input']>;
@@ -237,6 +244,12 @@ export const CreatePostDocument = gql`
     image
     createdAt
     updatedAt
+    author {
+      id
+      name
+      email
+      image
+    }
   }
 }
     `;
@@ -253,6 +266,12 @@ export const UpdatePostDocument = gql`
     image
     createdAt
     updatedAt
+    author {
+      id
+      name
+      email
+      image
+    }
   }
 }
     `;
@@ -339,6 +358,12 @@ export const PostsDocument = gql`
     image
     createdAt
     updatedAt
+    author {
+      id
+      name
+      email
+      image
+    }
   }
 }
     `;
@@ -355,6 +380,12 @@ export const PostDocument = gql`
     image
     createdAt
     updatedAt
+    author {
+      id
+      name
+      email
+      image
+    }
   }
 }
     `;

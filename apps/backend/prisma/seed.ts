@@ -11,16 +11,46 @@ const prisma = new PrismaClient({ adapter });
 async function main() {
 	console.log("🌱 Starting seed with Faker...");
 
-	const users = await prisma.user.findMany();
+	let users = await prisma.user.findMany();
 
-	console.log(`✅ Found ${users.length} users`);
+	if (users.length === 0) {
+		console.log("⚠️  No users found. Creating sample users...");
+
+		const sampleUsers = [];
+		for (let i = 0; i < 10; i++) {
+			sampleUsers.push({
+				id: faker.string.uuid(),
+				name: faker.person.fullName(),
+				email: faker.internet.email(),
+				emailVerified: faker.datatype.boolean(),
+				image: faker.image.avatar(),
+			});
+		}
+
+		await prisma.user.createMany({
+			data: sampleUsers,
+			skipDuplicates: true,
+		});
+
+		users = await prisma.user.findMany();
+		console.log(`✅ Created ${users.length} sample users`);
+	} else {
+		console.log(`✅ Found ${users.length} existing users`);
+	}
+
+	await prisma.post.deleteMany({});
+	console.log("🗑️  Deleted existing posts");
 
 	const posts = [];
 	for (let i = 0; i < 100; i++) {
+		const randomUser = users[Math.floor(Math.random() * users.length)];
+		if (!randomUser) continue;
+
 		posts.push({
 			title: faker.lorem.sentence({ min: 3, max: 8 }),
 			description: faker.lorem.paragraphs({ min: 1, max: 3 }),
 			image: faker.image.url({ width: 1200, height: 800 }),
+			authorId: randomUser.id,
 		});
 	}
 

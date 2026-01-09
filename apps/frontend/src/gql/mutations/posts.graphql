@@ -7,6 +7,12 @@ mutation createPost($input: CreatePostInput!) {
     image
     createdAt
     updatedAt
+    author {
+      id
+      name
+      email
+      image
+    }
   }
 }
 
@@ -19,6 +25,12 @@ mutation updatePost($id: ID!, $input: UpdatePostInput!) {
     image
     createdAt
     updatedAt
+    author {
+      id
+      name
+      email
+      image
+    }
   }
 }
 

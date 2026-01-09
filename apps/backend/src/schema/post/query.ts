@@ -34,14 +34,16 @@ builder.queryField("posts", (t) =>
           ...query,
           take: args.take,
           skip: args.skip,
-          where: {
-            OR: [
-              { title: { contains: args.search, mode: "insensitive" } },
-              {
-                description: { contains: args.search, mode: "insensitive" },
-              },
-            ],
-          },
+          where: args.search
+            ? {
+                OR: [
+                  { title: { contains: args.search, mode: "insensitive" } },
+                  {
+                    description: { contains: args.search, mode: "insensitive" },
+                  },
+                ],
+              }
+            : undefined,
           orderBy: { createdAt: "desc" },
         });
       } catch (error) {
