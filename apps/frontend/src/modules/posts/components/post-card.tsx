@@ -22,13 +22,13 @@ interface PostCardProps {
 
 export function PostCard({ post }: PostCardProps) {
   return (
-    <Card className="overflow-hidden pt-0">
+    <Card className="group overflow-hidden pt-0">
       {post.image && (
         <div className="aspect-video w-full overflow-hidden bg-muted">
           <img
             src={post.image}
             alt={post.title}
-            className="h-full w-full object-cover transition-transform hover:scale-105"
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
           />
         </div>
       )}

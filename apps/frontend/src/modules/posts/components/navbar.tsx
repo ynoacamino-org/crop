@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { AccountPopover } from "@/modules/auth/components/account-popover";
 
 export function Navbar() {
@@ -9,12 +10,12 @@ export function Navbar() {
         <div className="flex items-center gap-6">
           <h2 className="font-bold text-xl">Crop</h2>
           <nav className="hidden gap-6 md:flex">
-            <a
+            <Link
               href="/"
               className="font-medium text-sm transition-colors hover:text-primary"
             >
               Posts
-            </a>
+            </Link>
           </nav>
         </div>
 
