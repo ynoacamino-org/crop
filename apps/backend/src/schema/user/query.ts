@@ -1,8 +1,8 @@
 import { handlePrismaError } from "@prisma/lib/error-handler";
 import { UsersPayloadSchema } from "@repo/schemas";
 import { builder } from "@/builder";
-import { db } from "@/db";
-import { sanitize } from "@/lib/sanitize";
+import { db } from "@/lib/db";
+import { sanitize } from "@/lib/utils/sanitize";
 
 builder.queryField("me", (t) =>
   t.prismaField({

@@ -5,9 +5,9 @@ import {
   UpdatePostPayloadSchema,
 } from "@repo/schemas";
 import { builder } from "@/builder";
-import { db } from "@/db";
-import { UNAUTHORIZED_ERROR } from "@/lib/errors";
-import { sanitize } from "@/lib/sanitize";
+import { db } from "@/lib/db";
+import { UnauthorizedError } from "@/lib/errors/gql";
+import { sanitize } from "@/lib/utils/sanitize";
 import { CreatePostInput, UpdatePostInput } from "./inputs";
 
 builder.mutationField("createPost", (t) =>
@@ -23,7 +23,7 @@ builder.mutationField("createPost", (t) =>
       }),
     },
     resolve: async (query, _root, rawArgs, ctx) => {
-      if (!ctx.user) throw new UNAUTHORIZED_ERROR();
+      if (!ctx.user) throw new UnauthorizedError();
 
       const { input } = sanitize(rawArgs);
 
@@ -65,7 +65,7 @@ builder.mutationField("updatePost", (t) =>
     },
     resolve: async (query, _root, rawArgs, ctx) => {
       if (!ctx.user) {
-        throw new UNAUTHORIZED_ERROR();
+        throw new UnauthorizedError();
       }
 
       const { id, input } = sanitize(rawArgs);
@@ -102,7 +102,7 @@ builder.mutationField("deletePost", (t) =>
       }),
     },
     resolve: async (query, _root, rawArgs, ctx) => {
-      if (!ctx.user) throw new UNAUTHORIZED_ERROR();
+      if (!ctx.user) throw new UnauthorizedError();
 
       const { id } = sanitize(rawArgs);
 

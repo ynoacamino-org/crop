@@ -4,9 +4,9 @@ import {
   UpdateUserPayloadSchema,
 } from "@repo/schemas";
 import { builder } from "@/builder";
-import { db } from "@/db";
-import { UNAUTHORIZED_ERROR } from "@/lib/errors";
-import { sanitize } from "@/lib/sanitize";
+import { db } from "@/lib/db";
+import { UnauthorizedError } from "@/lib/errors/gql";
+import { sanitize } from "@/lib/utils/sanitize";
 import { AdminUpdateUserInput, UpdateUserInput } from "./inputs";
 
 builder.mutationField("updateMe", (t) =>
@@ -23,7 +23,7 @@ builder.mutationField("updateMe", (t) =>
       public: true,
     },
     resolve: async (query, _root, rawArgs, ctx) => {
-      if (!ctx.user) throw new UNAUTHORIZED_ERROR();
+      if (!ctx.user) throw new UnauthorizedError();
 
       const { input } = sanitize(rawArgs);
 
@@ -94,7 +94,7 @@ builder.mutationField("deleteMe", (t) =>
       public: true,
     },
     resolve: async (query, _root, _args, ctx) => {
-      if (!ctx.user) throw new UNAUTHORIZED_ERROR();
+      if (!ctx.user) throw new UnauthorizedError();
 
       try {
         return await db.user.delete({
