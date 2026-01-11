@@ -1,11 +1,11 @@
 import {
-  BAD_REQUEST_ERROR,
-  DUPLICATE_FIELD_ERROR,
-  FOREIGN_KEY_CONSTRAINT_ERROR,
-  INTERNAL_SERVER_ERROR,
-  INVALID_INPUT_ERROR,
-  NOT_FOUND_ERROR,
-} from "@/lib/errors";
+  BadRequestError,
+  DuplicateFieldError,
+  ForeignKeyConstraintError,
+  InternalServerError,
+  InvalidInputError,
+  NotFoundError,
+} from "@/lib/errors/gql";
 import { Prisma } from "@prisma/client/client";
 
 export function handlePrismaError(
@@ -21,7 +21,7 @@ export function handlePrismaError(
     switch (error.code) {
       // Record not found
       case "P2025": {
-        throw new NOT_FOUND_ERROR(
+        throw new NotFoundError(
           messages?.notFound ?? "El recurso solicitado no existe",
         );
       }
@@ -29,7 +29,7 @@ export function handlePrismaError(
       // Unique constraint violation
       case "P2002": {
         const fields = error.meta?.target as string[];
-        throw new DUPLICATE_FIELD_ERROR(
+        throw new DuplicateFieldError(
           messages?.duplicate
             ? `${messages.duplicate}: ${fields.join(", ")}`
             : `Ya existe un registro con los mismos valores en: ${fields.join(", ")}`,
@@ -40,7 +40,7 @@ export function handlePrismaError(
       // Foreign key constraint violation
       case "P2003": {
         const field = error.meta?.field_name as string;
-        throw new FOREIGN_KEY_CONSTRAINT_ERROR(
+        throw new ForeignKeyConstraintError(
           messages?.foreignKey
             ? `${messages.foreignKey}: ${field}`
             : `No se puede completar la operación debido a: ${field}`,
@@ -51,7 +51,7 @@ export function handlePrismaError(
       // Invalid input data
       case "P2006":
       case "P2007": {
-        throw new INVALID_INPUT_ERROR(
+        throw new InvalidInputError(
           messages?.invalidInput ?? "Los datos proporcionados no son válidos",
         );
       }
@@ -59,26 +59,26 @@ export function handlePrismaError(
       // Required field missing
       case "P2011": {
         const field = error.meta?.constraint as string;
-        throw new BAD_REQUEST_ERROR(`El campo ${field} es requerido`);
+        throw new BadRequestError(`El campo ${field} es requerido`);
       }
 
       // Required relation not found
       case "P2018": {
         const relations = error.meta?.required_connected_fields as string[];
-        throw new BAD_REQUEST_ERROR(
+        throw new BadRequestError(
           `Las relaciones requeridas no fueron encontradas: ${relations.join(", ")}`,
         );
       }
 
       // Transaction failed
       case "P2034": {
-        throw new INTERNAL_SERVER_ERROR(
+        throw new InternalServerError(
           "La transacción falló. Por favor, intente nuevamente",
         );
       }
 
       default: {
-        throw new INTERNAL_SERVER_ERROR(
+        throw new InternalServerError(
           `Error de base de datos: ${error.message}`,
         );
       }
@@ -86,10 +86,10 @@ export function handlePrismaError(
   }
 
   if (error instanceof Prisma.PrismaClientValidationError) {
-    throw new INVALID_INPUT_ERROR(
+    throw new InvalidInputError(
       "Los datos de entrada no cumplen con el formato esperado",
     );
   }
 
-  throw new INTERNAL_SERVER_ERROR("Error interno del servidor");
+  throw new InternalServerError("Error interno del servidor");
 }
