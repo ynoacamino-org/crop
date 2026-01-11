@@ -55,7 +55,8 @@ export const ModelName = {
   Session: 'Session',
   Account: 'Account',
   Verification: 'Verification',
-  Post: 'Post'
+  Post: 'Post',
+  Media: 'Media'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -144,6 +145,23 @@ export const PostScalarFieldEnum = {
 } as const
 
 export type PostScalarFieldEnum = (typeof PostScalarFieldEnum)[keyof typeof PostScalarFieldEnum]
+
+
+export const MediaScalarFieldEnum = {
+  id: 'id',
+  objectKey: 'objectKey',
+  url: 'url',
+  alt: 'alt',
+  type: 'type',
+  size: 'size',
+  mimeType: 'mimeType',
+  filename: 'filename',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  uploadedBy: 'uploadedBy'
+} as const
+
+export type MediaScalarFieldEnum = (typeof MediaScalarFieldEnum)[keyof typeof MediaScalarFieldEnum]
 
 
 export const SortOrder = {

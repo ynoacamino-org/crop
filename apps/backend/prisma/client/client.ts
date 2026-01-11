@@ -64,3 +64,8 @@ export type Verification = Prisma.VerificationModel
  * 
  */
 export type Post = Prisma.PostModel
+/**
+ * Model Media
+ * 
+ */
+export type Media = Prisma.MediaModel

@@ -26,6 +26,7 @@ model User {
   sessions      Session[]
   accounts      Account[]
   posts         Post[]
+  media         Media[]
   role          Role      @default(PUBLIC)
 
   @@unique([email])
@@ -94,8 +95,33 @@ model Post {
   @@map("Post")
 }
 
+model Media {
+  id        String    @id @default(cuid())
+  objectKey  String    @unique
+  url       String
+  alt       String?
+  type      MediaType
+  size      Int
+  mimeType  String
+  filename  String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  uploadedBy String?
+  uploader  User?     @relation(fields: [uploadedBy], references: [id], onDelete: SetNull)
+
+  @@index([uploadedBy])
+  @@index([type])
+  @@map("Media")
+}
+
 enum Role {
   PUBLIC
   COLLABORATOR
   ADMIN
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+  AUDIO
 }
