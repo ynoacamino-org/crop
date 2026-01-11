@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { type AuthType, auth } from "../auth";
+import { type AuthType, auth } from "@/lib/auth";
 
 export const authRouter = new Hono<{ Bindings: AuthType }>({
   strict: false,

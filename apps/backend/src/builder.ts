@@ -2,12 +2,11 @@ import SchemaBuilder from "@pothos/core";
 import PrismaPlugin from "@pothos/plugin-prisma";
 import ScopeAuthPlugin from "@pothos/plugin-scope-auth";
 import ValidationPlugin from "@pothos/plugin-validation";
+import type { User } from "@prisma/client/client";
+import type PrismaTypes from "@prisma/generated";
+import { getDatamodel } from "@prisma/generated";
 import { DateTimeResolver } from "graphql-scalars";
-import type { User } from "../prisma/client/client";
-import type PrismaTypes from "../prisma/generated";
-import { getDatamodel } from "../prisma/generated";
-
-import { db } from "./db";
+import { db } from "@/lib/db";
 
 export const builder = new SchemaBuilder<{
   Defaults: "v3";

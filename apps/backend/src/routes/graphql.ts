@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { yoga } from "../yoga";
+import { yoga } from "@/lib/yoga";
 
 export const graphqlRouter = new Hono();
 
