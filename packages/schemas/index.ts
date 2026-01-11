@@ -1,3 +1,19 @@
+// Media schemas
+export type {
+  CreateMediaPayload,
+  DeleteMediaPayload,
+  MediaPayload,
+  MediasPayload,
+  UpdateMediaPayload,
+} from "./media/interfaces";
+export {
+  CreateMediaPayloadSchema,
+  DeleteMediaPayloadSchema,
+  MediaPayloadSchema,
+  MediasPayloadSchema,
+  MediaTypeEnum,
+  UpdateMediaPayloadSchema,
+} from "./media/schemas";
 export type {
   CreatePostPayload,
   DeletePostPayload,

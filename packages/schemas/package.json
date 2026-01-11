@@ -7,7 +7,8 @@
   "exports": {
     ".": "./index.ts",
     "./post": "./post/schemas.ts",
-    "./user": "./user/schemas.ts"
+    "./user": "./user/schemas.ts",
+    "./media": "./media/schemas.ts"
   },
   "dependencies": {
     "zod": "^4.2.1"
