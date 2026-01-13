@@ -22,7 +22,7 @@ export const createGqlService = (
   }
 
   return new Service({
-    url: `${baseUrl}/api/graphql`,
+    url: `${baseUrl}/graphql`,
     fetchOptions,
     exchanges: [cacheExchange, dateExchange, fetchExchange],
   });

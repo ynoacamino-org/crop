@@ -1,4 +1,4 @@
-import got, { type Got } from "got";
+import ky, { type KyInstance } from "ky";
 import type {
   HttpOptions,
   HttpPath,
@@ -7,9 +7,10 @@ import type {
 } from "./types/http";
 
 class Http {
-  private client: Got;
+  private client: KyInstance;
+  private prefix: string;
 
-  constructor(prefix: HttpPath, options?: HttpOptions) {
+  constructor(baseUrl: string, prefix: string = "", options?: HttpOptions) {
     const headers: Record<string, string> = {};
 
     if (options?.cookies) {
@@ -19,22 +20,22 @@ class Http {
         .join("; ");
     }
 
-    this.client = got.extend({
-      prefixUrl: Http.buildPath(prefix),
-      responseType: "json",
+    this.prefix = prefix;
+    this.client = ky.create({
+      prefixUrl: baseUrl,
       retry: { limit: 2 },
-      timeout: { request: 5000 },
+      timeout: 5000,
       headers,
     });
   }
 
   get<T>(path: HttpPath, searchParams?: HttpSearchParams) {
-    return this.client.get(Http.buildPath(path), { searchParams }).json<T>();
+    return this.client.get(this.buildPath(path), { searchParams }).json<T>();
   }
 
   post<T>(path: HttpPath, body?: unknown, searchParams?: HttpSearchParams) {
     return this.client
-      .post(Http.buildPath(path), {
+      .post(this.buildPath(path), {
         json: body,
         searchParams,
       })
@@ -43,7 +44,7 @@ class Http {
 
   put<T>(path: HttpPath, body?: unknown, searchParams?: HttpSearchParams) {
     return this.client
-      .put(Http.buildPath(path), {
+      .put(this.buildPath(path), {
         json: body,
         searchParams,
       })
@@ -52,7 +53,7 @@ class Http {
 
   patch<T>(path: HttpPath, body?: unknown, searchParams?: HttpSearchParams) {
     return this.client
-      .patch(Http.buildPath(path), {
+      .patch(this.buildPath(path), {
         json: body,
         searchParams,
       })
@@ -60,7 +61,7 @@ class Http {
   }
 
   delete<T>(path: HttpPath, searchParams?: HttpSearchParams) {
-    return this.client.delete(Http.buildPath(path), { searchParams }).json<T>();
+    return this.client.delete(this.buildPath(path), { searchParams }).json<T>();
   }
 
   upload<T>(
@@ -68,11 +69,11 @@ class Http {
     file: HttpUploadFile,
     body?: Record<string, string>,
     fieldName = "file",
-    filename = "upload",
   ) {
     const form = new FormData();
 
     const blob = file instanceof Blob ? file : new Blob([new Uint8Array(file)]);
+    const filename = file instanceof File ? file.name : "upload";
 
     form.append(fieldName, blob, filename);
 
@@ -83,17 +84,16 @@ class Http {
     }
 
     return this.client
-      .post(Http.buildPath(path), {
+      .post(this.buildPath(path), {
         body: form,
       })
       .json<T>();
   }
 
-  static buildPath(path: HttpPath): string {
-    if (Array.isArray(path)) {
-      return path.map((p) => encodeURIComponent(p)).join("/");
-    }
-    return path;
+  private buildPath(path: HttpPath): string {
+    const pathArray = Array.isArray(path) ? path : [path];
+    const parts = this.prefix ? [this.prefix, ...pathArray] : pathArray;
+    return parts.map((p) => encodeURIComponent(p)).join("/");
   }
 }
 

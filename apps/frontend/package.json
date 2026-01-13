@@ -3,11 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "dev": "bun --bun next dev",
+    "build": "bun --bun next build",
+    "start": "bun --bun next start",
     "lint": "biome check --write",
-    "check-types": "tsc --noEmit"
+    "check-types": "bun --bun tsc --noEmit"
   },
   "dependencies": {
     "@graphql-typed-document-node/core": "^3.2.0",
@@ -45,13 +45,14 @@
     "@radix-ui/react-toggle": "^1.1.10",
     "@radix-ui/react-toggle-group": "^1.1.11",
     "@radix-ui/react-tooltip": "^1.2.8",
+    "@repo/schemas": "workspace:^",
     "better-auth": "^1.4.9",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
-    "got": "^14.6.6",
     "graphql-tag": "^2.12.6",
     "input-otp": "^1.4.2",
+    "ky": "^1.14.2",
     "lexical": "^0.39.0",
     "lucide-react": "^0.562.0",
     "next": "16.1.1",
@@ -67,8 +68,7 @@
     "tailwind-merge": "^3.4.0",
     "urql": "^5.0.1",
     "vaul": "^1.1.2",
-    "zod": "^4.3.4",
-    "@repo/schemas": "workspace:^"
+    "zod": "^4.3.4"
   },
   "devDependencies": {
     "@biomejs/biome": "2.3.10",

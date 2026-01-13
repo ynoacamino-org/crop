@@ -4,10 +4,9 @@ import type { HttpOptions } from "../types/http";
 
 class MediaModule {
   private http: Http;
-  private readonly prefix = "media";
 
-  constructor(prefix: string, options?: HttpOptions) {
-    this.http = new Http([prefix, this.prefix], options);
+  constructor(baseUrl: string, options?: HttpOptions) {
+    this.http = new Http(baseUrl, "media", options);
   }
 
   async upload(file: File, payload: UploadMediaPayload) {

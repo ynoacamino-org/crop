@@ -40,7 +40,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "@/shared/components/ui/button";
 import { Separator } from "@/shared/components/ui/separator";
-import { uploadMedia } from "./plugins/media-plugin";
+import { uploadMedia } from "./media-plugin";
 
 export function ToolbarPlugin() {
   const [editor] = useLexicalComposerContext();

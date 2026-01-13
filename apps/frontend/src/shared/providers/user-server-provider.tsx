@@ -8,12 +8,16 @@ export async function UserServerProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const service = await getService();
-  const userMe = await service.gql.query(MeDocument, {}).toPromise();
+  try {
+    const service = await getService();
+    const userMe = await service.gql.query(MeDocument, {}).toPromise();
 
-  if (userMe.error || !userMe.data?.me) {
+    if (userMe.error || !userMe.data?.me) {
+      redirect("/iniciar-sesion");
+    }
+
+    return <UserProvider user={userMe.data?.me}>{children}</UserProvider>;
+  } catch {
     redirect("/iniciar-sesion");
   }
-
-  return <UserProvider user={userMe.data?.me}>{children}</UserProvider>;
 }

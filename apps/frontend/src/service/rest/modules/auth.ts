@@ -5,8 +5,8 @@ import type { HttpOptions } from "../types/http";
 class AuthModule {
   private http: Http;
 
-  constructor(prefix: string, options?: HttpOptions) {
-    this.http = new Http([prefix, "auth"], options);
+  constructor(baseUrl: string, options?: HttpOptions) {
+    this.http = new Http(baseUrl, "auth", options);
   }
 
   getSession() {

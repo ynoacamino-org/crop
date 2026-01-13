@@ -1,6 +1,7 @@
-import type { PostsQuery } from "@/service/gql/generated/gql.node";
-import { PostsDocument } from "@/service/gql/generated/gql.node";
-import { getService } from "@/service/service.server";
+"use client";
+
+import type { PostsQuery } from "@/service/gql/generated/gql.client";
+import { usePostsQuery } from "@/service/gql/generated/gql.client";
 import { PostCard } from "./post-card";
 
 interface PostsListProps {
@@ -9,19 +10,26 @@ interface PostsListProps {
   search?: string;
 }
 
-export async function PostsList({
-  take = 10,
-  skip = 0,
-  search,
-}: PostsListProps) {
-  const service = await getService();
-  const posts = await service.gql
-    .query(PostsDocument, { search, take, skip })
-    .toPromise();
+export function PostsList({ take = 10, skip = 0, search }: PostsListProps) {
+  const [{ data, fetching, error }] = usePostsQuery({
+    variables: {
+      take,
+      skip,
+      search,
+    },
+  });
+
+  if (fetching) {
+    return <div>Cargando publicaciones...</div>;
+  }
+
+  if (error) {
+    return <div>Error al cargar las publicaciones: {error.message}</div>;
+  }
 
   return (
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {posts?.data?.posts.map((post: PostsQuery["posts"][number]) => (
+      {data?.posts.map((post: PostsQuery["posts"][number]) => (
         <PostCard key={post.id} post={post} />
       ))}
     </div>

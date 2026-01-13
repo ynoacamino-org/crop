@@ -32,11 +32,7 @@ export function MediaPlugin(): React.ReactElement | null {
   const [editor] = useLexicalComposerContext();
 
   useEffect(() => {
-    if (
-      !editor.hasNodes([
-        /* MediaNode will be registered in the editor config */
-      ])
-    ) {
+    if (!editor.hasNodes([])) {
       throw new Error("MediaPlugin: MediaNode not registered on editor");
     }
 
@@ -68,7 +64,7 @@ function getMediaTypeFromFile(file: File): MediaType {
   if (file.type.startsWith("audio/")) {
     return "audio";
   }
-  return "image"; // default fallback
+  return "image";
 }
 
 export async function uploadMedia(
@@ -78,14 +74,12 @@ export async function uploadMedia(
   const mediaType = getMediaTypeFromFile(file);
 
   try {
-    // Mostrar preview mientras se sube
     const reader = new FileReader();
     reader.readAsDataURL(file);
 
     reader.onload = async () => {
       const dataUrl = reader.result as string;
 
-      // Insertar media temporal con data URL
       const tempPayload: MediaPayload = {
         altText: file.name,
         src: dataUrl,
@@ -95,13 +89,8 @@ export async function uploadMedia(
       editor.dispatchCommand(INSERT_MEDIA_COMMAND, tempPayload);
 
       try {
-        // Subir media al servidor
-        const response = await service.rest.media.upload(file, {
-          alt: file.name,
-          prefix: "posts",
-        });
+        const response = await service.rest.media.upload(file, {});
 
-        // Actualizar el media con la URL real del servidor
         editor.update(() => {
           const nodes = editor.getEditorState()._nodeMap;
           for (const [key, node] of nodes) {
@@ -114,7 +103,6 @@ export async function uploadMedia(
                   mediaType === "image" || mediaType === "video" ? 800 : 500,
               });
 
-              // Reemplazar el nodo temporal con el real
               const oldNode = $getNodeByKey(key);
               if (oldNode && $isMediaNode(oldNode)) {
                 oldNode.replace(mediaNode);
