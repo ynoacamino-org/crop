@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const UploadMediaSchema = z.object({
+export const UploadMediaPayloadSchema = z.object({
   alt: z
     .string({ message: "Se espera que el texto alternativo sea una cadena de texto" })
     .max(500, { message: "El texto alternativo no puede tener más de 500 caracteres" })

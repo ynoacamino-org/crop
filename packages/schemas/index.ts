@@ -5,6 +5,7 @@ export type {
   MediaPayload,
   MediasPayload,
   UpdateMediaPayload,
+  UploadMediaPayload,
 } from "./media/interfaces";
 export {
   CreateMediaPayloadSchema,
@@ -13,6 +14,7 @@ export {
   MediasPayloadSchema,
   MediaTypeEnum,
   UpdateMediaPayloadSchema,
+  UploadMediaPayloadSchema,
 } from "./media/schemas";
 export type {
   CreatePostPayload,
