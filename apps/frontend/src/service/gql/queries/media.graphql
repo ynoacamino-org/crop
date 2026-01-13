@@ -1,0 +1,41 @@
+query Medias($take: Int, $skip: Int, $type: String, $search: String) {
+  medias(take: $take, skip: $skip, type: $type, search: $search) {
+    id
+    objectKey
+    url
+    alt
+    type
+    size
+    mimeType
+    filename
+    createdAt
+    updatedAt
+    uploader {
+      id
+      name
+      email
+      image
+    }
+  }
+}
+
+query Media($id: String!) {
+  media(id: $id) {
+    id
+    objectKey
+    url
+    alt
+    type
+    size
+    mimeType
+    filename
+    createdAt
+    updatedAt
+    uploader {
+      id
+      name
+      email
+      image
+    }
+  }
+}

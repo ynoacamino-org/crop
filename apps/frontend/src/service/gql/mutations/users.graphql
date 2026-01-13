@@ -1,0 +1,41 @@
+# Mutation to update current user profile
+mutation updateMe($input: UpdateUserInput!) {
+  updateMe(input: $input) {
+    id
+    email
+    name
+    image
+    role
+    createdAt
+    updatedAt
+  }
+}
+
+# Mutation to update a user (admin only)
+mutation updateUser($id: ID!, $input: AdminUpdateUserInput!) {
+  updateUser(id: $id, input: $input) {
+    id
+    email
+    name
+    image
+    role
+    createdAt
+    updatedAt
+  }
+}
+
+# Mutation to delete current user account
+mutation deleteMe {
+  deleteMe {
+    id
+    email
+  }
+}
+
+# Mutation to delete a user (admin only)
+mutation deleteUser($id: ID!) {
+  deleteUser(id: $id) {
+    id
+    email
+  }
+}

@@ -1,0 +1,43 @@
+# Mutation to create a new post
+mutation createPost($input: CreatePostInput!) {
+  createPost(input: $input) {
+    id
+    title
+    description
+    image
+    createdAt
+    updatedAt
+    author {
+      id
+      name
+      email
+      image
+    }
+  }
+}
+
+# Mutation to update a post
+mutation updatePost($id: ID!, $input: UpdatePostInput!) {
+  updatePost(id: $id, input: $input) {
+    id
+    title
+    description
+    image
+    createdAt
+    updatedAt
+    author {
+      id
+      name
+      email
+      image
+    }
+  }
+}
+
+# Mutation to delete a post
+mutation deletePost($id: ID!) {
+  deletePost(id: $id) {
+    id
+    title
+  }
+}

@@ -1,0 +1,25 @@
+# Query to get a list of users (admin only)
+query users($take: Int, $skip: Int, $search: String) {
+  users(take: $take, skip: $skip, search: $search) {
+    id
+    email
+    name
+    image
+    role
+    createdAt
+    updatedAt
+  }
+}
+
+query me {
+  me {
+    id
+    name
+    email
+    emailVerified
+    role
+    image
+    createdAt
+    updatedAt
+  }
+}
