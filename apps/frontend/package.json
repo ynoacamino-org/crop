@@ -49,6 +49,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "got": "^14.6.6",
     "graphql-tag": "^2.12.6",
     "input-otp": "^1.4.2",
     "lexical": "^0.39.0",
@@ -66,7 +67,8 @@
     "tailwind-merge": "^3.4.0",
     "urql": "^5.0.1",
     "vaul": "^1.1.2",
-    "zod": "^4.3.4"
+    "zod": "^4.3.4",
+    "@repo/schemas": "workspace:^"
   },
   "devDependencies": {
     "@biomejs/biome": "2.3.10",
