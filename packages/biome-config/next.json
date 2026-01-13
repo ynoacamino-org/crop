@@ -3,7 +3,7 @@
   "root": false,
   "files": {
     "ignoreUnknown": true,
-    "includes": ["**", "!node_modules", "!.next", "!dist", "!build", "!public", "!src/gql/generated/*.ts"]
+    "includes": ["**", "!node_modules", "!.next", "!dist", "!build", "!public", "!src/service/gql/generated/*.ts"]
   },
   "css": {
     "parser": {

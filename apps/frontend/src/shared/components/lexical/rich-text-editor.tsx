@@ -16,7 +16,10 @@ import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import type { EditorThemeClasses } from "lexical";
 
-import { ToolbarPlugin } from "./toolbar-plugin";
+import { MediaNode } from "./nodes/media-node";
+import DragDropPastePlugin from "./plugins/drag-drop-paste-plugin";
+import { MediaPlugin } from "./plugins/media-plugin";
+import { ToolbarPlugin } from "./plugins/toolbar-plugin";
 
 const theme: EditorThemeClasses = {
   paragraph: "mb-1 relative",
@@ -43,6 +46,7 @@ const theme: EditorThemeClasses = {
     strikethrough: "line-through",
     code: "bg-gray-900 dark:bg-gray-100 text-background px-1 py-0.5 rounded font-mono text-sm",
   },
+  image: "editor-image",
 };
 
 const placeholder = "Escribe algo increíble...";
@@ -63,6 +67,7 @@ export function RichTextEditor() {
       CodeHighlightNode,
       LinkNode,
       AutoLinkNode,
+      MediaNode,
     ],
     onError,
     theme,
@@ -93,6 +98,8 @@ export function RichTextEditor() {
           <ListPlugin />
           <LinkPlugin />
           <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
+          <MediaPlugin />
+          <DragDropPastePlugin />
         </div>
       </LexicalComposer>
     </div>

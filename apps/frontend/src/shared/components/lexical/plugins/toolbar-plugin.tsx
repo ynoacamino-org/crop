@@ -25,18 +25,22 @@ import {
   Heading1,
   Heading2,
   Heading3,
+  Image,
   Italic,
   List,
   ListOrdered,
+  Music,
   Quote,
   Redo,
   Strikethrough,
   Underline,
   Undo,
+  Video,
 } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "@/shared/components/ui/button";
 import { Separator } from "@/shared/components/ui/separator";
+import { uploadMedia } from "./plugins/media-plugin";
 
 export function ToolbarPlugin() {
   const [editor] = useLexicalComposerContext();
@@ -45,6 +49,9 @@ export function ToolbarPlugin() {
   const [isUnderline, setIsUnderline] = useState(false);
   const [isStrikethrough, setIsStrikethrough] = useState(false);
   const [isCode, setIsCode] = useState(false);
+  const imageInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
+  const audioInputRef = useRef<HTMLInputElement>(null);
 
   const updateToolbar = useCallback(() => {
     const selection = $getSelection();
@@ -95,8 +102,50 @@ export function ToolbarPlugin() {
     editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, alignment);
   };
 
+  const handleImageUpload = () => {
+    imageInputRef.current?.click();
+  };
+
+  const handleVideoUpload = () => {
+    videoInputRef.current?.click();
+  };
+
+  const handleAudioUpload = () => {
+    audioInputRef.current?.click();
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      await uploadMedia(editor, file);
+      // Reset input
+      e.target.value = "";
+    }
+  };
+
   return (
     <div className="flex flex-wrap items-center gap-1 border-b bg-background p-2">
+      <input
+        type="file"
+        ref={imageInputRef}
+        onChange={handleFileChange}
+        accept="image/jpeg,image/jpg,image/png,image/gif,image/webp,image/svg+xml"
+        className="hidden"
+      />
+      <input
+        type="file"
+        ref={videoInputRef}
+        onChange={handleFileChange}
+        accept="video/mp4,video/webm,video/ogg,video/quicktime"
+        className="hidden"
+      />
+      <input
+        type="file"
+        ref={audioInputRef}
+        onChange={handleFileChange}
+        accept="audio/mpeg,audio/mp3,audio/wav,audio/ogg,audio/webm"
+        className="hidden"
+      />
       {/* Undo/Redo */}
       <Button
         variant="ghost"
@@ -247,6 +296,40 @@ export function ToolbarPlugin() {
         tooltip="Cita"
       >
         <Quote className="h-4 w-4" />
+      </Button>
+
+      <Separator orientation="vertical" className="mx-1 h-6" />
+
+      {/* Media */}
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={handleImageUpload}
+        aria-label="Insertar imagen"
+        type="button"
+        tooltip="Insertar imagen"
+      >
+        <Image className="h-4 w-4" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={handleVideoUpload}
+        aria-label="Insertar video"
+        type="button"
+        tooltip="Insertar video"
+      >
+        <Video className="h-4 w-4" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={handleAudioUpload}
+        aria-label="Insertar audio"
+        type="button"
+        tooltip="Insertar audio"
+      >
+        <Music className="h-4 w-4" />
       </Button>
 
       <Separator orientation="vertical" className="mx-1 h-6" />
