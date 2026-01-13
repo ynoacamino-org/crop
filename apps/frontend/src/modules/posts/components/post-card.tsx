@@ -1,6 +1,6 @@
 "use client";
 
-import type { PostsQuery } from "@/gql/generated/gql.client";
+import type { PostsQuery } from "@/service/gql/generated/gql.client";
 import {
   Avatar,
   AvatarFallback,

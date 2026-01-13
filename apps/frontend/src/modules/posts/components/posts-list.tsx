@@ -1,5 +1,6 @@
-import { PostsDocument } from "@/gql/generated/gql.node";
-import { getService } from "@/gql/service.server";
+import type { PostsQuery } from "@/service/gql/generated/gql.node";
+import { PostsDocument } from "@/service/gql/generated/gql.node";
+import { getService } from "@/service/service.server";
 import { PostCard } from "./post-card";
 
 interface PostsListProps {
@@ -14,13 +15,13 @@ export async function PostsList({
   search,
 }: PostsListProps) {
   const service = await getService();
-  const posts = await service
+  const posts = await service.gql
     .query(PostsDocument, { search, take, skip })
     .toPromise();
 
   return (
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {posts?.data?.posts.map((post) => (
+      {posts?.data?.posts.map((post: PostsQuery["posts"][number]) => (
         <PostCard key={post.id} post={post} />
       ))}
     </div>

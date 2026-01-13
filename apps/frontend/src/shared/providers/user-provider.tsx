@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext } from "react";
-import type { MeQuery } from "@/gql/generated/gql.node";
+import type { MeQuery } from "@/service/gql/generated/gql.node";
 
 const UserContext = createContext<MeQuery["me"] | null>(null);
 
