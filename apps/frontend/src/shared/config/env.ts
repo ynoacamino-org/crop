@@ -1,2 +1,4 @@
-export const { NEXT_PUBLIC_BASE_URL: BASE_URL = "http://localhost:8000" } =
-  process.env;
+export const {
+  NEXT_PUBLIC_API_URL: API_URL = "http://localhost:8000/api",
+  INTERNAL_API_URL = "http://backend:8000/api",
+} = process.env;
