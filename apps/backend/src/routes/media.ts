@@ -1,5 +1,5 @@
 import { zValidator } from "@hono/zod-validator";
-import { UploadMediaSchema } from "@repo/schemas/media";
+import { UploadMediaPayloadSchema } from "@repo/schemas/media";
 import { Hono } from "hono";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
@@ -20,7 +20,7 @@ const mediaRouter = new Hono();
 
 mediaRouter.post(
   "/upload",
-  zValidator("form", UploadMediaSchema),
+  zValidator("form", UploadMediaPayloadSchema),
   async (c) => {
     const session = await auth.api.getSession({ headers: c.req.raw.headers });
     const user = session?.user;

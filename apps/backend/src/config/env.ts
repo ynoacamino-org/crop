@@ -25,7 +25,6 @@ export const env = {
   S3_FORCE_PATH_STYLE: process.env.S3_FORCE_PATH_STYLE || "false",
 };
 
-// Mantener exports individuales para compatibilidad
 export const {
   DATABASE_URL,
   GOOGLE_CLIENT_ID,
