@@ -35,7 +35,7 @@ const CreatePostPayloadSchema = z.object({
       .min(10, { message: "La descripción debe tener al menos 10 caracteres" })
       .max(1000, { message: "La descripción no puede tener más de 1000 caracteres" })
       .optional(),
-    image: z.url({ message: "La imagen debe ser una URL válida" }).optional(),
+    mediaId: z.string({ message: "Se espera que el ID del media sea una cadena de texto" }).optional(),
   }),
 });
 
@@ -54,7 +54,7 @@ const UpdatePostPayloadSchema = z.object({
       .min(10, { message: "La descripción debe tener al menos 10 caracteres" })
       .max(1000, { message: "La descripción no puede tener más de 1000 caracteres" })
       .optional(),
-    image: z.url({ message: "La imagen debe ser una URL válida" }).optional(),
+    mediaId: z.string({ message: "Se espera que el ID del media sea una cadena de texto" }).optional(),
   }),
 });
 

@@ -4,7 +4,6 @@ mutation createPost($input: CreatePostInput!) {
     id
     title
     description
-    image
     createdAt
     updatedAt
     author {
@@ -12,6 +11,13 @@ mutation createPost($input: CreatePostInput!) {
       name
       email
       image
+    }
+    media {
+      id
+      url
+      alt
+      type
+      mimeType
     }
   }
 }
@@ -22,7 +28,6 @@ mutation updatePost($id: ID!, $input: UpdatePostInput!) {
     id
     title
     description
-    image
     createdAt
     updatedAt
     author {
@@ -30,6 +35,13 @@ mutation updatePost($id: ID!, $input: UpdatePostInput!) {
       name
       email
       image
+    }
+    media {
+      id
+      url
+      alt
+      type
+      mimeType
     }
   }
 }

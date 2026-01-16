@@ -41,15 +41,50 @@ async function main() {
 	await prisma.post.deleteMany({});
 	console.log("🗑️  Deleted existing posts");
 
+	await prisma.media.deleteMany({});
+	console.log("🗑️  Deleted existing media");
+
+	const mediaItems = [];
+	for (let i = 0; i < 50; i++) {
+		const randomUser = users[Math.floor(Math.random() * users.length)];
+		if (!randomUser) continue;
+
+		const filename = faker.system.fileName();
+
+		mediaItems.push({
+			objectKey: faker.string.uuid(),
+			url: faker.image.url({ width: 1200, height: 800 }),
+			alt: faker.lorem.sentence(),
+			type: "IMAGE" as const,
+			size: faker.number.int({ min: 100000, max: 5000000 }),
+			mimeType: "image/jpeg",
+			filename: filename,
+			uploadedBy: randomUser.id,
+		});
+	}
+
+	await prisma.media.createMany({
+		data: mediaItems,
+		skipDuplicates: true,
+	});
+
+	const createdMedia = await prisma.media.findMany();
+	console.log(`✅ Created ${createdMedia.length} media items`);
+
 	const posts = [];
 	for (let i = 0; i < 100; i++) {
 		const randomUser = users[Math.floor(Math.random() * users.length)];
 		if (!randomUser) continue;
 
+		const hasMedia = Math.random() > 0.3;
+		const randomMedia = hasMedia && createdMedia.length > 0
+			? createdMedia[Math.floor(Math.random() * createdMedia.length)]
+			: null;
+
 		posts.push({
 			title: faker.lorem.sentence({ min: 3, max: 8 }),
 			description: faker.lorem.paragraphs({ min: 1, max: 3 }),
-			image: faker.image.url({ width: 1200, height: 800 }),
+			mediaId: randomMedia?.id,
 			authorId: randomUser.id,
 		});
 	}

@@ -50,8 +50,8 @@ export type CreateMediaInput = {
 export type CreatePostInput = {
   /** Description of the post */
   description?: InputMaybe<Scalars['String']['input']>;
-  /** Image URL of the post */
-  image?: InputMaybe<Scalars['String']['input']>;
+  /** Media ID for the post */
+  mediaId?: InputMaybe<Scalars['String']['input']>;
   /** Title of the post */
   title: Scalars['String']['input'];
 };
@@ -145,7 +145,7 @@ export type Post = {
   createdAt: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  image?: Maybe<Scalars['String']['output']>;
+  media?: Maybe<Media>;
   title: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
 };
@@ -208,8 +208,8 @@ export type UpdateMediaInput = {
 export type UpdatePostInput = {
   /** Description of the post */
   description?: InputMaybe<Scalars['String']['input']>;
-  /** Image URL of the post */
-  image?: InputMaybe<Scalars['String']['input']>;
+  /** Media ID for the post */
+  mediaId?: InputMaybe<Scalars['String']['input']>;
   /** Title of the post */
   title?: InputMaybe<Scalars['String']['input']>;
 };
@@ -261,7 +261,7 @@ export type CreatePostMutationVariables = Exact<{
 }>;
 
 
-export type CreatePostMutation = { __typename?: 'Mutation', createPost: { __typename?: 'Post', id: string, title: string, description?: string | null, image?: string | null, createdAt: Date, updatedAt: Date, author: { __typename?: 'User', id: string, name?: string | null, email: string, image?: string | null } } };
+export type CreatePostMutation = { __typename?: 'Mutation', createPost: { __typename?: 'Post', id: string, title: string, description?: string | null, createdAt: Date, updatedAt: Date, author: { __typename?: 'User', id: string, name?: string | null, email: string, image?: string | null }, media?: { __typename?: 'Media', id: string, url: string, alt?: string | null, type: MediaType, mimeType: string } | null } };
 
 export type UpdatePostMutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -269,7 +269,7 @@ export type UpdatePostMutationVariables = Exact<{
 }>;
 
 
-export type UpdatePostMutation = { __typename?: 'Mutation', updatePost: { __typename?: 'Post', id: string, title: string, description?: string | null, image?: string | null, createdAt: Date, updatedAt: Date, author: { __typename?: 'User', id: string, name?: string | null, email: string, image?: string | null } } };
+export type UpdatePostMutation = { __typename?: 'Mutation', updatePost: { __typename?: 'Post', id: string, title: string, description?: string | null, createdAt: Date, updatedAt: Date, author: { __typename?: 'User', id: string, name?: string | null, email: string, image?: string | null }, media?: { __typename?: 'Media', id: string, url: string, alt?: string | null, type: MediaType, mimeType: string } | null } };
 
 export type DeletePostMutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -329,14 +329,14 @@ export type PostsQueryVariables = Exact<{
 }>;
 
 
-export type PostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', id: string, title: string, description?: string | null, image?: string | null, createdAt: Date, updatedAt: Date, author: { __typename?: 'User', id: string, name?: string | null, email: string, image?: string | null } }> };
+export type PostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', id: string, title: string, description?: string | null, createdAt: Date, updatedAt: Date, author: { __typename?: 'User', id: string, name?: string | null, email: string, image?: string | null }, media?: { __typename?: 'Media', id: string, url: string, alt?: string | null, type: MediaType, mimeType: string } | null }> };
 
 export type PostQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
 
-export type PostQuery = { __typename?: 'Query', post?: { __typename?: 'Post', id: string, title: string, description?: string | null, image?: string | null, createdAt: Date, updatedAt: Date, author: { __typename?: 'User', id: string, name?: string | null, email: string, image?: string | null } } | null };
+export type PostQuery = { __typename?: 'Query', post?: { __typename?: 'Post', id: string, title: string, description?: string | null, createdAt: Date, updatedAt: Date, author: { __typename?: 'User', id: string, name?: string | null, email: string, image?: string | null }, media?: { __typename?: 'Media', id: string, url: string, alt?: string | null, type: MediaType, mimeType: string } | null } | null };
 
 export type UsersQueryVariables = Exact<{
   take?: InputMaybe<Scalars['Int']['input']>;
@@ -431,7 +431,6 @@ export const CreatePostDocument = gql`
     id
     title
     description
-    image
     createdAt
     updatedAt
     author {
@@ -439,6 +438,13 @@ export const CreatePostDocument = gql`
       name
       email
       image
+    }
+    media {
+      id
+      url
+      alt
+      type
+      mimeType
     }
   }
 }
@@ -453,7 +459,6 @@ export const UpdatePostDocument = gql`
     id
     title
     description
-    image
     createdAt
     updatedAt
     author {
@@ -461,6 +466,13 @@ export const UpdatePostDocument = gql`
       name
       email
       image
+    }
+    media {
+      id
+      url
+      alt
+      type
+      mimeType
     }
   }
 }
@@ -597,7 +609,6 @@ export const PostsDocument = gql`
     id
     title
     description
-    image
     createdAt
     updatedAt
     author {
@@ -605,6 +616,13 @@ export const PostsDocument = gql`
       name
       email
       image
+    }
+    media {
+      id
+      url
+      alt
+      type
+      mimeType
     }
   }
 }
@@ -619,7 +637,6 @@ export const PostDocument = gql`
     id
     title
     description
-    image
     createdAt
     updatedAt
     author {
@@ -627,6 +644,13 @@ export const PostDocument = gql`
       name
       email
       image
+    }
+    media {
+      id
+      url
+      alt
+      type
+      mimeType
     }
   }
 }

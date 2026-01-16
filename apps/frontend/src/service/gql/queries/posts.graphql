@@ -4,7 +4,6 @@ query posts($take: Int, $skip: Int, $search: String) {
     id
     title
     description
-    image
     createdAt
     updatedAt
     author {
@@ -12,6 +11,13 @@ query posts($take: Int, $skip: Int, $search: String) {
       name
       email
       image
+    }
+    media {
+      id
+      url
+      alt
+      type
+      mimeType
     }
   }
 }
@@ -22,7 +28,6 @@ query post($id: ID!) {
     id
     title
     description
-    image
     createdAt
     updatedAt
     author {
@@ -30,6 +35,13 @@ query post($id: ID!) {
       name
       email
       image
+    }
+    media {
+      id
+      url
+      alt
+      type
+      mimeType
     }
   }
 }

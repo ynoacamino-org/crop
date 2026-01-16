@@ -1,6 +1,6 @@
 import fs from "node:fs";
 
-const filePath = "../frontend/src/gql/generated/gql.client.ts";
+const filePath = "../frontend/src/service/gql/generated/gql.client.ts";
 
 let content = fs.readFileSync(filePath, "utf8");
 

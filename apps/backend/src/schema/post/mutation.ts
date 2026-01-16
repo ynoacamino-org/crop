@@ -33,7 +33,7 @@ builder.mutationField("createPost", (t) =>
           data: {
             title: input.title,
             description: input.description,
-            image: input.image,
+            mediaId: input.mediaId,
             authorId: ctx.user.id,
           },
         });
@@ -77,7 +77,7 @@ builder.mutationField("updatePost", (t) =>
           data: {
             title: input.title,
             description: input.description,
-            image: input.image,
+            mediaId: input.mediaId,
           },
         });
       } catch (error) {

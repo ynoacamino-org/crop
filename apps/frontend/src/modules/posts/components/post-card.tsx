@@ -12,6 +12,7 @@ import {
   CardFooter,
   CardHeader,
 } from "@/shared/components/ui/card";
+import { Skeleton } from "@/shared/components/ui/skeleton";
 import { getInitials } from "@/shared/lib/utils";
 
 type Post = PostsQuery["posts"][number];
@@ -23,14 +24,16 @@ interface PostCardProps {
 export function PostCard({ post }: PostCardProps) {
   return (
     <Card className="group overflow-hidden pt-0">
-      {post.image && (
+      {post.media && post.media.type === "IMAGE" ? (
         <div className="aspect-video w-full overflow-hidden bg-muted">
           <img
-            src={post.image}
-            alt={post.title}
+            src={post.media.url}
+            alt={post.media.alt || post.title}
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
           />
         </div>
+      ) : (
+        <Skeleton className="aspect-video w-full animate-pulse bg-muted" />
       )}
 
       <CardHeader>

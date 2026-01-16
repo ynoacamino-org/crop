@@ -16,10 +16,10 @@ export const CreatePostInput = builder.inputType("CreatePostInput", {
       description: "Description of the post",
       validate: CreatePostPayloadSchema.shape.input.shape.description,
     }),
-    image: t.string({
+    mediaId: t.string({
       required: false,
-      description: "Image URL of the post",
-      validate: CreatePostPayloadSchema.shape.input.shape.image,
+      description: "Media ID for the post",
+      validate: CreatePostPayloadSchema.shape.input.shape.mediaId,
     }),
   }),
 });
@@ -36,10 +36,10 @@ export const UpdatePostInput = builder.inputType("UpdatePostInput", {
       description: "Description of the post",
       validate: UpdatePostPayloadSchema.shape.input.shape.description,
     }),
-    image: t.string({
+    mediaId: t.string({
       required: false,
-      description: "Image URL of the post",
-      validate: UpdatePostPayloadSchema.shape.input.shape.image,
+      description: "Media ID for the post",
+      validate: UpdatePostPayloadSchema.shape.input.shape.mediaId,
     }),
   }),
 });

@@ -85,29 +85,32 @@ model Post {
   id          String   @id @default(cuid())
   title       String
   description String?
-  image       String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   authorId    String
   author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  mediaId     String?
+  media       Media?   @relation(fields: [mediaId], references: [id], onDelete: SetNull)
 
   @@index([authorId])
+  @@index([mediaId])
   @@map("Post")
 }
 
 model Media {
-  id        String    @id @default(cuid())
+  id         String    @id @default(cuid())
   objectKey  String    @unique
-  url       String
-  alt       String?
-  type      MediaType
-  size      Int
-  mimeType  String
-  filename  String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  url        String
+  alt        String?
+  type       MediaType
+  size       Int
+  mimeType   String
+  filename   String
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
   uploadedBy String?
-  uploader  User?     @relation(fields: [uploadedBy], references: [id], onDelete: SetNull)
+  uploader   User?     @relation(fields: [uploadedBy], references: [id], onDelete: SetNull)
+  posts      Post[]
 
   @@index([uploadedBy])
   @@index([type])
