@@ -215,7 +215,7 @@ export default function MediaComponent({
   };
 
   return (
-    <div className="relative my-2">
+    <div className="relative inline-block">
       <div
         className={`relative inline-block ${isSelected ? "ring-2 ring-primary" : ""}`}
       >

@@ -260,6 +260,10 @@ export class MediaNode extends DecoratorNode<React.ReactElement> {
     return false;
   }
 
+  isInline(): boolean {
+    return true;
+  }
+
   getSrc(): string {
     return this.__src;
   }
