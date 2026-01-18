@@ -6,7 +6,6 @@
   "types": "./index.ts",
   "exports": {
     ".": "./index.ts",
-    "./post": "./post/schemas.ts",
     "./user": "./user/schemas.ts",
     "./media": "./media/schemas.ts"
   },

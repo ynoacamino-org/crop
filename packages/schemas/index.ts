@@ -16,20 +16,6 @@ export {
   UpdateMediaPayloadSchema,
   UploadMediaPayloadSchema,
 } from "./media/schemas";
-export type {
-  CreatePostPayload,
-  DeletePostPayload,
-  PostPayload,
-  PostsPayload,
-  UpdatePostPayload,
-} from "./post/interfaces";
-export {
-  CreatePostPayloadSchema,
-  DeletePostPayloadSchema,
-  PostPayloadSchema,
-  PostsPayloadSchema,
-  UpdatePostPayloadSchema,
-} from "./post/schemas";
 
 // User schemas
 export type {
