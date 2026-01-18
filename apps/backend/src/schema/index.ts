@@ -1,5 +1,4 @@
 import { builder } from "../builder";
-import "./post";
 import "./user";
 import "./media";
 

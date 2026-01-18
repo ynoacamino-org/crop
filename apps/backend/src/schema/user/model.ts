@@ -13,8 +13,5 @@ export const User = builder.prismaObject("User", {
     createdAt: t.expose("createdAt", { type: "DateTime" }),
     updatedAt: t.expose("updatedAt", { type: "DateTime" }),
     role: t.expose("role", { type: Role }),
-    posts: t.relation("posts", {
-      nullable: false,
-    }),
   }),
 });
