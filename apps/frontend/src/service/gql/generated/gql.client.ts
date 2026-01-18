@@ -47,15 +47,6 @@ export type CreateMediaInput = {
   url: Scalars['String']['input'];
 };
 
-export type CreatePostInput = {
-  /** Description of the post */
-  description?: InputMaybe<Scalars['String']['input']>;
-  /** Media ID for the post */
-  mediaId?: InputMaybe<Scalars['String']['input']>;
-  /** Title of the post */
-  title: Scalars['String']['input'];
-};
-
 export type Media = {
   __typename?: 'Media';
   alt?: Maybe<Scalars['String']['output']>;
@@ -80,14 +71,11 @@ export enum MediaType {
 export type Mutation = {
   __typename?: 'Mutation';
   createMedia: Media;
-  createPost: Post;
   deleteMe: User;
   deleteMedia: Media;
-  deletePost: Post;
   deleteUser: User;
   updateMe: User;
   updateMedia: Media;
-  updatePost: Post;
   updateUser: User;
 };
 
@@ -97,18 +85,8 @@ export type MutationCreateMediaArgs = {
 };
 
 
-export type MutationCreatePostArgs = {
-  input: CreatePostInput;
-};
-
-
 export type MutationDeleteMediaArgs = {
   id: Scalars['String']['input'];
-};
-
-
-export type MutationDeletePostArgs = {
-  id: Scalars['ID']['input'];
 };
 
 
@@ -128,26 +106,9 @@ export type MutationUpdateMediaArgs = {
 };
 
 
-export type MutationUpdatePostArgs = {
-  id: Scalars['ID']['input'];
-  input: UpdatePostInput;
-};
-
-
 export type MutationUpdateUserArgs = {
   id: Scalars['ID']['input'];
   input: AdminUpdateUserInput;
-};
-
-export type Post = {
-  __typename?: 'Post';
-  author: User;
-  createdAt: Scalars['DateTime']['output'];
-  description?: Maybe<Scalars['String']['output']>;
-  id: Scalars['ID']['output'];
-  media?: Maybe<Media>;
-  title: Scalars['String']['output'];
-  updatedAt: Scalars['DateTime']['output'];
 };
 
 export type Query = {
@@ -155,8 +116,6 @@ export type Query = {
   me?: Maybe<User>;
   media?: Maybe<Media>;
   medias: Array<Media>;
-  post?: Maybe<Post>;
-  posts: Array<Post>;
   users: Array<User>;
 };
 
@@ -171,18 +130,6 @@ export type QueryMediasArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   type?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type QueryPostArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-export type QueryPostsArgs = {
-  search?: InputMaybe<Scalars['String']['input']>;
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  take?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -205,15 +152,6 @@ export type UpdateMediaInput = {
   url?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type UpdatePostInput = {
-  /** Description of the post */
-  description?: InputMaybe<Scalars['String']['input']>;
-  /** Media ID for the post */
-  mediaId?: InputMaybe<Scalars['String']['input']>;
-  /** Title of the post */
-  title?: InputMaybe<Scalars['String']['input']>;
-};
-
 export type UpdateUserInput = {
   /** Profile image URL of the user */
   image?: InputMaybe<Scalars['String']['input']>;
@@ -229,7 +167,6 @@ export type User = {
   id: Scalars['ID']['output'];
   image?: Maybe<Scalars['String']['output']>;
   name?: Maybe<Scalars['String']['output']>;
-  posts: Array<Post>;
   role: Role;
   updatedAt: Scalars['DateTime']['output'];
 };
@@ -255,28 +192,6 @@ export type DeleteMediaMutationVariables = Exact<{
 
 
 export type DeleteMediaMutation = { __typename?: 'Mutation', deleteMedia: { __typename?: 'Media', id: string, objectKey: string, url: string, alt?: string | null, type: MediaType, size: number, mimeType: string, filename: string, createdAt: Date, updatedAt: Date } };
-
-export type CreatePostMutationVariables = Exact<{
-  input: CreatePostInput;
-}>;
-
-
-export type CreatePostMutation = { __typename?: 'Mutation', createPost: { __typename?: 'Post', id: string, title: string, description?: string | null, createdAt: Date, updatedAt: Date, author: { __typename?: 'User', id: string, name?: string | null, email: string, image?: string | null }, media?: { __typename?: 'Media', id: string, url: string, alt?: string | null, type: MediaType, mimeType: string } | null } };
-
-export type UpdatePostMutationVariables = Exact<{
-  id: Scalars['ID']['input'];
-  input: UpdatePostInput;
-}>;
-
-
-export type UpdatePostMutation = { __typename?: 'Mutation', updatePost: { __typename?: 'Post', id: string, title: string, description?: string | null, createdAt: Date, updatedAt: Date, author: { __typename?: 'User', id: string, name?: string | null, email: string, image?: string | null }, media?: { __typename?: 'Media', id: string, url: string, alt?: string | null, type: MediaType, mimeType: string } | null } };
-
-export type DeletePostMutationVariables = Exact<{
-  id: Scalars['ID']['input'];
-}>;
-
-
-export type DeletePostMutation = { __typename?: 'Mutation', deletePost: { __typename?: 'Post', id: string, title: string } };
 
 export type UpdateMeMutationVariables = Exact<{
   input: UpdateUserInput;
@@ -321,22 +236,6 @@ export type MediaQueryVariables = Exact<{
 
 
 export type MediaQuery = { __typename?: 'Query', media?: { __typename?: 'Media', id: string, objectKey: string, url: string, alt?: string | null, type: MediaType, size: number, mimeType: string, filename: string, createdAt: Date, updatedAt: Date, uploader?: { __typename?: 'User', id: string, name?: string | null, email: string, image?: string | null } | null } | null };
-
-export type PostsQueryVariables = Exact<{
-  take?: InputMaybe<Scalars['Int']['input']>;
-  skip?: InputMaybe<Scalars['Int']['input']>;
-  search?: InputMaybe<Scalars['String']['input']>;
-}>;
-
-
-export type PostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', id: string, title: string, description?: string | null, createdAt: Date, updatedAt: Date, author: { __typename?: 'User', id: string, name?: string | null, email: string, image?: string | null }, media?: { __typename?: 'Media', id: string, url: string, alt?: string | null, type: MediaType, mimeType: string } | null }> };
-
-export type PostQueryVariables = Exact<{
-  id: Scalars['ID']['input'];
-}>;
-
-
-export type PostQuery = { __typename?: 'Query', post?: { __typename?: 'Post', id: string, title: string, description?: string | null, createdAt: Date, updatedAt: Date, author: { __typename?: 'User', id: string, name?: string | null, email: string, image?: string | null }, media?: { __typename?: 'Media', id: string, url: string, alt?: string | null, type: MediaType, mimeType: string } | null } | null };
 
 export type UsersQueryVariables = Exact<{
   take?: InputMaybe<Scalars['Int']['input']>;
@@ -424,74 +323,6 @@ export const DeleteMediaDocument = gql`
 
 export function useDeleteMediaMutation() {
   return Urql.useMutation<DeleteMediaMutation, DeleteMediaMutationVariables>(DeleteMediaDocument);
-};
-export const CreatePostDocument = gql`
-    mutation createPost($input: CreatePostInput!) {
-  createPost(input: $input) {
-    id
-    title
-    description
-    createdAt
-    updatedAt
-    author {
-      id
-      name
-      email
-      image
-    }
-    media {
-      id
-      url
-      alt
-      type
-      mimeType
-    }
-  }
-}
-    `;
-
-export function useCreatePostMutation() {
-  return Urql.useMutation<CreatePostMutation, CreatePostMutationVariables>(CreatePostDocument);
-};
-export const UpdatePostDocument = gql`
-    mutation updatePost($id: ID!, $input: UpdatePostInput!) {
-  updatePost(id: $id, input: $input) {
-    id
-    title
-    description
-    createdAt
-    updatedAt
-    author {
-      id
-      name
-      email
-      image
-    }
-    media {
-      id
-      url
-      alt
-      type
-      mimeType
-    }
-  }
-}
-    `;
-
-export function useUpdatePostMutation() {
-  return Urql.useMutation<UpdatePostMutation, UpdatePostMutationVariables>(UpdatePostDocument);
-};
-export const DeletePostDocument = gql`
-    mutation deletePost($id: ID!) {
-  deletePost(id: $id) {
-    id
-    title
-  }
-}
-    `;
-
-export function useDeletePostMutation() {
-  return Urql.useMutation<DeletePostMutation, DeletePostMutationVariables>(DeletePostDocument);
 };
 export const UpdateMeDocument = gql`
     mutation updateMe($input: UpdateUserInput!) {
@@ -602,62 +433,6 @@ export const MediaDocument = gql`
 
 export function useMediaQuery(options: Omit<Urql.UseQueryArgs<MediaQueryVariables>, 'query'>) {
   return Urql.useQuery<MediaQuery, MediaQueryVariables>({ query: MediaDocument, ...options });
-};
-export const PostsDocument = gql`
-    query posts($take: Int, $skip: Int, $search: String) {
-  posts(take: $take, skip: $skip, search: $search) {
-    id
-    title
-    description
-    createdAt
-    updatedAt
-    author {
-      id
-      name
-      email
-      image
-    }
-    media {
-      id
-      url
-      alt
-      type
-      mimeType
-    }
-  }
-}
-    `;
-
-export function usePostsQuery(options?: Omit<Urql.UseQueryArgs<PostsQueryVariables>, 'query'>) {
-  return Urql.useQuery<PostsQuery, PostsQueryVariables>({ query: PostsDocument, ...options });
-};
-export const PostDocument = gql`
-    query post($id: ID!) {
-  post(id: $id) {
-    id
-    title
-    description
-    createdAt
-    updatedAt
-    author {
-      id
-      name
-      email
-      image
-    }
-    media {
-      id
-      url
-      alt
-      type
-      mimeType
-    }
-  }
-}
-    `;
-
-export function usePostQuery(options: Omit<Urql.UseQueryArgs<PostQueryVariables>, 'query'>) {
-  return Urql.useQuery<PostQuery, PostQueryVariables>({ query: PostDocument, ...options });
 };
 export const UsersDocument = gql`
     query users($take: Int, $skip: Int, $search: String) {
