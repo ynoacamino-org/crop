@@ -60,6 +60,7 @@ export type Media = {
 
 export enum MediaType {
   Audio = 'AUDIO',
+  File = 'FILE',
   Image = 'IMAGE',
   Video = 'VIDEO'
 }
