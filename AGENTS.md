@@ -101,10 +101,14 @@ src/schema/{resource}/
 ```bash
 # Root
 bun install
+bun run lint          # Run Biome linter/formatter across all packages
 
 # Backend
 cd apps/backend
 bun run dev           # Start server (port 7000)
+bun run build         # Build for production
+bun run lint          # Run Biome linter/formatter
+bun run check-types   # TypeScript type checking
 bun run gen-schema    # Export GraphQL schema
 bun run codegen       # Generate types for frontend
 bun prisma migrate dev
@@ -113,7 +117,16 @@ bun prisma db seed
 # Frontend
 cd apps/frontend
 bun run dev           # Start Next.js (port 3000)
+bun run build         # Build for production
+bun run lint          # Run Biome linter/formatter
+bun run check-types   # TypeScript type checking
 ```
+
+### Testing
+This project currently does not have test files configured. When adding tests:
+- Use Jest or Vitest for unit/integration tests
+- Place test files alongside source files with `.test.ts` or `.spec.ts` suffix
+- Run single test: `bun test path/to/test.test.ts`
 
 ### Environment Variables
 **Backend:**
@@ -149,16 +162,65 @@ bun run dev           # Start Next.js (port 3000)
 - **Lexical Editor:** Custom MediaNode for inline images/video/audio
 - **Form Validation:** React Hook Form + Zod resolver (shared schemas)
 
-### Naming Conventions
-**GraphQL Operations:**
-- Queries (server): `getPostsQuery`, `getPostByIdQuery`
-- Queries (client): `usePostsQuery`, `usePostByIdQuery`
-- Mutations (client): `useCreatePostMutation`, `useUpdatePostMutation`
+## Code Style Guidelines
 
-**Files:**
-- GraphQL files: `*.graphql` in `service/gql/{queries|mutations}/`
-- Components: PascalCase (e.g., `PostCard.tsx`)
-- Utilities: kebab-case (e.g., `use-mobile.ts`)
+### Formatting & Linting
+- **Tool:** Biome (configured in root `biome.json`)
+- **Line width:** 120 characters
+- **Indentation:** 2 spaces (no tabs)
+- **Run:** `bun run lint` before committing
+- **Type checking:** `bun run check-types` in each app
+
+### Import Organization
+```typescript
+// 1. External libraries (node_modules)
+import { useState } from 'react';
+import { Hono } from 'hono';
+
+// 2. Internal packages (@repo/*)
+import { createPostSchema } from '@repo/schemas';
+
+// 3. Local modules (relative imports)
+import { db } from './lib/db';
+import { Button } from './components/ui/button';
+```
+
+### TypeScript Conventions
+- **Strict mode enabled** - All types must be explicit
+- **Prefer interfaces** for object shapes, types for unions
+- **No implicit any** - Use proper typing
+- **Null vs undefined:** Convert null to undefined for consistency
+- **Generic naming:** Use descriptive names (TEntity, TResponse)
+
+### Naming Conventions
+- **Files:** kebab-case for utilities (`use-mobile.ts`), PascalCase for components (`PostCard.tsx`)
+- **Variables/Functions:** camelCase (`getUserById`, `isLoading`)
+- **Constants:** UPPER_SNAKE_CASE (`MAX_FILE_SIZE`)
+- **Types/Interfaces:** PascalCase (`User`, `PostResponse`)
+- **GraphQL operations:** 
+  - Server: `getPostsQuery`, `createPostMutation`
+  - Client hooks: `usePostsQuery`, `useCreatePostMutation`
+
+### Error Handling
+- **Custom error classes:** `NotFoundError`, `UnauthorizedError`, `ValidationError`
+- **Consistent error responses:** Use standardized error format
+- **Never expose stack traces** to client
+- **Always validate inputs** with Zod schemas
+- **Use try/catch** for async operations, handle gracefully
+
+### React/Next.js Patterns
+- **Server Components first** - Only use Client Components when needed
+- **State management:** Use React hooks for local state, URQL for server state
+- **Form handling:** React Hook Form + Zod resolver
+- **Component structure:** Feature modules in `modules/`, shared in `shared/`
+- **Props interface:** Always define explicit prop types
+
+### Backend Patterns
+- **Dependency injection:** Context-based (db, auth, storage)
+- **Input sanitization:** Convert null to undefined
+- **Authorization:** Scope-based with Pothos plugin
+- **Database operations:** Always use Prisma, never raw SQL
+- **File uploads:** REST endpoints, not GraphQL
 
 ## Security Features
 
@@ -181,6 +243,66 @@ bun run dev           # Start Next.js (port 3000)
 **DevOps:**
 - Docker Compose, Kong API Gateway, Turborepo, Biome
 
+## Code Style Guidelines
+
+### Formatting & Linting
+- **Tool:** Biome (configured in root `biome.json`)
+- **Line width:** 120 characters
+- **Indentation:** 2 spaces (no tabs)
+- **Run:** `bun run lint` before committing
+- **Type checking:** `bun run check-types` in each app
+
+### Import Organization
+```typescript
+// 1. External libraries (node_modules)
+import { useState } from 'react';
+import { Hono } from 'hono';
+
+// 2. Internal packages (@repo/*)
+import { createPostSchema } from '@repo/schemas';
+
+// 3. Local modules (relative imports)
+import { db } from './lib/db';
+import { Button } from './components/ui/button';
+```
+
+### TypeScript Conventions
+- **Strict mode enabled** - All types must be explicit
+- **Prefer interfaces** for object shapes, types for unions
+- **No implicit any** - Use proper typing
+- **Null vs undefined:** Convert null to undefined for consistency
+- **Generic naming:** Use descriptive names (TEntity, TResponse)
+
+### Naming Conventions
+- **Files:** kebab-case for utilities (`use-mobile.ts`), PascalCase for components (`PostCard.tsx`)
+- **Variables/Functions:** camelCase (`getUserById`, `isLoading`)
+- **Constants:** UPPER_SNAKE_CASE (`MAX_FILE_SIZE`)
+- **Types/Interfaces:** PascalCase (`User`, `PostResponse`)
+- **GraphQL operations:** 
+  - Server: `getPostsQuery`, `createPostMutation`
+  - Client hooks: `usePostsQuery`, `useCreatePostMutation`
+
+### Error Handling
+- **Custom error classes:** `NotFoundError`, `UnauthorizedError`, `ValidationError`
+- **Consistent error responses:** Use standardized error format
+- **Never expose stack traces** to client
+- **Always validate inputs** with Zod schemas
+- **Use try/catch** for async operations, handle gracefully
+
+### React/Next.js Patterns
+- **Server Components first** - Only use Client Components when needed
+- **State management:** Use React hooks for local state, URQL for server state
+- **Form handling:** React Hook Form + Zod resolver
+- **Component structure:** Feature modules in `modules/`, shared in `shared/`
+- **Props interface:** Always define explicit prop types
+
+### Backend Patterns
+- **Dependency injection:** Context-based (db, auth, storage)
+- **Input sanitization:** Convert null to undefined
+- **Authorization:** Scope-based with Pothos plugin
+- **Database operations:** Always use Prisma, never raw SQL
+- **File uploads:** REST endpoints, not GraphQL
+
 ## Notes for AI Agents
 
 1. **Always use shared schemas** from `@repo/schemas` for validation
@@ -192,6 +314,7 @@ bun run dev           # Start Next.js (port 3000)
 7. **Authorization scopes** - Use `public`, `collaborator`, or `admin` in Pothos resolvers
 8. **Lexical nodes are immutable** - Always create new nodes, never mutate existing
 9. **Code style enforced by Biome** - Run `bun run lint` before committing
+10. **TypeScript strict mode** - Always run `bun run check-types` to verify types
 
 ## Common Tasks
 

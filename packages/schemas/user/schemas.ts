@@ -28,10 +28,7 @@ const UpdateMePayloadSchema = z.object({
       .min(2, { message: "El nombre debe tener al menos 2 caracteres" })
       .max(100, { message: "El nombre no puede tener más de 100 caracteres" })
       .optional(),
-    image: z
-      .string({ message: "Se espera que la imagen sea una cadena de texto, no un número" })
-      .url({ message: "La imagen debe ser una URL válida" })
-      .optional(),
+    image: z.url({ message: "La imagen debe ser una URL válida" }).optional(),
   }),
 });
 
@@ -43,10 +40,7 @@ const UpdateUserPayloadSchema = z.object({
       .min(2, { message: "El nombre debe tener al menos 2 caracteres" })
       .max(100, { message: "El nombre no puede tener más de 100 caracteres" })
       .optional(),
-    image: z
-      .string({ message: "Se espera que la imagen sea una cadena de texto, no un número" })
-      .url({ message: "La imagen debe ser una URL válida" })
-      .optional(),
+    image: z.url({ message: "La imagen debe ser una URL válida" }).optional(),
     role: z.enum(["USER", "ADMIN"], { message: "El rol debe ser USER o ADMIN" }).optional(),
   }),
 });
