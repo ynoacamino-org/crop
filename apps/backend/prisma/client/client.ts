@@ -60,11 +60,6 @@ export type Account = Prisma.AccountModel
  */
 export type Verification = Prisma.VerificationModel
 /**
- * Model Post
- * 
- */
-export type Post = Prisma.PostModel
-/**
  * Model Media
  * 
  */

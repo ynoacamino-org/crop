@@ -21,7 +21,8 @@ export type Role = (typeof Role)[keyof typeof Role]
 export const MediaType = {
   IMAGE: 'IMAGE',
   VIDEO: 'VIDEO',
-  AUDIO: 'AUDIO'
+  AUDIO: 'AUDIO',
+  FILE: 'FILE'
 } as const
 
 export type MediaType = (typeof MediaType)[keyof typeof MediaType]
