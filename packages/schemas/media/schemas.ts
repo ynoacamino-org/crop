@@ -9,10 +9,15 @@ export const UploadMediaPayloadSchema = z.object({
     .string({ message: "Se espera que el prefijo sea una cadena de texto" })
     .max(100, { message: "El prefijo no puede tener más de 100 caracteres" })
     .optional(),
+  isPublic: z
+    .string()
+    .optional()
+    .default("true")
+    .transform((val) => val === "true"),
 });
 
-const MediaTypeEnum = z.enum(["IMAGE", "VIDEO", "AUDIO"], {
-  message: "El tipo de medio debe ser IMAGE, VIDEO o AUDIO",
+const MediaTypeEnum = z.enum(["IMAGE", "VIDEO", "AUDIO", "FILE"], {
+  message: "El tipo de medio debe ser IMAGE, VIDEO, AUDIO o FILE",
 });
 
 const MediasPayloadSchema = z.object({
@@ -35,7 +40,7 @@ const MediasPayloadSchema = z.object({
 });
 
 const MediaPayloadSchema = z.object({
-  id: z.string().cuid({ message: "Se espera que el identificador sea un CUID válido" }),
+  id: z.cuid({ message: "Se espera que el identificador sea un CUID válido" }),
 });
 
 const CreateMediaPayloadSchema = z.object({
@@ -43,7 +48,7 @@ const CreateMediaPayloadSchema = z.object({
     objectKey: z
       .string({ message: "Se espera que el objectKey sea una cadena de texto" })
       .min(1, { message: "El objectKey es requerido" }),
-    url: z.url({ message: "La URL debe ser válida" }),
+    url: z.url({ message: "La URL debe ser válida" }).optional(),
     alt: z
       .string({ message: "Se espera que el texto alternativo sea una cadena de texto" })
       .max(500, { message: "El texto alternativo no puede tener más de 500 caracteres" })
@@ -64,7 +69,7 @@ const CreateMediaPayloadSchema = z.object({
 });
 
 const UpdateMediaPayloadSchema = z.object({
-  id: z.string().cuid({ message: "Se espera que el identificador sea un CUID válido" }),
+  id: z.cuid({ message: "Se espera que el identificador sea un CUID válido" }),
   input: z.object({
     alt: z
       .string({ message: "Se espera que el texto alternativo sea una cadena de texto" })
@@ -75,7 +80,7 @@ const UpdateMediaPayloadSchema = z.object({
 });
 
 const DeleteMediaPayloadSchema = z.object({
-  id: z.string().cuid({ message: "Se espera que el identificador sea un CUID válido" }),
+  id: z.cuid({ message: "Se espera que el identificador sea un CUID válido" }),
 });
 
 export {

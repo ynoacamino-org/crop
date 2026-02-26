@@ -1,14 +1,23 @@
 import { builder } from "@/builder";
+import { getMediaSignedUrl } from "@/lib/utils/storage";
 
 export const MediaType = builder.enumType("MediaType", {
-  values: ["IMAGE", "VIDEO", "AUDIO"] as const,
+  values: ["IMAGE", "VIDEO", "AUDIO", "FILE"] as const,
 });
 
 export const Media = builder.prismaObject("Media", {
   fields: (t) => ({
     id: t.exposeID("id"),
     objectKey: t.exposeString("objectKey"),
-    url: t.exposeString("url"),
+    url: t.string({
+      nullable: false,
+      resolve: async (media) => {
+        if (media.url) {
+          return media.url;
+        }
+        return getMediaSignedUrl(media.objectKey, 3600);
+      },
+    }),
     alt: t.exposeString("alt", { nullable: true }),
     type: t.expose("type", { type: MediaType }),
     size: t.exposeInt("size"),

@@ -83,7 +83,7 @@ model Verification {
 model Media {
   id         String    @id @default(cuid())
   objectKey  String    @unique
-  url        String
+  url        String?
   alt        String?
   type       MediaType
   size       Int
@@ -109,4 +109,5 @@ enum MediaType {
   IMAGE
   VIDEO
   AUDIO
+  FILE
 }

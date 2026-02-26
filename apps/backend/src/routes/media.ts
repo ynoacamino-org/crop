@@ -10,8 +10,10 @@ import {
   UnauthorizedError,
   UnsupportedMediaTypeError,
 } from "@/lib/errors/rest";
+import { storage } from "@/lib/storage";
 import {
   getMediaTypeFromMime,
+  type UploadMediaResult,
   uploadMedia,
   validateMediaType,
 } from "@/lib/utils/storage";
@@ -45,11 +47,6 @@ mediaRouter.post(
     }
 
     const mediaType = getMediaTypeFromMime(file.type);
-    if (!mediaType) {
-      throw new UnsupportedMediaTypeError(
-        "Tipo de archivo no soportado. Use imágenes, videos o archivos de audio",
-      );
-    }
 
     if (!validateMediaType(file.type, mediaType)) {
       throw new UnsupportedMediaTypeError(
@@ -57,8 +54,12 @@ mediaRouter.post(
       );
     }
 
+    const isPublic = validatedData.isPublic ?? true;
+
+    let uploadResult: UploadMediaResult | undefined;
+
     try {
-      const uploadResult = await uploadMedia({
+      uploadResult = await uploadMedia({
         file,
         filename: file.name,
         prefix: validatedData.prefix || mediaType.toLowerCase(),
@@ -71,7 +72,7 @@ mediaRouter.post(
       const media = await db.media.create({
         data: {
           objectKey: uploadResult.objectKey,
-          url: uploadResult.url,
+          url: isPublic ? uploadResult.url : null,
           alt: validatedData.alt,
           type: mediaType,
           size: uploadResult.size,
@@ -89,12 +90,19 @@ mediaRouter.post(
         201,
       );
     } catch (error) {
+      if (uploadResult?.objectKey) {
+        try {
+          await storage.delete(uploadResult.objectKey);
+        } catch {}
+      }
+
       if (error instanceof Error) {
         throw new InternalServerError(
           `Error al subir el archivo: ${error.message}`,
         );
+      } else {
+        throw new InternalServerError("Error al subir el archivo");
       }
-      throw new InternalServerError("Error al subir el archivo");
     }
   },
 );
