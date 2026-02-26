@@ -1,5 +1,7 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { signIn } from "@/modules/auth/lib/auth-client";
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -11,6 +13,38 @@ import {
 } from "@/shared/components/ui/card";
 
 export default function IniciarSesionPage() {
+  const router = useRouter();
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleEmailLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+
+    try {
+      const result = await signIn.email({
+        email,
+        password,
+      });
+
+      if (result.error) {
+        setError(result.error.message || "Credenciales inválidas");
+        return;
+      }
+
+      router.push("/");
+    } catch {
+      setError("Error al iniciar sesión. Intenta nuevamente.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-zinc-50 to-zinc-100 px-4 dark:from-zinc-950 dark:to-zinc-900">
       <Card className="w-full max-w-md">
@@ -48,6 +82,64 @@ export default function IniciarSesionPage() {
             </svg>
             Continuar con Google
           </Button>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                O continúa con email
+              </span>
+            </div>
+          </div>
+
+          <form onSubmit={handleEmailLogin} className="space-y-4">
+            {error && (
+              <div className="rounded-md bg-red-50 p-3 text-red-800 text-sm dark:bg-red-900/20 dark:text-red-400">
+                {error}
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <label htmlFor="email" className="font-medium text-sm">
+                Email
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                required
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                placeholder="tu@email.com"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="password" className="font-medium text-sm">
+                Contraseña
+              </label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                required
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                placeholder="Tu contraseña"
+              />
+            </div>
+
+            <Button type="submit" disabled={loading} className="w-full">
+              {loading ? "Iniciando sesión..." : "Iniciar sesión"}
+            </Button>
+          </form>
+
+          <div className="text-center text-sm">
+            <span className="text-muted-foreground">¿No tienes cuenta? </span>
+            <a href="/registro" className="text-primary hover:underline">
+              Regístrate
+            </a>
+          </div>
 
           <p className="text-center text-muted-foreground text-sm">
             Al continuar, aceptas nuestros{" "}

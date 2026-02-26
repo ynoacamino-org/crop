@@ -15,7 +15,7 @@ export const auth = betterAuth({
   secret: BETTER_AUTH_SECRET,
   baseURL: BACKEND_URL,
   basePath: "/api/auth",
-  trustedOrigins: [BACKEND_URL],
+  trustedOrigins: ["http://localhost:8000", BACKEND_URL],
   user: {
     modelName: "User",
     additionalFields: {
@@ -27,6 +27,12 @@ export const auth = betterAuth({
       },
     },
   },
+  emailAndPassword: {
+    enabled: true,
+    requireEmailVerification: false,
+    minPasswordLength: 8,
+    maxPasswordLength: 128,
+  },
   socialProviders: {
     google: {
       prompt: "select_account",
@@ -37,8 +43,11 @@ export const auth = betterAuth({
   session: {
     cookieCache: {
       enabled: true,
-      maxAge: 5 * 60,
+      maxAge: 15 * 60,
     },
+  },
+  advanced: {
+    useSecureCookies: process.env.NODE_ENV === "production",
   },
 });
 

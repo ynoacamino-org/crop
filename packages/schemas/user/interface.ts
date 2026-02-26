@@ -1,11 +1,17 @@
 import type z from "zod";
 import type {
   DeleteUserPayloadSchema,
+  SignInPayloadSchema,
+  SignUpPayloadSchema,
   UpdateMePayloadSchema,
   UpdateUserPayloadSchema,
   UserPayloadSchema,
   UsersPayloadSchema,
 } from "./schemas";
+
+type SignUpPayload = z.infer<typeof SignUpPayloadSchema>;
+
+type SignInPayload = z.infer<typeof SignInPayloadSchema>;
 
 type UsersPayload = z.infer<typeof UsersPayloadSchema>;
 
@@ -17,4 +23,12 @@ type UpdateUserPayload = z.infer<typeof UpdateUserPayloadSchema>;
 
 type DeleteUserPayload = z.infer<typeof DeleteUserPayloadSchema>;
 
-export type { UsersPayload, UserPayload, UpdateMePayload, UpdateUserPayload, DeleteUserPayload };
+export type {
+  SignUpPayload,
+  SignInPayload,
+  UsersPayload,
+  UserPayload,
+  UpdateMePayload,
+  UpdateUserPayload,
+  DeleteUserPayload,
+};

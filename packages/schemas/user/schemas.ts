@@ -1,5 +1,25 @@
 import { z } from "zod";
 
+const SignUpPayloadSchema = z.object({
+  name: z
+    .string({ message: "El nombre es requerido" })
+    .min(2, { message: "El nombre debe tener al menos 2 caracteres" })
+    .max(100, { message: "El nombre no puede tener más de 100 caracteres" }),
+  email: z.string({ message: "El email es requerido" }).email({ message: "Email inválido" }).toLowerCase(),
+  password: z
+    .string({ message: "La contraseña es requerida" })
+    .min(8, { message: "La contraseña debe tener al menos 8 caracteres" })
+    .max(128, { message: "La contraseña no puede tener más de 128 caracteres" })
+    .regex(/[A-Z]/, { message: "La contraseña debe tener al menos una mayúscula" })
+    .regex(/[a-z]/, { message: "La contraseña debe tener al menos una minúscula" })
+    .regex(/[0-9]/, { message: "La contraseña debe tener al menos un número" }),
+});
+
+const SignInPayloadSchema = z.object({
+  email: z.string({ message: "El email es requerido" }).email({ message: "Email inválido" }).toLowerCase(),
+  password: z.string({ message: "La contraseña es requerida" }).min(1, { message: "La contraseña es requerida" }),
+});
+
 const UsersPayloadSchema = z.object({
   take: z
     .number({ message: "Se espera que el campo límite sea un número, no una cadena de texto" })
@@ -52,6 +72,8 @@ const DeleteUserPayloadSchema = z.object({
 });
 
 export {
+  SignUpPayloadSchema,
+  SignInPayloadSchema,
   UsersPayloadSchema,
   UserPayloadSchema,
   UpdateMePayloadSchema,
