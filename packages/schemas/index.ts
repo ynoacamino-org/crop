@@ -6,6 +6,7 @@ export type {
   MediasPayload,
   UpdateMediaPayload,
   UploadMediaPayload,
+  UploadMediaPayloadInput,
 } from "./media/interfaces";
 export {
   CreateMediaPayloadSchema,

@@ -1,4 +1,4 @@
-import type { UploadMediaPayload } from "@repo/schemas";
+import type { UploadMediaPayloadInput } from "@repo/schemas";
 
 type Media = {
   id: string;
@@ -19,4 +19,8 @@ type MediaUploadResponse = {
   data: Media;
 };
 
-export type { Media, MediaUploadResponse, UploadMediaPayload };
+export type {
+  Media,
+  MediaUploadResponse,
+  UploadMediaPayloadInput as UploadMediaPayload,
+};

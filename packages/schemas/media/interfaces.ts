@@ -9,6 +9,7 @@ import type {
 } from "./schemas";
 
 export type UploadMediaPayload = z.infer<typeof UploadMediaPayloadSchema>;
+export type UploadMediaPayloadInput = z.input<typeof UploadMediaPayloadSchema>;
 export type MediasPayload = z.infer<typeof MediasPayloadSchema>;
 export type MediaPayload = z.infer<typeof MediaPayloadSchema>;
 export type CreateMediaPayload = z.infer<typeof CreateMediaPayloadSchema>;

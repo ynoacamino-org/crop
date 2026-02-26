@@ -89,7 +89,9 @@ export async function uploadMedia(
       editor.dispatchCommand(INSERT_MEDIA_COMMAND, tempPayload);
 
       try {
-        const response = await service.rest.media.upload(file, {});
+        const response = await service.rest.media.upload(file, {
+          isPublic: "true",
+        });
 
         editor.update(() => {
           const nodes = editor.getEditorState()._nodeMap;
