@@ -26,3 +26,48 @@ export const MediaType = {
 } as const
 
 export type MediaType = (typeof MediaType)[keyof typeof MediaType]
+
+
+export const ArticleStatus = {
+  DRAFT: 'DRAFT',
+  PUBLISHED: 'PUBLISHED',
+  ARCHIVED: 'ARCHIVED'
+} as const
+
+export type ArticleStatus = (typeof ArticleStatus)[keyof typeof ArticleStatus]
+
+
+export const Jurisdiction = {
+  NACIONAL: 'NACIONAL',
+  REGIONAL: 'REGIONAL',
+  LOCAL: 'LOCAL',
+  INTERNACIONAL: 'INTERNACIONAL'
+} as const
+
+export type Jurisdiction = (typeof Jurisdiction)[keyof typeof Jurisdiction]
+
+
+export const CaseType = {
+  CIVIL: 'CIVIL',
+  PENAL: 'PENAL',
+  CONSTITUCIONAL: 'CONSTITUCIONAL',
+  LABORAL: 'LABORAL',
+  ADMINISTRATIVO: 'ADMINISTRATIVO',
+  COMERCIAL: 'COMERCIAL',
+  FAMILIA: 'FAMILIA',
+  TRIBUTARIO: 'TRIBUTARIO',
+  AMBIENTAL: 'AMBIENTAL'
+} as const
+
+export type CaseType = (typeof CaseType)[keyof typeof CaseType]
+
+
+export const CourtType = {
+  SUPREMA: 'SUPREMA',
+  SUPERIOR: 'SUPERIOR',
+  PRIMERA_INSTANCIA: 'PRIMERA_INSTANCIA',
+  ESPECIALIZADA: 'ESPECIALIZADA',
+  CONSTITUCIONAL: 'CONSTITUCIONAL'
+} as const
+
+export type CourtType = (typeof CourtType)[keyof typeof CourtType]

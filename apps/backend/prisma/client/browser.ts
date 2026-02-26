@@ -42,3 +42,28 @@ export type Verification = Prisma.VerificationModel
  * 
  */
 export type Media = Prisma.MediaModel
+/**
+ * Model Article
+ * 
+ */
+export type Article = Prisma.ArticleModel
+/**
+ * Model LegalCase
+ * 
+ */
+export type LegalCase = Prisma.LegalCaseModel
+/**
+ * Model Court
+ * 
+ */
+export type Court = Prisma.CourtModel
+/**
+ * Model Category
+ * 
+ */
+export type Category = Prisma.CategoryModel
+/**
+ * Model Tag
+ * 
+ */
+export type Tag = Prisma.TagModel

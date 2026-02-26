@@ -1,4 +1,23 @@
 // Media schemas
+
+// Legal Case schemas
+export type {
+  CreateLegalCasePayload,
+  DeleteLegalCasePayload,
+  LegalCasePayload,
+  LegalCasesPayload,
+  UpdateLegalCasePayload,
+} from "./legal-case/interfaces";
+export {
+  CaseStatusEnum,
+  CourtLevelEnum,
+  CreateLegalCasePayloadSchema,
+  DeleteLegalCasePayloadSchema,
+  LegalAreaEnum,
+  LegalCasePayloadSchema,
+  LegalCasesPayloadSchema,
+  UpdateLegalCasePayloadSchema,
+} from "./legal-case/schemas";
 export type {
   CreateMediaPayload,
   DeleteMediaPayload,
@@ -17,7 +36,6 @@ export {
   UpdateMediaPayloadSchema,
   UploadMediaPayloadSchema,
 } from "./media/schemas";
-
 // User schemas
 export type {
   DeleteUserPayload,

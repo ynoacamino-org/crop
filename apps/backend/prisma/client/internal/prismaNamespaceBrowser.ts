@@ -55,7 +55,12 @@ export const ModelName = {
   Session: 'Session',
   Account: 'Account',
   Verification: 'Verification',
-  Media: 'Media'
+  Media: 'Media',
+  Article: 'Article',
+  LegalCase: 'LegalCase',
+  Court: 'Court',
+  Category: 'Category',
+  Tag: 'Tag'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -80,6 +85,7 @@ export const UserScalarFieldEnum = {
   email: 'email',
   emailVerified: 'emailVerified',
   image: 'image',
+  bio: 'bio',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   role: 'role'
@@ -148,6 +154,84 @@ export const MediaScalarFieldEnum = {
 } as const
 
 export type MediaScalarFieldEnum = (typeof MediaScalarFieldEnum)[keyof typeof MediaScalarFieldEnum]
+
+
+export const ArticleScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  slug: 'slug',
+  excerpt: 'excerpt',
+  content: 'content',
+  status: 'status',
+  publishedAt: 'publishedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  authorId: 'authorId',
+  featuredImageId: 'featuredImageId',
+  views: 'views',
+  readingTimeMin: 'readingTimeMin'
+} as const
+
+export type ArticleScalarFieldEnum = (typeof ArticleScalarFieldEnum)[keyof typeof ArticleScalarFieldEnum]
+
+
+export const LegalCaseScalarFieldEnum = {
+  id: 'id',
+  caseNumber: 'caseNumber',
+  caseName: 'caseName',
+  summary: 'summary',
+  parties: 'parties',
+  plaintiff: 'plaintiff',
+  defendant: 'defendant',
+  judges: 'judges',
+  verdict: 'verdict',
+  legalBasis: 'legalBasis',
+  caseDate: 'caseDate',
+  resolutionDate: 'resolutionDate',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  courtId: 'courtId',
+  jurisdiction: 'jurisdiction',
+  caseType: 'caseType'
+} as const
+
+export type LegalCaseScalarFieldEnum = (typeof LegalCaseScalarFieldEnum)[keyof typeof LegalCaseScalarFieldEnum]
+
+
+export const CourtScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  type: 'type',
+  jurisdiction: 'jurisdiction',
+  description: 'description',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CourtScalarFieldEnum = (typeof CourtScalarFieldEnum)[keyof typeof CourtScalarFieldEnum]
+
+
+export const CategoryScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  slug: 'slug',
+  description: 'description',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CategoryScalarFieldEnum = (typeof CategoryScalarFieldEnum)[keyof typeof CategoryScalarFieldEnum]
+
+
+export const TagScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  slug: 'slug',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TagScalarFieldEnum = (typeof TagScalarFieldEnum)[keyof typeof TagScalarFieldEnum]
 
 
 export const SortOrder = {

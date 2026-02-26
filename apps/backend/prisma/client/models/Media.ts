@@ -265,6 +265,8 @@ export type MediaWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Media"> | Date | string
   uploadedBy?: Prisma.StringNullableFilter<"Media"> | string | null
   uploader?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  articleFeaturedIn?: Prisma.ArticleListRelationFilter
+  articleAttachments?: Prisma.ArticleListRelationFilter
 }
 
 export type MediaOrderByWithRelationInput = {
@@ -280,6 +282,8 @@ export type MediaOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   uploadedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   uploader?: Prisma.UserOrderByWithRelationInput
+  articleFeaturedIn?: Prisma.ArticleOrderByRelationAggregateInput
+  articleAttachments?: Prisma.ArticleOrderByRelationAggregateInput
 }
 
 export type MediaWhereUniqueInput = Prisma.AtLeast<{
@@ -298,6 +302,8 @@ export type MediaWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"Media"> | Date | string
   uploadedBy?: Prisma.StringNullableFilter<"Media"> | string | null
   uploader?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  articleFeaturedIn?: Prisma.ArticleListRelationFilter
+  articleAttachments?: Prisma.ArticleListRelationFilter
 }, "id" | "objectKey">
 
 export type MediaOrderByWithAggregationInput = {
@@ -348,6 +354,8 @@ export type MediaCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   uploader?: Prisma.UserCreateNestedOneWithoutMediaInput
+  articleFeaturedIn?: Prisma.ArticleCreateNestedManyWithoutFeaturedImageInput
+  articleAttachments?: Prisma.ArticleCreateNestedManyWithoutAttachmentsInput
 }
 
 export type MediaUncheckedCreateInput = {
@@ -362,6 +370,8 @@ export type MediaUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   uploadedBy?: string | null
+  articleFeaturedIn?: Prisma.ArticleUncheckedCreateNestedManyWithoutFeaturedImageInput
+  articleAttachments?: Prisma.ArticleUncheckedCreateNestedManyWithoutAttachmentsInput
 }
 
 export type MediaUpdateInput = {
@@ -376,6 +386,8 @@ export type MediaUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   uploader?: Prisma.UserUpdateOneWithoutMediaNestedInput
+  articleFeaturedIn?: Prisma.ArticleUpdateManyWithoutFeaturedImageNestedInput
+  articleAttachments?: Prisma.ArticleUpdateManyWithoutAttachmentsNestedInput
 }
 
 export type MediaUncheckedUpdateInput = {
@@ -390,6 +402,8 @@ export type MediaUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   uploadedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  articleFeaturedIn?: Prisma.ArticleUncheckedUpdateManyWithoutFeaturedImageNestedInput
+  articleAttachments?: Prisma.ArticleUncheckedUpdateManyWithoutAttachmentsNestedInput
 }
 
 export type MediaCreateManyInput = {
@@ -493,6 +507,11 @@ export type MediaSumOrderByAggregateInput = {
   size?: Prisma.SortOrder
 }
 
+export type MediaNullableScalarRelationFilter = {
+  is?: Prisma.MediaWhereInput | null
+  isNot?: Prisma.MediaWhereInput | null
+}
+
 export type MediaCreateNestedManyWithoutUploaderInput = {
   create?: Prisma.XOR<Prisma.MediaCreateWithoutUploaderInput, Prisma.MediaUncheckedCreateWithoutUploaderInput> | Prisma.MediaCreateWithoutUploaderInput[] | Prisma.MediaUncheckedCreateWithoutUploaderInput[]
   connectOrCreate?: Prisma.MediaCreateOrConnectWithoutUploaderInput | Prisma.MediaCreateOrConnectWithoutUploaderInput[]
@@ -547,6 +566,60 @@ export type IntFieldUpdateOperationsInput = {
   divide?: number
 }
 
+export type MediaCreateNestedOneWithoutArticleFeaturedInInput = {
+  create?: Prisma.XOR<Prisma.MediaCreateWithoutArticleFeaturedInInput, Prisma.MediaUncheckedCreateWithoutArticleFeaturedInInput>
+  connectOrCreate?: Prisma.MediaCreateOrConnectWithoutArticleFeaturedInInput
+  connect?: Prisma.MediaWhereUniqueInput
+}
+
+export type MediaCreateNestedManyWithoutArticleAttachmentsInput = {
+  create?: Prisma.XOR<Prisma.MediaCreateWithoutArticleAttachmentsInput, Prisma.MediaUncheckedCreateWithoutArticleAttachmentsInput> | Prisma.MediaCreateWithoutArticleAttachmentsInput[] | Prisma.MediaUncheckedCreateWithoutArticleAttachmentsInput[]
+  connectOrCreate?: Prisma.MediaCreateOrConnectWithoutArticleAttachmentsInput | Prisma.MediaCreateOrConnectWithoutArticleAttachmentsInput[]
+  connect?: Prisma.MediaWhereUniqueInput | Prisma.MediaWhereUniqueInput[]
+}
+
+export type MediaUncheckedCreateNestedManyWithoutArticleAttachmentsInput = {
+  create?: Prisma.XOR<Prisma.MediaCreateWithoutArticleAttachmentsInput, Prisma.MediaUncheckedCreateWithoutArticleAttachmentsInput> | Prisma.MediaCreateWithoutArticleAttachmentsInput[] | Prisma.MediaUncheckedCreateWithoutArticleAttachmentsInput[]
+  connectOrCreate?: Prisma.MediaCreateOrConnectWithoutArticleAttachmentsInput | Prisma.MediaCreateOrConnectWithoutArticleAttachmentsInput[]
+  connect?: Prisma.MediaWhereUniqueInput | Prisma.MediaWhereUniqueInput[]
+}
+
+export type MediaUpdateOneWithoutArticleFeaturedInNestedInput = {
+  create?: Prisma.XOR<Prisma.MediaCreateWithoutArticleFeaturedInInput, Prisma.MediaUncheckedCreateWithoutArticleFeaturedInInput>
+  connectOrCreate?: Prisma.MediaCreateOrConnectWithoutArticleFeaturedInInput
+  upsert?: Prisma.MediaUpsertWithoutArticleFeaturedInInput
+  disconnect?: Prisma.MediaWhereInput | boolean
+  delete?: Prisma.MediaWhereInput | boolean
+  connect?: Prisma.MediaWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MediaUpdateToOneWithWhereWithoutArticleFeaturedInInput, Prisma.MediaUpdateWithoutArticleFeaturedInInput>, Prisma.MediaUncheckedUpdateWithoutArticleFeaturedInInput>
+}
+
+export type MediaUpdateManyWithoutArticleAttachmentsNestedInput = {
+  create?: Prisma.XOR<Prisma.MediaCreateWithoutArticleAttachmentsInput, Prisma.MediaUncheckedCreateWithoutArticleAttachmentsInput> | Prisma.MediaCreateWithoutArticleAttachmentsInput[] | Prisma.MediaUncheckedCreateWithoutArticleAttachmentsInput[]
+  connectOrCreate?: Prisma.MediaCreateOrConnectWithoutArticleAttachmentsInput | Prisma.MediaCreateOrConnectWithoutArticleAttachmentsInput[]
+  upsert?: Prisma.MediaUpsertWithWhereUniqueWithoutArticleAttachmentsInput | Prisma.MediaUpsertWithWhereUniqueWithoutArticleAttachmentsInput[]
+  set?: Prisma.MediaWhereUniqueInput | Prisma.MediaWhereUniqueInput[]
+  disconnect?: Prisma.MediaWhereUniqueInput | Prisma.MediaWhereUniqueInput[]
+  delete?: Prisma.MediaWhereUniqueInput | Prisma.MediaWhereUniqueInput[]
+  connect?: Prisma.MediaWhereUniqueInput | Prisma.MediaWhereUniqueInput[]
+  update?: Prisma.MediaUpdateWithWhereUniqueWithoutArticleAttachmentsInput | Prisma.MediaUpdateWithWhereUniqueWithoutArticleAttachmentsInput[]
+  updateMany?: Prisma.MediaUpdateManyWithWhereWithoutArticleAttachmentsInput | Prisma.MediaUpdateManyWithWhereWithoutArticleAttachmentsInput[]
+  deleteMany?: Prisma.MediaScalarWhereInput | Prisma.MediaScalarWhereInput[]
+}
+
+export type MediaUncheckedUpdateManyWithoutArticleAttachmentsNestedInput = {
+  create?: Prisma.XOR<Prisma.MediaCreateWithoutArticleAttachmentsInput, Prisma.MediaUncheckedCreateWithoutArticleAttachmentsInput> | Prisma.MediaCreateWithoutArticleAttachmentsInput[] | Prisma.MediaUncheckedCreateWithoutArticleAttachmentsInput[]
+  connectOrCreate?: Prisma.MediaCreateOrConnectWithoutArticleAttachmentsInput | Prisma.MediaCreateOrConnectWithoutArticleAttachmentsInput[]
+  upsert?: Prisma.MediaUpsertWithWhereUniqueWithoutArticleAttachmentsInput | Prisma.MediaUpsertWithWhereUniqueWithoutArticleAttachmentsInput[]
+  set?: Prisma.MediaWhereUniqueInput | Prisma.MediaWhereUniqueInput[]
+  disconnect?: Prisma.MediaWhereUniqueInput | Prisma.MediaWhereUniqueInput[]
+  delete?: Prisma.MediaWhereUniqueInput | Prisma.MediaWhereUniqueInput[]
+  connect?: Prisma.MediaWhereUniqueInput | Prisma.MediaWhereUniqueInput[]
+  update?: Prisma.MediaUpdateWithWhereUniqueWithoutArticleAttachmentsInput | Prisma.MediaUpdateWithWhereUniqueWithoutArticleAttachmentsInput[]
+  updateMany?: Prisma.MediaUpdateManyWithWhereWithoutArticleAttachmentsInput | Prisma.MediaUpdateManyWithWhereWithoutArticleAttachmentsInput[]
+  deleteMany?: Prisma.MediaScalarWhereInput | Prisma.MediaScalarWhereInput[]
+}
+
 export type MediaCreateWithoutUploaderInput = {
   id?: string
   objectKey: string
@@ -558,6 +631,8 @@ export type MediaCreateWithoutUploaderInput = {
   filename: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  articleFeaturedIn?: Prisma.ArticleCreateNestedManyWithoutFeaturedImageInput
+  articleAttachments?: Prisma.ArticleCreateNestedManyWithoutAttachmentsInput
 }
 
 export type MediaUncheckedCreateWithoutUploaderInput = {
@@ -571,6 +646,8 @@ export type MediaUncheckedCreateWithoutUploaderInput = {
   filename: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  articleFeaturedIn?: Prisma.ArticleUncheckedCreateNestedManyWithoutFeaturedImageInput
+  articleAttachments?: Prisma.ArticleUncheckedCreateNestedManyWithoutAttachmentsInput
 }
 
 export type MediaCreateOrConnectWithoutUploaderInput = {
@@ -616,6 +693,133 @@ export type MediaScalarWhereInput = {
   uploadedBy?: Prisma.StringNullableFilter<"Media"> | string | null
 }
 
+export type MediaCreateWithoutArticleFeaturedInInput = {
+  id?: string
+  objectKey: string
+  url?: string | null
+  alt?: string | null
+  type: $Enums.MediaType
+  size: number
+  mimeType: string
+  filename: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  uploader?: Prisma.UserCreateNestedOneWithoutMediaInput
+  articleAttachments?: Prisma.ArticleCreateNestedManyWithoutAttachmentsInput
+}
+
+export type MediaUncheckedCreateWithoutArticleFeaturedInInput = {
+  id?: string
+  objectKey: string
+  url?: string | null
+  alt?: string | null
+  type: $Enums.MediaType
+  size: number
+  mimeType: string
+  filename: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  uploadedBy?: string | null
+  articleAttachments?: Prisma.ArticleUncheckedCreateNestedManyWithoutAttachmentsInput
+}
+
+export type MediaCreateOrConnectWithoutArticleFeaturedInInput = {
+  where: Prisma.MediaWhereUniqueInput
+  create: Prisma.XOR<Prisma.MediaCreateWithoutArticleFeaturedInInput, Prisma.MediaUncheckedCreateWithoutArticleFeaturedInInput>
+}
+
+export type MediaCreateWithoutArticleAttachmentsInput = {
+  id?: string
+  objectKey: string
+  url?: string | null
+  alt?: string | null
+  type: $Enums.MediaType
+  size: number
+  mimeType: string
+  filename: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  uploader?: Prisma.UserCreateNestedOneWithoutMediaInput
+  articleFeaturedIn?: Prisma.ArticleCreateNestedManyWithoutFeaturedImageInput
+}
+
+export type MediaUncheckedCreateWithoutArticleAttachmentsInput = {
+  id?: string
+  objectKey: string
+  url?: string | null
+  alt?: string | null
+  type: $Enums.MediaType
+  size: number
+  mimeType: string
+  filename: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  uploadedBy?: string | null
+  articleFeaturedIn?: Prisma.ArticleUncheckedCreateNestedManyWithoutFeaturedImageInput
+}
+
+export type MediaCreateOrConnectWithoutArticleAttachmentsInput = {
+  where: Prisma.MediaWhereUniqueInput
+  create: Prisma.XOR<Prisma.MediaCreateWithoutArticleAttachmentsInput, Prisma.MediaUncheckedCreateWithoutArticleAttachmentsInput>
+}
+
+export type MediaUpsertWithoutArticleFeaturedInInput = {
+  update: Prisma.XOR<Prisma.MediaUpdateWithoutArticleFeaturedInInput, Prisma.MediaUncheckedUpdateWithoutArticleFeaturedInInput>
+  create: Prisma.XOR<Prisma.MediaCreateWithoutArticleFeaturedInInput, Prisma.MediaUncheckedCreateWithoutArticleFeaturedInInput>
+  where?: Prisma.MediaWhereInput
+}
+
+export type MediaUpdateToOneWithWhereWithoutArticleFeaturedInInput = {
+  where?: Prisma.MediaWhereInput
+  data: Prisma.XOR<Prisma.MediaUpdateWithoutArticleFeaturedInInput, Prisma.MediaUncheckedUpdateWithoutArticleFeaturedInInput>
+}
+
+export type MediaUpdateWithoutArticleFeaturedInInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  objectKey?: Prisma.StringFieldUpdateOperationsInput | string
+  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  alt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.EnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType
+  size?: Prisma.IntFieldUpdateOperationsInput | number
+  mimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  filename?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  uploader?: Prisma.UserUpdateOneWithoutMediaNestedInput
+  articleAttachments?: Prisma.ArticleUpdateManyWithoutAttachmentsNestedInput
+}
+
+export type MediaUncheckedUpdateWithoutArticleFeaturedInInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  objectKey?: Prisma.StringFieldUpdateOperationsInput | string
+  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  alt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.EnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType
+  size?: Prisma.IntFieldUpdateOperationsInput | number
+  mimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  filename?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  uploadedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  articleAttachments?: Prisma.ArticleUncheckedUpdateManyWithoutAttachmentsNestedInput
+}
+
+export type MediaUpsertWithWhereUniqueWithoutArticleAttachmentsInput = {
+  where: Prisma.MediaWhereUniqueInput
+  update: Prisma.XOR<Prisma.MediaUpdateWithoutArticleAttachmentsInput, Prisma.MediaUncheckedUpdateWithoutArticleAttachmentsInput>
+  create: Prisma.XOR<Prisma.MediaCreateWithoutArticleAttachmentsInput, Prisma.MediaUncheckedCreateWithoutArticleAttachmentsInput>
+}
+
+export type MediaUpdateWithWhereUniqueWithoutArticleAttachmentsInput = {
+  where: Prisma.MediaWhereUniqueInput
+  data: Prisma.XOR<Prisma.MediaUpdateWithoutArticleAttachmentsInput, Prisma.MediaUncheckedUpdateWithoutArticleAttachmentsInput>
+}
+
+export type MediaUpdateManyWithWhereWithoutArticleAttachmentsInput = {
+  where: Prisma.MediaScalarWhereInput
+  data: Prisma.XOR<Prisma.MediaUpdateManyMutationInput, Prisma.MediaUncheckedUpdateManyWithoutArticleAttachmentsInput>
+}
+
 export type MediaCreateManyUploaderInput = {
   id?: string
   objectKey: string
@@ -640,6 +844,8 @@ export type MediaUpdateWithoutUploaderInput = {
   filename?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  articleFeaturedIn?: Prisma.ArticleUpdateManyWithoutFeaturedImageNestedInput
+  articleAttachments?: Prisma.ArticleUpdateManyWithoutAttachmentsNestedInput
 }
 
 export type MediaUncheckedUpdateWithoutUploaderInput = {
@@ -653,6 +859,8 @@ export type MediaUncheckedUpdateWithoutUploaderInput = {
   filename?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  articleFeaturedIn?: Prisma.ArticleUncheckedUpdateManyWithoutFeaturedImageNestedInput
+  articleAttachments?: Prisma.ArticleUncheckedUpdateManyWithoutAttachmentsNestedInput
 }
 
 export type MediaUncheckedUpdateManyWithoutUploaderInput = {
@@ -668,6 +876,88 @@ export type MediaUncheckedUpdateManyWithoutUploaderInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+export type MediaUpdateWithoutArticleAttachmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  objectKey?: Prisma.StringFieldUpdateOperationsInput | string
+  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  alt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.EnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType
+  size?: Prisma.IntFieldUpdateOperationsInput | number
+  mimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  filename?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  uploader?: Prisma.UserUpdateOneWithoutMediaNestedInput
+  articleFeaturedIn?: Prisma.ArticleUpdateManyWithoutFeaturedImageNestedInput
+}
+
+export type MediaUncheckedUpdateWithoutArticleAttachmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  objectKey?: Prisma.StringFieldUpdateOperationsInput | string
+  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  alt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.EnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType
+  size?: Prisma.IntFieldUpdateOperationsInput | number
+  mimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  filename?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  uploadedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  articleFeaturedIn?: Prisma.ArticleUncheckedUpdateManyWithoutFeaturedImageNestedInput
+}
+
+export type MediaUncheckedUpdateManyWithoutArticleAttachmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  objectKey?: Prisma.StringFieldUpdateOperationsInput | string
+  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  alt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.EnumMediaTypeFieldUpdateOperationsInput | $Enums.MediaType
+  size?: Prisma.IntFieldUpdateOperationsInput | number
+  mimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  filename?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  uploadedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+
+/**
+ * Count Type MediaCountOutputType
+ */
+
+export type MediaCountOutputType = {
+  articleFeaturedIn: number
+  articleAttachments: number
+}
+
+export type MediaCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  articleFeaturedIn?: boolean | MediaCountOutputTypeCountArticleFeaturedInArgs
+  articleAttachments?: boolean | MediaCountOutputTypeCountArticleAttachmentsArgs
+}
+
+/**
+ * MediaCountOutputType without action
+ */
+export type MediaCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MediaCountOutputType
+   */
+  select?: Prisma.MediaCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * MediaCountOutputType without action
+ */
+export type MediaCountOutputTypeCountArticleFeaturedInArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ArticleWhereInput
+}
+
+/**
+ * MediaCountOutputType without action
+ */
+export type MediaCountOutputTypeCountArticleAttachmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ArticleWhereInput
+}
 
 
 export type MediaSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -683,6 +973,9 @@ export type MediaSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   updatedAt?: boolean
   uploadedBy?: boolean
   uploader?: boolean | Prisma.Media$uploaderArgs<ExtArgs>
+  articleFeaturedIn?: boolean | Prisma.Media$articleFeaturedInArgs<ExtArgs>
+  articleAttachments?: boolean | Prisma.Media$articleAttachmentsArgs<ExtArgs>
+  _count?: boolean | Prisma.MediaCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["media"]>
 
 export type MediaSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -732,6 +1025,9 @@ export type MediaSelectScalar = {
 export type MediaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "objectKey" | "url" | "alt" | "type" | "size" | "mimeType" | "filename" | "createdAt" | "updatedAt" | "uploadedBy", ExtArgs["result"]["media"]>
 export type MediaInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   uploader?: boolean | Prisma.Media$uploaderArgs<ExtArgs>
+  articleFeaturedIn?: boolean | Prisma.Media$articleFeaturedInArgs<ExtArgs>
+  articleAttachments?: boolean | Prisma.Media$articleAttachmentsArgs<ExtArgs>
+  _count?: boolean | Prisma.MediaCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type MediaIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   uploader?: boolean | Prisma.Media$uploaderArgs<ExtArgs>
@@ -744,6 +1040,8 @@ export type $MediaPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   name: "Media"
   objects: {
     uploader: Prisma.$UserPayload<ExtArgs> | null
+    articleFeaturedIn: Prisma.$ArticlePayload<ExtArgs>[]
+    articleAttachments: Prisma.$ArticlePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1152,6 +1450,8 @@ readonly fields: MediaFieldRefs;
 export interface Prisma__MediaClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   uploader<T extends Prisma.Media$uploaderArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Media$uploaderArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  articleFeaturedIn<T extends Prisma.Media$articleFeaturedInArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Media$articleFeaturedInArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ArticlePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  articleAttachments<T extends Prisma.Media$articleAttachmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Media$articleAttachmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ArticlePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1604,6 +1904,54 @@ export type Media$uploaderArgs<ExtArgs extends runtime.Types.Extensions.Internal
    */
   include?: Prisma.UserInclude<ExtArgs> | null
   where?: Prisma.UserWhereInput
+}
+
+/**
+ * Media.articleFeaturedIn
+ */
+export type Media$articleFeaturedInArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Article
+   */
+  select?: Prisma.ArticleSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Article
+   */
+  omit?: Prisma.ArticleOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ArticleInclude<ExtArgs> | null
+  where?: Prisma.ArticleWhereInput
+  orderBy?: Prisma.ArticleOrderByWithRelationInput | Prisma.ArticleOrderByWithRelationInput[]
+  cursor?: Prisma.ArticleWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ArticleScalarFieldEnum | Prisma.ArticleScalarFieldEnum[]
+}
+
+/**
+ * Media.articleAttachments
+ */
+export type Media$articleAttachmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Article
+   */
+  select?: Prisma.ArticleSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Article
+   */
+  omit?: Prisma.ArticleOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ArticleInclude<ExtArgs> | null
+  where?: Prisma.ArticleWhereInput
+  orderBy?: Prisma.ArticleOrderByWithRelationInput | Prisma.ArticleOrderByWithRelationInput[]
+  cursor?: Prisma.ArticleWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ArticleScalarFieldEnum | Prisma.ArticleScalarFieldEnum[]
 }
 
 /**
