@@ -13,7 +13,7 @@ import { CreateMediaInput, UpdateMediaInput } from "./inputs";
 builder.mutationField("createMedia", (t) =>
   t.prismaField({
     type: "Media",
-    authScopes: { collaborator: true },
+    authScopes: { authenticated: true },
     args: {
       input: t.arg({
         type: CreateMediaInput,
@@ -53,7 +53,7 @@ builder.mutationField("createMedia", (t) =>
 builder.mutationField("updateMedia", (t) =>
   t.prismaField({
     type: "Media",
-    authScopes: { collaborator: true },
+    authScopes: { authenticated: true },
     args: {
       id: t.arg.string({
         required: true,
@@ -104,7 +104,7 @@ builder.mutationField("updateMedia", (t) =>
 builder.mutationField("deleteMedia", (t) =>
   t.prismaField({
     type: "Media",
-    authScopes: { collaborator: true },
+    authScopes: { authenticated: true },
     args: {
       id: t.arg.string({
         required: true,

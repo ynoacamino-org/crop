@@ -9,7 +9,7 @@ builder.queryField("me", (t) =>
     type: "User",
     nullable: true,
     authScopes: {
-      collaborator: true,
+      authenticated: true,
     },
     resolve: async (_query, _root, _args, ctx) => {
       if (!ctx.user) return null;
