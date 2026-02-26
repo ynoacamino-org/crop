@@ -9,12 +9,12 @@ const adapter = new PrismaPg({
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
-	console.log("🌱 Starting seed with Faker...");
+	console.log("Starting seed with Faker...");
 
 	let users = await prisma.user.findMany();
 
 	if (users.length === 0) {
-		console.log("⚠️  No users found. Creating sample users...");
+		console.log(" No users found. Creating sample users...");
 
 		const sampleUsers = [];
 		for (let i = 0; i < 10; i++) {
@@ -33,14 +33,13 @@ async function main() {
 		});
 
 		users = await prisma.user.findMany();
-		console.log(`✅ Created ${users.length} sample users`);
+		console.log(`Created ${users.length} sample users`);
 	} else {
-		console.log(`✅ Found ${users.length} existing users`);
+		console.log(`Found ${users.length} existing users`);
 	}
 
 	await prisma.media.deleteMany({});
-	console.log("🗑️  Deleted existing media");
-
+	console.log("Deleted existing media");
 	const mediaItems = [];
 	for (let i = 0; i < 50; i++) {
 		const randomUser = users[Math.floor(Math.random() * users.length)];
@@ -66,13 +65,13 @@ async function main() {
 	});
 
 	const createdMedia = await prisma.media.findMany();
-	console.log(`✅ Created ${createdMedia.length} media items`);
-	console.log("🎉 Seed completed successfully!");
+	console.log(`Created ${createdMedia.length} media items`);
+	console.log("Seed completed successfully!");
 }
 
 main()
 	.catch((e) => {
-		console.error("❌ Error seeding database:", e);
+		console.error("Error seeding database:", e);
 		process.exit(1);
 	})
 	.finally(async () => {
