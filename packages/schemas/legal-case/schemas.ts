@@ -1,5 +1,18 @@
 import { z } from "zod";
 
+// Enums from Prisma schema
+export const JurisdictionEnum = z.enum(["NACIONAL", "REGIONAL", "LOCAL", "INTERNACIONAL"], {
+  message: "La jurisdicción debe ser NACIONAL, REGIONAL, LOCAL o INTERNACIONAL",
+});
+
+export const CaseTypeEnum = z.enum(
+  ["CIVIL", "PENAL", "CONSTITUCIONAL", "LABORAL", "ADMINISTRATIVO", "COMERCIAL", "FAMILIA", "TRIBUTARIO", "AMBIENTAL"],
+  {
+    message: "El tipo de caso debe ser un valor válido",
+  },
+);
+
+// Keep legacy enums for backward compatibility
 export const CaseStatusEnum = z.enum(["DRAFT", "PUBLISHED", "ARCHIVED"], {
   message: "El estado del caso debe ser DRAFT, PUBLISHED o ARCHIVED",
 });
@@ -15,117 +28,78 @@ export const LegalAreaEnum = z.enum(
   },
 );
 
-export const LegalCasesPayloadSchema = z.object({
-  take: z
-    .number({ message: "Se espera que el campo límite sea un número, no una cadena de texto" })
-    .min(1, { message: "El campo límite debe ser al menos 1" })
-    .max(100, { message: "El campo límite no puede ser mayor a 100" })
-    .optional(),
-  skip: z
-    .number({ message: "Se espera que el campo saltar sea un número, no una cadena de texto" })
-    .min(0, { message: "El campo saltar debe ser al menos 0" })
-    .max(1000, { message: "El campo saltar no puede ser mayor a 1000" })
-    .optional(),
-  legalArea: LegalAreaEnum.optional(),
-  courtLevel: CourtLevelEnum.optional(),
-  status: CaseStatusEnum.optional(),
-  search: z
-    .string({ message: "Se espera que el campo búsqueda sea una cadena de texto, no un número" })
-    .min(1, { message: "El campo búsqueda debe tener al menos 1 caracteres" })
-    .max(100, { message: "El campo búsqueda no puede tener más de 100 caracteres" })
-    .optional(),
-  authorId: z.cuid({ message: "Se espera que el autor sea un CUID válido" }).optional(),
+// Schema for creating a legal case
+export const createLegalCaseSchema = z.object({
+  caseNumber: z
+    .string({ message: "El número de caso es requerido" })
+    .min(1, { message: "El número de caso es requerido" })
+    .max(100, { message: "El número de caso no puede tener más de 100 caracteres" }),
+  caseName: z
+    .string({ message: "El nombre del caso es requerido" })
+    .min(1, { message: "El nombre del caso es requerido" })
+    .max(500, { message: "El nombre del caso no puede tener más de 500 caracteres" }),
+  summary: z.string().max(2000, { message: "El resumen no puede tener más de 2000 caracteres" }).optional(),
+  parties: z.string().max(1000, { message: "Las partes no pueden tener más de 1000 caracteres" }).optional(),
+  plaintiff: z.string().max(300, { message: "El demandante no puede tener más de 300 caracteres" }).optional(),
+  defendant: z.string().max(300, { message: "El demandado no puede tener más de 300 caracteres" }).optional(),
+  judges: z.string().max(500, { message: "Los jueces no pueden tener más de 500 caracteres" }).optional(),
+  verdict: z.string().max(5000, { message: "El veredicto no puede tener más de 5000 caracteres" }).optional(),
+  legalBasis: z.string().max(5000, { message: "La base legal no puede tener más de 5000 caracteres" }).optional(),
+  jurisdiction: JurisdictionEnum.optional(),
+  caseType: CaseTypeEnum.optional(),
+  courtId: z.string().cuid({ message: "El ID del tribunal debe ser un CUID válido" }).optional(),
 });
 
-export const LegalCasePayloadSchema = z.object({
-  id: z.cuid({ message: "Se espera que el identificador sea un CUID válido" }).optional(),
+// Schema for updating a legal case
+export const updateLegalCaseSchema = z.object({
   caseNumber: z
-    .string({ message: "Se espera que el número de caso sea una cadena de texto" })
+    .string()
     .min(1, { message: "El número de caso es requerido" })
     .max(100, { message: "El número de caso no puede tener más de 100 caracteres" })
     .optional(),
+  caseName: z
+    .string()
+    .min(1, { message: "El nombre del caso es requerido" })
+    .max(500, { message: "El nombre del caso no puede tener más de 500 caracteres" })
+    .optional(),
+  summary: z.string().max(2000, { message: "El resumen no puede tener más de 2000 caracteres" }).optional().nullable(),
+  parties: z.string().max(1000, { message: "Las partes no pueden tener más de 1000 caracteres" }).optional().nullable(),
+  plaintiff: z
+    .string()
+    .max(300, { message: "El demandante no puede tener más de 300 caracteres" })
+    .optional()
+    .nullable(),
+  defendant: z
+    .string()
+    .max(300, { message: "El demandado no puede tener más de 300 caracteres" })
+    .optional()
+    .nullable(),
+  judges: z.string().max(500, { message: "Los jueces no pueden tener más de 500 caracteres" }).optional().nullable(),
+  verdict: z
+    .string()
+    .max(5000, { message: "El veredicto no puede tener más de 5000 caracteres" })
+    .optional()
+    .nullable(),
+  legalBasis: z
+    .string()
+    .max(5000, { message: "La base legal no puede tener más de 5000 caracteres" })
+    .optional()
+    .nullable(),
+  jurisdiction: JurisdictionEnum.optional().nullable(),
+  caseType: CaseTypeEnum.optional().nullable(),
+  courtId: z.string().cuid({ message: "El ID del tribunal debe ser un CUID válido" }).optional().nullable(),
 });
 
-export const CreateLegalCasePayloadSchema = z.object({
-  input: z.object({
-    caseNumber: z
-      .string({ message: "Se espera que el número de caso sea una cadena de texto" })
-      .min(1, { message: "El número de caso es requerido" })
-      .max(100, { message: "El número de caso no puede tener más de 100 caracteres" }),
-    title: z
-      .string({ message: "Se espera que el título sea una cadena de texto" })
-      .min(1, { message: "El título es requerido" })
-      .max(500, { message: "El título no puede tener más de 500 caracteres" }),
-    summary: z
-      .string({ message: "Se espera que el resumen sea una cadena de texto" })
-      .max(2000, { message: "El resumen no puede tener más de 2000 caracteres" })
-      .optional(),
-    content: z
-      .string({ message: "Se espera que el contenido sea una cadena de texto" })
-      .min(1, { message: "El contenido es requerido" }),
-    legalArea: LegalAreaEnum,
-    court: z
-      .string({ message: "Se espera que la corte sea una cadena de texto" })
-      .max(200, { message: "La corte no puede tener más de 200 caracteres" })
-      .optional(),
-    courtLevel: CourtLevelEnum.optional(),
-    judge: z
-      .string({ message: "Se espera que el juez sea una cadena de texto" })
-      .max(200, { message: "El juez no puede tener más de 200 caracteres" })
-      .optional(),
-    caseDate: z.coerce.date({ message: "La fecha del caso debe ser una fecha válida" }).optional(),
-    publicationDate: z.coerce.date({ message: "La fecha de publicación debe ser una fecha válida" }).optional(),
-    status: CaseStatusEnum.optional(),
-    tags: z
-      .array(z.string().max(50, { message: "Cada etiqueta no puede tener más de 50 caracteres" }))
-      .max(20, { message: "No se pueden agregar más de 20 etiquetas" })
-      .optional(),
-    featuredMediaId: z.cuid({ message: "Se espera que el medio destacado sea un CUID válido" }).optional(),
-  }),
-});
-
-export const UpdateLegalCasePayloadSchema = z.object({
-  id: z.cuid({ message: "Se espera que el identificador sea un CUID válido" }),
-  input: z.object({
-    caseNumber: z
-      .string({ message: "Se espera que el número de caso sea una cadena de texto" })
-      .min(1, { message: "El número de caso es requerido" })
-      .max(100, { message: "El número de caso no puede tener más de 100 caracteres" })
-      .optional(),
-    title: z
-      .string({ message: "Se espera que el título sea una cadena de texto" })
-      .min(1, { message: "El título es requerido" })
-      .max(500, { message: "El título no puede tener más de 500 caracteres" })
-      .optional(),
-    summary: z
-      .string({ message: "Se espera que el resumen sea una cadena de texto" })
-      .max(2000, { message: "El resumen no puede tener más de 2000 caracteres" })
-      .optional(),
-    content: z
-      .string({ message: "Se espera que el contenido sea una cadena de texto" })
-      .min(1, { message: "El contenido es requerido" })
-      .optional(),
-    legalArea: LegalAreaEnum.optional(),
-    court: z
-      .string({ message: "Se espera que la corte sea una cadena de texto" })
-      .max(200, { message: "La corte no puede tener más de 200 caracteres" })
-      .optional(),
-    courtLevel: CourtLevelEnum.optional(),
-    judge: z
-      .string({ message: "Se espera que el juez sea una cadena de texto" })
-      .max(200, { message: "El juez no puede tener más de 200 caracteres" })
-      .optional(),
-    caseDate: z.coerce.date({ message: "La fecha del caso debe ser una fecha válida" }).optional(),
-    publicationDate: z.coerce.date({ message: "La fecha de publicación debe ser una fecha válida" }).optional(),
-    status: CaseStatusEnum.optional(),
-    tags: z
-      .array(z.string().max(50, { message: "Cada etiqueta no puede tener más de 50 caracteres" }))
-      .max(20, { message: "No se pueden agregar más de 20 etiquetas" })
-      .optional(),
-    featuredMediaId: z.cuid({ message: "Se espera que el medio destacado sea un CUID válido" }).optional(),
-  }),
-});
-
-export const DeleteLegalCasePayloadSchema = z.object({
-  id: z.cuid({ message: "Se espera que el identificador sea un CUID válido" }),
+// Query schema for fetching legal cases
+export const legalCasesQuerySchema = z.object({
+  jurisdiction: JurisdictionEnum.optional(),
+  caseType: CaseTypeEnum.optional(),
+  courtId: z.string().cuid().optional(),
+  search: z
+    .string()
+    .min(1, { message: "El campo búsqueda debe tener al menos 1 carácter" })
+    .max(100, { message: "El campo búsqueda no puede tener más de 100 caracteres" })
+    .optional(),
+  take: z.number().min(1).max(100).optional(),
+  skip: z.number().min(0).optional(),
 });

@@ -1,14 +1,19 @@
 import type { z } from "zod";
 import type {
-  CreateLegalCasePayloadSchema,
-  DeleteLegalCasePayloadSchema,
-  LegalCasePayloadSchema,
-  LegalCasesPayloadSchema,
-  UpdateLegalCasePayloadSchema,
+  CaseTypeEnum,
+  createLegalCaseSchema,
+  JurisdictionEnum,
+  legalCasesQuerySchema,
+  updateLegalCaseSchema,
 } from "./schemas";
 
-export type LegalCasesPayload = z.infer<typeof LegalCasesPayloadSchema>;
-export type LegalCasePayload = z.infer<typeof LegalCasePayloadSchema>;
-export type CreateLegalCasePayload = z.infer<typeof CreateLegalCasePayloadSchema>;
-export type UpdateLegalCasePayload = z.infer<typeof UpdateLegalCasePayloadSchema>;
-export type DeleteLegalCasePayload = z.infer<typeof DeleteLegalCasePayloadSchema>;
+// Type exports for enums
+export type JurisdictionType = z.infer<typeof JurisdictionEnum>;
+export type CaseTypeType = z.infer<typeof CaseTypeEnum>;
+
+// Query input types
+export type LegalCasesQueryInput = z.infer<typeof legalCasesQuerySchema>;
+
+// Mutation input types
+export type CreateLegalCaseInput = z.infer<typeof createLegalCaseSchema>;
+export type UpdateLegalCaseInput = z.infer<typeof updateLegalCaseSchema>;

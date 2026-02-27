@@ -1,22 +1,36 @@
 // Media schemas
 
+// Article schemas
+export type {
+  ArticleStatusType,
+  ArticlesQueryInput,
+  CreateArticleInput,
+  UpdateArticleInput,
+} from "./article/interfaces";
+export {
+  ArticleStatus,
+  articlesQuerySchema,
+  createArticleSchema,
+  updateArticleSchema,
+} from "./article/schemas";
+
 // Legal Case schemas
 export type {
-  CreateLegalCasePayload,
-  DeleteLegalCasePayload,
-  LegalCasePayload,
-  LegalCasesPayload,
-  UpdateLegalCasePayload,
+  CaseTypeType,
+  CreateLegalCaseInput,
+  JurisdictionType,
+  LegalCasesQueryInput,
+  UpdateLegalCaseInput,
 } from "./legal-case/interfaces";
 export {
   CaseStatusEnum,
+  CaseTypeEnum,
   CourtLevelEnum,
-  CreateLegalCasePayloadSchema,
-  DeleteLegalCasePayloadSchema,
+  createLegalCaseSchema,
+  JurisdictionEnum,
   LegalAreaEnum,
-  LegalCasePayloadSchema,
-  LegalCasesPayloadSchema,
-  UpdateLegalCasePayloadSchema,
+  legalCasesQuerySchema,
+  updateLegalCaseSchema,
 } from "./legal-case/schemas";
 export type {
   CreateMediaPayload,
@@ -39,6 +53,8 @@ export {
 // User schemas
 export type {
   DeleteUserPayload,
+  SignInPayload,
+  SignUpPayload,
   UpdateMePayload,
   UpdateUserPayload,
   UserPayload,
@@ -46,6 +62,8 @@ export type {
 } from "./user/interface";
 export {
   DeleteUserPayloadSchema,
+  SignInPayloadSchema,
+  SignUpPayloadSchema,
   UpdateMePayloadSchema,
   UpdateUserPayloadSchema,
   UserPayloadSchema,
