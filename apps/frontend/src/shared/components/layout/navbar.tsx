@@ -1,6 +1,7 @@
 "use client";
 
 import { AccountPopover } from "@/modules/auth/components/ui/account-popover";
+import { ThemeToggle } from "@/shared/components/ui/theme-toggle";
 
 export function Navbar() {
   return (
@@ -10,7 +11,8 @@ export function Navbar() {
           <h2 className="font-bold text-xl">Crop</h2>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
           <AccountPopover />
         </div>
       </div>

@@ -1,5 +1,15 @@
+import { ThemeProvider } from "./theme-provider";
 import { UrqlProvider } from "./urql";
 
 export function Providers({ children }: { children: React.ReactNode }) {
-  return <UrqlProvider>{children}</UrqlProvider>;
+  return (
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="system"
+      enableSystem
+      disableTransitionOnChange
+    >
+      <UrqlProvider>{children}</UrqlProvider>
+    </ThemeProvider>
+  );
 }

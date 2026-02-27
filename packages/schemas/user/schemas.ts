@@ -10,8 +10,6 @@ const SignUpPayloadSchema = z.object({
     .string({ message: "La contraseña es requerida" })
     .min(8, { message: "La contraseña debe tener al menos 8 caracteres" })
     .max(128, { message: "La contraseña no puede tener más de 128 caracteres" })
-    .regex(/[A-Z]/, { message: "La contraseña debe tener al menos una mayúscula" })
-    .regex(/[a-z]/, { message: "La contraseña debe tener al menos una minúscula" })
     .regex(/[0-9]/, { message: "La contraseña debe tener al menos un número" }),
 });
 
