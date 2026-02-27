@@ -507,6 +507,22 @@ export type DeleteUserMutationVariables = Exact<{
 
 export type DeleteUserMutation = { __typename?: 'Mutation', deleteUser: { __typename?: 'User', id: string, email: string } };
 
+export type LegalCaseQueryVariables = Exact<{
+  id?: InputMaybe<Scalars['String']['input']>;
+  caseNumber?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type LegalCaseQuery = { __typename?: 'Query', legalCase: { __typename?: 'LegalCase', id: string, caseNumber: string, caseName: string, summary?: string | null, parties?: string | null, plaintiff?: string | null, defendant?: string | null, judges?: string | null, verdict?: string | null, legalBasis?: string | null, jurisdiction?: Jurisdiction | null, caseType?: CaseType | null, caseDate?: Date | null, resolutionDate?: Date | null, createdAt: Date, updatedAt: Date, court?: { __typename?: 'Court', id: string, name: string, type?: CourtType | null, jurisdiction?: Jurisdiction | null, description?: string | null } | null, articles: Array<{ __typename?: 'Article', id: string, title: string, slug: string, excerpt?: string | null, status: ArticleStatus, publishedAt?: Date | null, createdAt: Date }> } };
+
+export type RecentLegalCasesQueryVariables = Exact<{
+  take?: InputMaybe<Scalars['Int']['input']>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type RecentLegalCasesQuery = { __typename?: 'Query', legalCases: Array<{ __typename?: 'LegalCase', id: string, caseNumber: string, caseName: string, summary?: string | null, parties?: string | null, plaintiff?: string | null, defendant?: string | null, jurisdiction?: Jurisdiction | null, caseType?: CaseType | null, caseDate?: Date | null, resolutionDate?: Date | null, createdAt: Date, court?: { __typename?: 'Court', id: string, name: string, type?: CourtType | null, jurisdiction?: Jurisdiction | null } | null }> };
+
 export type MediasQueryVariables = Exact<{
   take?: InputMaybe<Scalars['Int']['input']>;
   skip?: InputMaybe<Scalars['Int']['input']>;
@@ -668,6 +684,76 @@ export const DeleteUserDocument = gql`
 
 export function useDeleteUserMutation() {
   return Urql.useMutation<DeleteUserMutation, DeleteUserMutationVariables>(DeleteUserDocument);
+};
+export const LegalCaseDocument = gql`
+    query LegalCase($id: String, $caseNumber: String) {
+  legalCase(id: $id, caseNumber: $caseNumber) {
+    id
+    caseNumber
+    caseName
+    summary
+    parties
+    plaintiff
+    defendant
+    judges
+    verdict
+    legalBasis
+    jurisdiction
+    caseType
+    caseDate
+    resolutionDate
+    createdAt
+    updatedAt
+    court {
+      id
+      name
+      type
+      jurisdiction
+      description
+    }
+    articles {
+      id
+      title
+      slug
+      excerpt
+      status
+      publishedAt
+      createdAt
+    }
+  }
+}
+    `;
+
+export function useLegalCaseQuery(options?: Omit<Urql.UseQueryArgs<LegalCaseQueryVariables>, 'query'>) {
+  return Urql.useQuery<LegalCaseQuery, LegalCaseQueryVariables>({ query: LegalCaseDocument, ...options });
+};
+export const RecentLegalCasesDocument = gql`
+    query RecentLegalCases($take: Int, $skip: Int) {
+  legalCases(take: $take, skip: $skip) {
+    id
+    caseNumber
+    caseName
+    summary
+    parties
+    plaintiff
+    defendant
+    jurisdiction
+    caseType
+    caseDate
+    resolutionDate
+    createdAt
+    court {
+      id
+      name
+      type
+      jurisdiction
+    }
+  }
+}
+    `;
+
+export function useRecentLegalCasesQuery(options?: Omit<Urql.UseQueryArgs<RecentLegalCasesQueryVariables>, 'query'>) {
+  return Urql.useQuery<RecentLegalCasesQuery, RecentLegalCasesQueryVariables>({ query: RecentLegalCasesDocument, ...options });
 };
 export const MediasDocument = gql`
     query Medias($take: Int, $skip: Int, $type: String, $search: String) {

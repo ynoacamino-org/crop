@@ -21,7 +21,7 @@ function traverse(obj: unknown, fn: (value: unknown) => unknown): unknown {
 export const dateExchange = mapExchange({
   onResult(result) {
     if (result.data) {
-      traverse(result.data, (value) => {
+      result.data = traverse(result.data, (value) => {
         if (typeof value === "string" && isISODate(value)) {
           return new Date(value);
         }

@@ -1,0 +1,22 @@
+query RecentLegalCases($take: Int, $skip: Int) {
+  legalCases(take: $take, skip: $skip) {
+    id
+    caseNumber
+    caseName
+    summary
+    parties
+    plaintiff
+    defendant
+    jurisdiction
+    caseType
+    caseDate
+    resolutionDate
+    createdAt
+    court {
+      id
+      name
+      type
+      jurisdiction
+    }
+  }
+}

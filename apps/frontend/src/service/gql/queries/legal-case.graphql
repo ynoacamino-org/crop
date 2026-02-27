@@ -1,0 +1,36 @@
+query LegalCase($id: String, $caseNumber: String) {
+  legalCase(id: $id, caseNumber: $caseNumber) {
+    id
+    caseNumber
+    caseName
+    summary
+    parties
+    plaintiff
+    defendant
+    judges
+    verdict
+    legalBasis
+    jurisdiction
+    caseType
+    caseDate
+    resolutionDate
+    createdAt
+    updatedAt
+    court {
+      id
+      name
+      type
+      jurisdiction
+      description
+    }
+    articles {
+      id
+      title
+      slug
+      excerpt
+      status
+      publishedAt
+      createdAt
+    }
+  }
+}
