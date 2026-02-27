@@ -16,13 +16,6 @@ import {
   AlertTitle,
 } from "@/shared/components/ui/alert";
 import { Badge } from "@/shared/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/shared/components/ui/card";
-import { Separator } from "@/shared/components/ui/separator";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 
 const caseTypeLabels: Record<string, string> = {
@@ -56,10 +49,10 @@ export default function LegalCasePage() {
 
   if (fetching) {
     return (
-      <div className="space-y-8">
-        <Skeleton className="h-12 w-3/4" />
-        <Skeleton className="h-64 w-full" />
-        <Skeleton className="h-48 w-full" />
+      <div className="space-y-6">
+        <Skeleton className="h-10 w-3/4" />
+        <Skeleton className="h-40 w-full" />
+        <Skeleton className="h-32 w-full" />
       </div>
     );
   }
@@ -95,211 +88,204 @@ export default function LegalCasePage() {
     : null;
 
   return (
-    <div className="space-y-8">
+    <article className="mx-auto max-w-4xl space-y-8">
       {/* Header */}
-      <div className="space-y-4">
+      <header className="space-y-4 border-b pb-6">
         <div className="flex flex-wrap items-center gap-2">
           {legalCase.caseType && (
-            <Badge variant="secondary" className="text-sm">
-              <Scale className="mr-1 h-4 w-4" />
+            <Badge variant="secondary" className="text-xs">
+              <Scale className="mr-1 h-3.5 w-3.5" />
               {caseTypeLabels[legalCase.caseType] || legalCase.caseType}
             </Badge>
           )}
           {legalCase.jurisdiction && (
-            <Badge variant="outline" className="text-sm">
+            <Badge variant="outline" className="text-xs">
               {jurisdictionLabels[legalCase.jurisdiction] ||
                 legalCase.jurisdiction}
             </Badge>
           )}
         </div>
 
-        <h1 className="font-bold text-4xl tracking-tight">
-          {legalCase.caseName}
-        </h1>
-        <p className="font-mono text-lg text-muted-foreground">
-          {legalCase.caseNumber}
-        </p>
-      </div>
+        <div className="space-y-2">
+          <h1 className="font-semibold text-3xl tracking-tight">
+            {legalCase.caseName}
+          </h1>
+          <p className="font-mono text-muted-foreground text-sm">
+            Expediente: {legalCase.caseNumber}
+          </p>
+        </div>
+      </header>
 
-      {/* Main Info Grid */}
-      <div className="grid gap-6 md:grid-cols-2">
+      {/* Metadata Grid */}
+      <section className="grid gap-6 border-b pb-6 sm:grid-cols-2">
         {/* Fechas */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Calendar className="h-5 w-5" />
-              Fechas Importantes
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {caseDate && (
-              <div>
-                <p className="text-muted-foreground text-sm">Fecha del caso</p>
-                <p className="font-medium">{caseDate}</p>
-              </div>
-            )}
-            {resolutionDate && (
-              <div>
-                <p className="text-muted-foreground text-sm">
-                  Fecha de resolución
-                </p>
-                <p className="font-medium">{resolutionDate}</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        {(caseDate || resolutionDate) && (
+          <div className="space-y-3">
+            <h3 className="flex items-center gap-2 font-semibold text-muted-foreground text-sm uppercase tracking-wide">
+              <Calendar className="h-4 w-4" />
+              Fechas
+            </h3>
+            <dl className="space-y-2 text-sm">
+              {caseDate && (
+                <>
+                  <dt className="font-medium">Fecha del caso</dt>
+                  <dd className="text-muted-foreground">{caseDate}</dd>
+                </>
+              )}
+              {resolutionDate && (
+                <>
+                  <dt className="font-medium">Resolución</dt>
+                  <dd className="text-muted-foreground">{resolutionDate}</dd>
+                </>
+              )}
+            </dl>
+          </div>
+        )}
 
         {/* Tribunal */}
         {legalCase.court && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <Gavel className="h-5 w-5" />
-                Tribunal
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div>
-                <p className="text-muted-foreground text-sm">Nombre</p>
-                <p className="font-medium">{legalCase.court.name}</p>
-              </div>
+          <div className="space-y-3">
+            <h3 className="flex items-center gap-2 font-semibold text-muted-foreground text-sm uppercase tracking-wide">
+              <Gavel className="h-4 w-4" />
+              Tribunal
+            </h3>
+            <dl className="space-y-2 text-sm">
+              <dt className="font-medium">Nombre</dt>
+              <dd className="text-muted-foreground">{legalCase.court.name}</dd>
               {legalCase.court.type && (
-                <div>
-                  <p className="text-muted-foreground text-sm">Tipo</p>
-                  <p className="font-medium">{legalCase.court.type}</p>
-                </div>
+                <>
+                  <dt className="font-medium">Tipo</dt>
+                  <dd className="text-muted-foreground">
+                    {legalCase.court.type}
+                  </dd>
+                </>
               )}
-            </CardContent>
-          </Card>
+              {legalCase.court.jurisdiction && (
+                <>
+                  <dt className="font-medium">Jurisdicción</dt>
+                  <dd className="text-muted-foreground">
+                    {jurisdictionLabels[legalCase.court.jurisdiction] ||
+                      legalCase.court.jurisdiction}
+                  </dd>
+                </>
+              )}
+            </dl>
+          </div>
         )}
-      </div>
+      </section>
 
-      {/* Resumen */}
-      {legalCase.summary && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+      {/* Main Content */}
+      <section className="space-y-6">
+        {/* Resumen */}
+        {legalCase.summary && (
+          <div className="space-y-3">
+            <h2 className="flex items-center gap-2 font-semibold text-lg">
               <FileText className="h-5 w-5" />
               Resumen
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+            </h2>
             <p className="text-muted-foreground leading-relaxed">
               {legalCase.summary}
             </p>
-          </CardContent>
-        </Card>
-      )}
+          </div>
+        )}
 
-      {/* Partes */}
-      {(legalCase.plaintiff || legalCase.defendant || legalCase.parties) && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+        {/* Partes */}
+        {(legalCase.plaintiff || legalCase.defendant || legalCase.parties) && (
+          <div className="space-y-3 border-t pt-6">
+            <h2 className="flex items-center gap-2 font-semibold text-lg">
               <Users className="h-5 w-5" />
-              Partes
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {legalCase.plaintiff && (
-              <div>
-                <p className="font-semibold text-sm">Demandante</p>
-                <p className="text-muted-foreground">{legalCase.plaintiff}</p>
-              </div>
-            )}
-            {legalCase.defendant && (
-              <div>
-                <p className="font-semibold text-sm">Demandado</p>
-                <p className="text-muted-foreground">{legalCase.defendant}</p>
-              </div>
-            )}
-            {legalCase.parties &&
-              !legalCase.plaintiff &&
-              !legalCase.defendant && (
+              Partes Involucradas
+            </h2>
+            <dl className="space-y-3 text-sm">
+              {legalCase.plaintiff && (
                 <div>
-                  <p className="font-semibold text-sm">Partes involucradas</p>
-                  <p className="text-muted-foreground">{legalCase.parties}</p>
+                  <dt className="font-semibold">Demandante</dt>
+                  <dd className="mt-1 text-muted-foreground">
+                    {legalCase.plaintiff}
+                  </dd>
                 </div>
               )}
-          </CardContent>
-        </Card>
-      )}
+              {legalCase.defendant && (
+                <div>
+                  <dt className="font-semibold">Demandado</dt>
+                  <dd className="mt-1 text-muted-foreground">
+                    {legalCase.defendant}
+                  </dd>
+                </div>
+              )}
+              {legalCase.parties &&
+                !legalCase.plaintiff &&
+                !legalCase.defendant && (
+                  <div>
+                    <dt className="font-semibold">Partes</dt>
+                    <dd className="mt-1 text-muted-foreground">
+                      {legalCase.parties}
+                    </dd>
+                  </div>
+                )}
+            </dl>
+          </div>
+        )}
 
-      {/* Jueces */}
-      {legalCase.judges && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+        {/* Jueces */}
+        {legalCase.judges && (
+          <div className="space-y-3 border-t pt-6">
+            <h2 className="flex items-center gap-2 font-semibold text-lg">
               <Scale className="h-5 w-5" />
-              Jueces
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">{legalCase.judges}</p>
-          </CardContent>
-        </Card>
-      )}
+              Magistrados
+            </h2>
+            <p className="text-muted-foreground text-sm">{legalCase.judges}</p>
+          </div>
+        )}
 
-      {/* Veredicto */}
-      {legalCase.verdict && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+        {/* Veredicto */}
+        {legalCase.verdict && (
+          <div className="space-y-3 border-t pt-6">
+            <h2 className="flex items-center gap-2 font-semibold text-lg">
               <Gavel className="h-5 w-5" />
-              Veredicto
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+              Decisión
+            </h2>
             <p className="text-muted-foreground leading-relaxed">
               {legalCase.verdict}
             </p>
-          </CardContent>
-        </Card>
-      )}
+          </div>
+        )}
 
-      {/* Base Legal */}
-      {legalCase.legalBasis && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+        {/* Base Legal */}
+        {legalCase.legalBasis && (
+          <div className="space-y-3 border-t pt-6">
+            <h2 className="flex items-center gap-2 font-semibold text-lg">
               <FileText className="h-5 w-5" />
-              Base Legal
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="whitespace-pre-wrap text-muted-foreground leading-relaxed">
+              Fundamentación Legal
+            </h2>
+            <p className="whitespace-pre-wrap text-muted-foreground text-sm leading-relaxed">
               {legalCase.legalBasis}
             </p>
-          </CardContent>
-        </Card>
-      )}
+          </div>
+        )}
+      </section>
 
       {/* Artículos Relacionados */}
       {legalCase.articles && legalCase.articles.length > 0 && (
-        <>
-          <Separator />
-          <div className="space-y-4">
-            <h2 className="font-semibold text-2xl">Artículos Relacionados</h2>
-            <div className="grid gap-4 sm:grid-cols-2">
-              {legalCase.articles.map((article) => (
-                <Card
-                  key={article.id}
-                  className="transition-shadow hover:shadow-md"
-                >
-                  <CardHeader>
-                    <CardTitle className="text-lg">{article.title}</CardTitle>
-                    {article.excerpt && (
-                      <p className="line-clamp-2 text-muted-foreground text-sm">
-                        {article.excerpt}
-                      </p>
-                    )}
-                  </CardHeader>
-                </Card>
-              ))}
-            </div>
+        <section className="space-y-4 border-t pt-6">
+          <h2 className="font-semibold text-lg">Artículos Relacionados</h2>
+          <div className="divide-y">
+            {legalCase.articles.map((article) => (
+              <div
+                key={article.id}
+                className="py-3 transition-colors hover:bg-muted/30"
+              >
+                <h3 className="font-medium">{article.title}</h3>
+                {article.excerpt && (
+                  <p className="mt-1 line-clamp-2 text-muted-foreground text-sm">
+                    {article.excerpt}
+                  </p>
+                )}
+              </div>
+            ))}
           </div>
-        </>
+        </section>
       )}
-    </div>
+    </article>
   );
 }

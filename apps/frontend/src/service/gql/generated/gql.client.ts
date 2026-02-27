@@ -518,6 +518,10 @@ export type LegalCaseQuery = { __typename?: 'Query', legalCase: { __typename?: '
 export type RecentLegalCasesQueryVariables = Exact<{
   take?: InputMaybe<Scalars['Int']['input']>;
   skip?: InputMaybe<Scalars['Int']['input']>;
+  search?: InputMaybe<Scalars['String']['input']>;
+  jurisdiction?: InputMaybe<Scalars['String']['input']>;
+  caseType?: InputMaybe<Scalars['String']['input']>;
+  courtId?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
@@ -728,8 +732,15 @@ export function useLegalCaseQuery(options?: Omit<Urql.UseQueryArgs<LegalCaseQuer
   return Urql.useQuery<LegalCaseQuery, LegalCaseQueryVariables>({ query: LegalCaseDocument, ...options });
 };
 export const RecentLegalCasesDocument = gql`
-    query RecentLegalCases($take: Int, $skip: Int) {
-  legalCases(take: $take, skip: $skip) {
+    query RecentLegalCases($take: Int, $skip: Int, $search: String, $jurisdiction: String, $caseType: String, $courtId: String) {
+  legalCases(
+    take: $take
+    skip: $skip
+    search: $search
+    jurisdiction: $jurisdiction
+    caseType: $caseType
+    courtId: $courtId
+  ) {
     id
     caseNumber
     caseName

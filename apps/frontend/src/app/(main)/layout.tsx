@@ -1,4 +1,4 @@
-import { Navbar } from "@/shared/components/layout";
+import { Navbar } from "@/shared/components/layout/navbar";
 import { Toaster } from "@/shared/components/ui/sonner";
 import { UserServerProvider } from "@/shared/providers/user-server-provider";
 
@@ -11,7 +11,7 @@ export default async function Layout({ children }: LayoutProps) {
     <UserServerProvider>
       <div className="flex min-h-screen flex-col">
         <Navbar />
-        <main className="container mx-auto max-w-7xl flex-1 px-4 py-8 sm:px-6 lg:px-8">
+        <main className="container mx-auto max-w-7xl flex-1 px-4 py-6 sm:px-6 lg:px-8">
           {children}
         </main>
         <Toaster />
