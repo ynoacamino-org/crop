@@ -101,16 +101,27 @@ export enum CourtType {
 }
 
 export type CreateArticleInput = {
+  /** Array of category IDs */
   categoryIds?: InputMaybe<Array<Scalars['String']['input']>>;
+  /** Full content of the article (Markdown/HTML) */
   content: Scalars['String']['input'];
+  /** Short summary of the article */
   excerpt?: InputMaybe<Scalars['String']['input']>;
+  /** ID of the featured image media */
   featuredImageId?: InputMaybe<Scalars['String']['input']>;
+  /** Array of related legal case IDs */
   legalCaseIds?: InputMaybe<Array<Scalars['String']['input']>>;
-  publishedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  /** Publication date (ISO 8601 datetime string) */
+  publishedAt?: InputMaybe<Scalars['String']['input']>;
+  /** Estimated reading time in minutes */
   readingTimeMin?: InputMaybe<Scalars['Int']['input']>;
+  /** URL-friendly slug */
   slug: Scalars['String']['input'];
+  /** Article status: DRAFT, PUBLISHED, or ARCHIVED */
   status?: InputMaybe<Scalars['String']['input']>;
+  /** Array of tag IDs */
   tagIds?: InputMaybe<Array<Scalars['String']['input']>>;
+  /** Title of the article */
   title: Scalars['String']['input'];
 };
 
@@ -380,16 +391,27 @@ export type Tag = {
 };
 
 export type UpdateArticleInput = {
+  /** Array of category IDs */
   categoryIds?: InputMaybe<Array<Scalars['String']['input']>>;
+  /** Full content of the article */
   content?: InputMaybe<Scalars['String']['input']>;
+  /** Short summary of the article */
   excerpt?: InputMaybe<Scalars['String']['input']>;
+  /** ID of the featured image media */
   featuredImageId?: InputMaybe<Scalars['String']['input']>;
+  /** Array of related legal case IDs */
   legalCaseIds?: InputMaybe<Array<Scalars['String']['input']>>;
-  publishedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  /** Publication date (ISO 8601 datetime string) */
+  publishedAt?: InputMaybe<Scalars['String']['input']>;
+  /** Estimated reading time in minutes */
   readingTimeMin?: InputMaybe<Scalars['Int']['input']>;
+  /** URL-friendly slug */
   slug?: InputMaybe<Scalars['String']['input']>;
+  /** Article status: DRAFT, PUBLISHED, or ARCHIVED */
   status?: InputMaybe<Scalars['String']['input']>;
+  /** Array of tag IDs */
   tagIds?: InputMaybe<Array<Scalars['String']['input']>>;
+  /** Title of the article */
   title?: InputMaybe<Scalars['String']['input']>;
 };
 

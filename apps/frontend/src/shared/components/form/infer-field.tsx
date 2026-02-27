@@ -7,7 +7,9 @@ import type {
 import type { FieldType } from "@/shared/types/form/field";
 import { SUPPORTED_FIELDS } from "@/shared/types/form/supported-fields";
 import { Field, FieldDescription, FieldError, FieldLabel } from "../ui/field";
+import { Input } from "../ui/input";
 import { PasswordInput } from "../ui/password";
+import { Textarea } from "../ui/textarea";
 
 function InferItem<
   FieldName extends string,
@@ -17,20 +19,81 @@ function InferItem<
   props: FieldType<FieldName> &
     ControllerRenderProps<TFieldValues, TName> & {
       fieldState: ControllerFieldState;
+      disabled?: boolean;
     },
 ) {
-  const { type, label, description, fieldState, ...rest } = props;
+  const {
+    type,
+    label,
+    description,
+    fieldState,
+    icon: Icon,
+    placeholder,
+    readonly,
+    disabled,
+    ...rest
+  } = props;
 
   return (
     <Field data-invalid={fieldState.invalid}>
       <FieldLabel>
-        {props.icon && <props.icon className="" size={16} />}
+        {Icon && <Icon className="mr-2" size={16} />}
         {label}
       </FieldLabel>
       {(() => {
         switch (type) {
+          case SUPPORTED_FIELDS.TEXT:
+            return (
+              <Input
+                type="text"
+                placeholder={placeholder}
+                readOnly={readonly}
+                disabled={disabled}
+                {...rest}
+              />
+            );
+
+          case SUPPORTED_FIELDS.EMAIL:
+            return (
+              <Input
+                type="email"
+                placeholder={placeholder}
+                readOnly={readonly}
+                disabled={disabled}
+                {...rest}
+              />
+            );
+
           case SUPPORTED_FIELDS.PASSWORD:
-            return <PasswordInput {...rest} />;
+            return (
+              <PasswordInput
+                placeholder={placeholder}
+                readOnly={readonly}
+                disabled={disabled}
+                {...rest}
+              />
+            );
+
+          case SUPPORTED_FIELDS.TEXTAREA:
+            return (
+              <Textarea
+                placeholder={placeholder}
+                readOnly={readonly}
+                disabled={disabled}
+                {...rest}
+              />
+            );
+
+          case SUPPORTED_FIELDS.NUMBER:
+            return (
+              <Input
+                type="number"
+                placeholder={placeholder}
+                readOnly={readonly}
+                disabled={disabled}
+                {...rest}
+              />
+            );
 
           default:
             return null;

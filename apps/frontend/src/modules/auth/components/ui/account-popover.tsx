@@ -12,8 +12,8 @@ import {
 } from "@/shared/components/ui/popover";
 import { getInitials } from "@/shared/lib/utils";
 import { useUser } from "@/shared/providers/user-provider";
-import { LoginButton } from "./login-button";
-import { LogoutButton } from "./logout-button";
+import { LoginButton } from "../ui/login-button";
+import { LogoutButton } from "../ui/logout-button";
 
 export function AccountPopover() {
   const user = useUser();

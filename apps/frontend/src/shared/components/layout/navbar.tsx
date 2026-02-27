@@ -1,6 +1,6 @@
 "use client";
 
-import { AccountPopover } from "@/modules/auth/components/account-popover";
+import { AccountPopover } from "@/modules/auth/components/ui/account-popover";
 
 export function Navbar() {
   return (
