@@ -1,5 +1,3 @@
-"use client";
-
 import {
   AlertCircle,
   Calendar,
@@ -8,15 +6,20 @@ import {
   Scale,
   Users,
 } from "lucide-react";
-import { useParams } from "next/navigation";
-import { useLegalCaseQuery } from "@/service/gql/generated/gql.client";
+import { notFound } from "next/navigation";
+import {
+  LegalCaseDocument,
+  type LegalCaseQuery,
+  type LegalCaseQueryVariables,
+} from "@/service/gql/generated/gql.node";
+import { getService } from "@/service/service.server";
 import {
   Alert,
   AlertDescription,
   AlertTitle,
 } from "@/shared/components/ui/alert";
 import { Badge } from "@/shared/components/ui/badge";
-import { Skeleton } from "@/shared/components/ui/skeleton";
+import { formatLongDate } from "@/shared/lib/format-date";
 
 const caseTypeLabels: Record<string, string> = {
   CIVIL: "Civil",
@@ -37,27 +40,20 @@ const jurisdictionLabels: Record<string, string> = {
   INTERNACIONAL: "Internacional",
 };
 
-export default function LegalCasePage() {
-  const params = useParams();
-  const id = params?.id as string;
+interface LegalCasePageProps {
+  params: Promise<{ id: string }>;
+}
 
-  const [result] = useLegalCaseQuery({
-    variables: { id },
-  });
+export default async function LegalCasePage({ params }: LegalCasePageProps) {
+  const { id } = await params;
+  const { gql } = await getService();
 
-  const { data, fetching, error } = result;
+  const result = await gql.query<LegalCaseQuery, LegalCaseQueryVariables>(
+    LegalCaseDocument,
+    { id },
+  );
 
-  if (fetching) {
-    return (
-      <div className="space-y-6">
-        <Skeleton className="h-10 w-3/4" />
-        <Skeleton className="h-40 w-full" />
-        <Skeleton className="h-32 w-full" />
-      </div>
-    );
-  }
-
-  if (error || !data?.legalCase) {
+  if (result.error || !result.data?.legalCase) {
     return (
       <Alert variant="destructive">
         <AlertCircle className="h-4 w-4" />
@@ -69,26 +65,17 @@ export default function LegalCasePage() {
     );
   }
 
-  const legalCase = data.legalCase;
+  const legalCase = result.data.legalCase;
 
-  const caseDate = legalCase.caseDate
-    ? legalCase.caseDate.toLocaleDateString("es-ES", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      })
-    : null;
+  if (!legalCase) {
+    notFound();
+  }
 
-  const resolutionDate = legalCase.resolutionDate
-    ? legalCase.resolutionDate.toLocaleDateString("es-ES", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      })
-    : null;
+  const caseDate = formatLongDate(legalCase.caseDate);
+  const resolutionDate = formatLongDate(legalCase.resolutionDate);
 
   return (
-    <article className="mx-auto max-w-4xl space-y-8">
+    <article className="mx-auto max-w-7xl space-y-8">
       {/* Header */}
       <header className="space-y-4 border-b pb-6">
         <div className="flex flex-wrap items-center gap-2">

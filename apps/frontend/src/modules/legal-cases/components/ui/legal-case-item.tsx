@@ -3,6 +3,7 @@
 import { Calendar, Gavel, MapPin } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/shared/components/ui/badge";
+import { formatMediumDate } from "@/shared/lib/format-date";
 
 interface LegalCaseItemProps {
   id: string;
@@ -47,13 +48,7 @@ export function LegalCaseItem({
   caseDate,
   court,
 }: LegalCaseItemProps) {
-  const formattedDate = caseDate
-    ? caseDate.toLocaleDateString("es-ES", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-      })
-    : null;
+  const formattedDate = formatMediumDate(caseDate);
 
   return (
     <article className="group border-b py-4 transition-colors hover:bg-muted/30">

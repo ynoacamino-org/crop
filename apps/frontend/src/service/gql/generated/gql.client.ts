@@ -507,6 +507,21 @@ export type DeleteUserMutationVariables = Exact<{
 
 export type DeleteUserMutation = { __typename?: 'Mutation', deleteUser: { __typename?: 'User', id: string, email: string } };
 
+export type ArticleQueryVariables = Exact<{
+  slug: Scalars['String']['input'];
+}>;
+
+
+export type ArticleQuery = { __typename?: 'Query', article: { __typename?: 'Article', id: string, title: string, slug: string, content: string, excerpt?: string | null, publishedAt?: Date | null, readingTimeMin?: number | null, views: number, author: { __typename?: 'User', id: string, name?: string | null, image?: string | null }, featuredImage?: { __typename?: 'Media', id: string, url: string, alt?: string | null } | null, categories: Array<{ __typename?: 'Category', id: string, name: string, slug: string }>, tags: Array<{ __typename?: 'Tag', id: string, name: string, slug: string }>, legalCases: Array<{ __typename?: 'LegalCase', id: string, caseNumber: string, caseName: string, jurisdiction?: Jurisdiction | null, caseType?: CaseType | null }> } };
+
+export type RecentArticlesQueryVariables = Exact<{
+  take?: InputMaybe<Scalars['Int']['input']>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type RecentArticlesQuery = { __typename?: 'Query', articles: Array<{ __typename?: 'Article', id: string, title: string, slug: string, excerpt?: string | null, publishedAt?: Date | null, readingTimeMin?: number | null, views: number, author: { __typename?: 'User', id: string, name?: string | null, image?: string | null }, featuredImage?: { __typename?: 'Media', id: string, url: string, alt?: string | null } | null, categories: Array<{ __typename?: 'Category', id: string, name: string, slug: string }>, tags: Array<{ __typename?: 'Tag', id: string, name: string, slug: string }> }> };
+
 export type LegalCaseQueryVariables = Exact<{
   id?: InputMaybe<Scalars['String']['input']>;
   caseNumber?: InputMaybe<Scalars['String']['input']>;
@@ -688,6 +703,88 @@ export const DeleteUserDocument = gql`
 
 export function useDeleteUserMutation() {
   return Urql.useMutation<DeleteUserMutation, DeleteUserMutationVariables>(DeleteUserDocument);
+};
+export const ArticleDocument = gql`
+    query Article($slug: String!) {
+  article(slug: $slug) {
+    id
+    title
+    slug
+    content
+    excerpt
+    publishedAt
+    readingTimeMin
+    views
+    author {
+      id
+      name
+      image
+    }
+    featuredImage {
+      id
+      url
+      alt
+    }
+    categories {
+      id
+      name
+      slug
+    }
+    tags {
+      id
+      name
+      slug
+    }
+    legalCases {
+      id
+      caseNumber
+      caseName
+      jurisdiction
+      caseType
+    }
+  }
+}
+    `;
+
+export function useArticleQuery(options: Omit<Urql.UseQueryArgs<ArticleQueryVariables>, 'query'>) {
+  return Urql.useQuery<ArticleQuery, ArticleQueryVariables>({ query: ArticleDocument, ...options });
+};
+export const RecentArticlesDocument = gql`
+    query RecentArticles($take: Int, $skip: Int) {
+  articles(take: $take, skip: $skip, status: "PUBLISHED") {
+    id
+    title
+    slug
+    excerpt
+    publishedAt
+    readingTimeMin
+    views
+    author {
+      id
+      name
+      image
+    }
+    featuredImage {
+      id
+      url
+      alt
+    }
+    categories {
+      id
+      name
+      slug
+    }
+    tags {
+      id
+      name
+      slug
+    }
+  }
+}
+    `;
+
+export function useRecentArticlesQuery(options?: Omit<Urql.UseQueryArgs<RecentArticlesQueryVariables>, 'query'>) {
+  return Urql.useQuery<RecentArticlesQuery, RecentArticlesQueryVariables>({ query: RecentArticlesDocument, ...options });
 };
 export const LegalCaseDocument = gql`
     query LegalCase($id: String, $caseNumber: String) {

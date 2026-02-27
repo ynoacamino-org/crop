@@ -1,131 +1,133 @@
-// import { format } from "date-fns";
-// import { es } from "date-fns/locale";
-// import { Calendar, Eye, User } from "lucide-react";
-// import Link from "next/link";
-// import { Badge } from "@/shared/components/ui/badge";
-// import {
-//   Card,
-//   CardContent,
-//   CardDescription,
-//   CardFooter,
-//   CardHeader,
-//   CardTitle,
-// } from "@/shared/components/ui/card";
+"use client";
 
-// interface ArticleCardProps {
-//   id: string;
-//   title: string;
-//   slug: string;
-//   excerpt?: string;
-//   author: {
-//     name: string;
-//   };
-//   status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
-//   publishedAt?: Date | null;
-//   views: number;
-//   readingTimeMin: number;
-//   categories?: Array<{ name: string }>;
-//   featuredImage?: {
-//     url: string;
-//     alt?: string;
-//   } | null;
-// }
+import { Calendar, Clock, Eye, User } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { Badge } from "@/shared/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/shared/components/ui/card";
+import { formatLongDate } from "@/shared/lib/format-date";
 
-// const statusLabels = {
-//   DRAFT: "Borrador",
-//   PUBLISHED: "Publicado",
-//   ARCHIVED: "Archivado",
-// };
+interface ArticleCardProps {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt?: string | null;
+  publishedAt?: Date | null;
+  readingTimeMin?: number | null;
+  views?: number;
+  author: {
+    name?: string | null;
+    image?: string | null;
+  };
+  featuredImage?: {
+    url: string;
+    alt?: string | null;
+  } | null;
+  categories?: Array<{
+    name: string;
+    slug: string;
+  }>;
+}
 
-// const statusColors = {
-//   DRAFT: "default",
-//   PUBLISHED: "success",
-//   ARCHIVED: "secondary",
-// } as const;
+export function ArticleCard({
+  slug,
+  title,
+  excerpt,
+  publishedAt,
+  readingTimeMin,
+  views = 0,
+  author,
+  featuredImage,
+  categories = [],
+}: ArticleCardProps) {
+  const formattedDate = formatLongDate(publishedAt);
 
-// export function ArticleCard({
-//   id,
-//   title,
-//   slug,
-//   excerpt,
-//   author,
-//   status,
-//   publishedAt,
-//   views,
-//   readingTimeMin,
-//   categories,
-//   featuredImage,
-// }: ArticleCardProps) {
-//   return (
-//     <Card className="flex h-full flex-col overflow-hidden transition-shadow hover:shadow-lg">
-//       {featuredImage && (
-//         <div className="relative h-48 w-full overflow-hidden bg-muted">
-//           <img
-//             src={featuredImage.url}
-//             alt={featuredImage.alt || title}
-//             className="h-full w-full object-cover transition-transform hover:scale-105"
-//           />
-//         </div>
-//       )}
+  return (
+    <Link href={`/articulos/${slug}`}>
+      <Card className="group h-full overflow-hidden pt-0 transition-all hover:border-primary/50">
+        {featuredImage ? (
+          <div className="relative aspect-video w-full overflow-hidden bg-muted">
+            <Image
+              src={featuredImage.url}
+              alt={featuredImage.alt || title}
+              fill
+              className="object-cover transition-transform duration-700 group-hover:scale-103"
+            />
+          </div>
+        ) : (
+          <div className="aspect-video w-full bg-muted" />
+        )}
 
-//       <CardHeader>
-//         <div className="mb-2 flex items-center gap-2">
-//           <Badge variant={statusColors[status]}>{statusLabels[status]}</Badge>
-//           {categories && categories.length > 0 && (
-//             <>
-//               {categories.slice(0, 2).map((category, index) => (
-//                 <Badge key={index} variant="outline">
-//                   {category.name}
-//                 </Badge>
-//               ))}
-//             </>
-//           )}
-//         </div>
+        <CardHeader>
+          {/* Categories */}
+          {categories.length > 0 && (
+            <div className="mb-2 flex flex-wrap items-center gap-2">
+              {categories.slice(0, 2).map((category) => (
+                <Badge
+                  key={category.slug}
+                  variant="secondary"
+                  className="text-xs"
+                >
+                  {category.name}
+                </Badge>
+              ))}
+            </div>
+          )}
 
-//         <Link href={`/articles/${slug}`} className="hover:underline">
-//           <CardTitle className="line-clamp-2">{title}</CardTitle>
-//         </Link>
+          <CardTitle className="line-clamp-2 transition-colors group-hover:text-primary">
+            {title}
+          </CardTitle>
 
-//         {excerpt && (
-//           <CardDescription className="line-clamp-3">{excerpt}</CardDescription>
-//         )}
-//       </CardHeader>
+          {excerpt && (
+            <CardDescription className="line-clamp-2 text-sm">
+              {excerpt}
+            </CardDescription>
+          )}
+        </CardHeader>
 
-//       <CardContent className="flex-1">
-//         <div className="flex flex-col gap-2 text-muted-foreground text-sm">
-//           <div className="flex items-center gap-2">
-//             <User className="size-4" />
-//             <span>{author.name}</span>
-//           </div>
+        <CardContent>
+          {/* Metadata */}
+          <div className="flex flex-wrap items-center gap-4 text-muted-foreground text-xs">
+            {/* Author */}
+            <div className="flex items-center gap-1.5">
+              <User className="h-3.5 w-3.5" />
+              <span>{author.name || "Anónimo"}</span>
+            </div>
 
-//           {publishedAt && (
-//             <div className="flex items-center gap-2">
-//               <Calendar className="size-4" />
-//               <span>
-//                 {format(new Date(publishedAt), "d 'de' MMMM, yyyy", {
-//                   locale: es,
-//                 })}
-//               </span>
-//             </div>
-//           )}
+            {/* Reading Time */}
+            {readingTimeMin && (
+              <div className="flex items-center gap-1.5">
+                <Clock className="h-3.5 w-3.5" />
+                <span>{readingTimeMin} min</span>
+              </div>
+            )}
 
-//           <div className="flex items-center gap-2">
-//             <Eye className="size-4" />
-//             <span>
-//               {views} vistas · {readingTimeMin} min de lectura
-//             </span>
-//           </div>
-//         </div>
-//       </CardContent>
+            {/* Views */}
+            {views > 0 && (
+              <div className="flex items-center gap-1.5">
+                <Eye className="h-3.5 w-3.5" />
+                <span>{views.toLocaleString()}</span>
+              </div>
+            )}
+          </div>
+        </CardContent>
 
-//       <CardFooter className="gap-2">
-//         <Link
-//           href={`/articles/${slug}`}
-//           className="text-primary text-sm hover:underline"
-//         >
-//           Leer artículo →
-//         </Link>
-//       </CardFooter>
-//     </Card>
-//   );
-// }
+        <CardFooter>
+          {formattedDate && (
+            <div className="flex items-center gap-1.5 text-muted-foreground text-xs">
+              <Calendar className="h-3.5 w-3.5" />
+              <span>{formattedDate}</span>
+            </div>
+          )}
+        </CardFooter>
+      </Card>
+    </Link>
+  );
+}

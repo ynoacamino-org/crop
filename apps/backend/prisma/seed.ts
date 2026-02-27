@@ -3,6 +3,109 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { DATABASE_URL } from "../src/config/env";
 import { PrismaClient } from "./client/client";
 
+/**
+ * Genera contenido legal en formato JSON de Lexical
+ */
+function generateLexicalContent(caseData: {
+	caseNumber: string;
+	parties: string;
+	legalBasis?: string | null;
+}): string {
+	const paragraphs = (count: number) => {
+		return Array.from({ length: count }, () => ({
+			type: "paragraph",
+			children: [
+				{
+					type: "text",
+					text: faker.lorem.paragraph(),
+				},
+			],
+		}));
+	};
+
+	const heading = (level: 1 | 2 | 3, text: string) => ({
+		type: "heading",
+		tag: `h${level}`,
+		children: [
+			{
+				type: "text",
+				text,
+			},
+		],
+	});
+
+	const content = {
+		root: {
+			type: "root",
+			format: "",
+			indent: 0,
+			version: 1,
+			children: [
+				heading(2, "Introducción"),
+				...paragraphs(2),
+				heading(2, "Antecedentes del caso"),
+				{
+					type: "paragraph",
+					children: [
+						{
+							type: "text",
+							format: 1, // bold
+							text: `Expediente N°: ${caseData.caseNumber}`,
+						},
+					],
+				},
+				{
+					type: "paragraph",
+					children: [
+						{
+							type: "text",
+							format: 1, // bold
+							text: "Partes:",
+						},
+					],
+				},
+				{
+					type: "paragraph",
+					children: [
+						{
+							type: "text",
+							text: caseData.parties,
+						},
+					],
+				},
+				...paragraphs(2),
+				heading(2, "Hechos relevantes"),
+				...paragraphs(3),
+				heading(2, "Fundamentos jurídicos"),
+				heading(3, "Base legal aplicada"),
+				{
+					type: "paragraph",
+					children: [
+						{
+							type: "text",
+							text: caseData.legalBasis || faker.lorem.sentence(),
+						},
+					],
+				},
+				...paragraphs(3),
+				heading(3, "Análisis del tribunal"),
+				...paragraphs(2),
+				heading(2, "Ratio decidendi"),
+				...paragraphs(1),
+				heading(2, "Fallo"),
+				...paragraphs(1),
+				heading(2, "Implicancias y conclusiones"),
+				...paragraphs(2),
+				heading(2, "Comentarios finales"),
+				...paragraphs(1),
+			],
+			direction: null,
+		},
+	};
+
+	return JSON.stringify(content);
+}
+
 const adapter = new PrismaPg({
 	connectionString: DATABASE_URL,
 });
@@ -360,56 +463,11 @@ async function main() {
 				.replace(/-+/g, "-")
 				.substring(0, 90) + `-${i}`;
 
-		const content = `## Introducción
-
-${faker.lorem.paragraphs(2)}
-
-## Antecedentes del caso
-
-**Expediente N°:** ${mainCase.caseNumber}
-**Partes:**
-${mainCase.parties}
-
-${faker.lorem.paragraphs(2)}
-
-## Hechos relevantes
-
-${faker.lorem.paragraphs(3)}
-
-## Fundamentos jurídicos
-
-### Base legal aplicada
-
-${mainCase.legalBasis}
-
-${faker.lorem.paragraphs(3)}
-
-### Análisis del tribunal
-
-${faker.lorem.paragraphs(2)}
-
-## Ratio decidendi
-
-${faker.lorem.paragraph()}
-
-## Fallo
-
-**Decisión:** ${mainCase.verdict}
-
-${faker.lorem.paragraph()}
-
-## Implicancias y conclusiones
-
-${faker.lorem.paragraphs(2)}
-
-## Comentarios finales
-
-${faker.lorem.paragraph()}
-
----
-
-*Fecha de resolución: ${mainCase.resolutionDate?.toLocaleDateString("es-ES") || "N/A"}*
-*Tribunal: ${createdCourts.find((c) => c.id === mainCase.courtId)?.name || "N/A"}*`;
+		const content = generateLexicalContent({
+			caseNumber: mainCase.caseNumber,
+			parties: mainCase.parties || "",
+			legalBasis: mainCase.legalBasis,
+		});
 
 		const status = faker.helpers.weightedArrayElement([
 			{ weight: 7, value: "PUBLISHED" as const },

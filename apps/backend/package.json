@@ -10,7 +10,7 @@
     "gen-schema": "bun run scripts/gen-schema.ts",
     "codegen": "bun run gen-schema && graphql-codegen --config codegen.ts && bun scripts/post-codegen.ts",
     "seed": "bun run prisma/seed.ts",
-    "check-types": "tsc --noEmit"
+    "check-types": "bun --bun tsc --noEmit"
   },
   "devDependencies": {
     "@biomejs/biome": "2.3.10",
