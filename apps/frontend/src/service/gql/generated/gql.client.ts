@@ -57,6 +57,13 @@ export enum ArticleStatus {
   Published = 'PUBLISHED'
 }
 
+/** Paginated list of Article */
+export type ArticlesConnection = {
+  __typename?: 'ArticlesConnection';
+  items: Array<Article>;
+  pageInfo: PaginationInfo;
+};
+
 export enum CaseType {
   Administrativo = 'ADMINISTRATIVO',
   Ambiental = 'AMBIENTAL',
@@ -188,6 +195,13 @@ export type LegalCase = {
   verdict?: Maybe<Scalars['String']['output']>;
 };
 
+/** Paginated list of LegalCase */
+export type LegalCasesConnection = {
+  __typename?: 'LegalCasesConnection';
+  items: Array<LegalCase>;
+  pageInfo: PaginationInfo;
+};
+
 export type Media = {
   __typename?: 'Media';
   alt?: Maybe<Scalars['String']['output']>;
@@ -291,15 +305,26 @@ export type MutationUpdateUserArgs = {
   input: AdminUpdateUserInput;
 };
 
+/** Information about pagination */
+export type PaginationInfo = {
+  __typename?: 'PaginationInfo';
+  /** Whether there is a next page */
+  hasNextPage: Scalars['Boolean']['output'];
+  /** Whether there is a previous page */
+  hasPreviousPage: Scalars['Boolean']['output'];
+  /** Total number of items */
+  totalCount: Scalars['Int']['output'];
+};
+
 export type Query = {
   __typename?: 'Query';
   article: Article;
-  articles: Array<Article>;
+  articles: ArticlesConnection;
   categories: Array<Category>;
   court: Court;
   courts: Array<Court>;
   legalCase: LegalCase;
-  legalCases: Array<LegalCase>;
+  legalCases: LegalCasesConnection;
   me?: Maybe<User>;
   media?: Maybe<Media>;
   medias: Array<Media>;
@@ -520,7 +545,7 @@ export type RecentArticlesQueryVariables = Exact<{
 }>;
 
 
-export type RecentArticlesQuery = { __typename?: 'Query', articles: Array<{ __typename?: 'Article', id: string, title: string, slug: string, excerpt?: string | null, publishedAt?: Date | null, readingTimeMin?: number | null, views: number, author: { __typename?: 'User', id: string, name?: string | null, image?: string | null }, featuredImage?: { __typename?: 'Media', id: string, url: string, alt?: string | null } | null, categories: Array<{ __typename?: 'Category', id: string, name: string, slug: string }>, tags: Array<{ __typename?: 'Tag', id: string, name: string, slug: string }> }> };
+export type RecentArticlesQuery = { __typename?: 'Query', articles: { __typename?: 'ArticlesConnection', items: Array<{ __typename?: 'Article', id: string, title: string, slug: string, excerpt?: string | null, publishedAt?: Date | null, readingTimeMin?: number | null, views: number, author: { __typename?: 'User', id: string, name?: string | null, image?: string | null }, featuredImage?: { __typename?: 'Media', id: string, url: string, alt?: string | null } | null, categories: Array<{ __typename?: 'Category', id: string, name: string, slug: string }>, tags: Array<{ __typename?: 'Tag', id: string, name: string, slug: string }> }>, pageInfo: { __typename?: 'PaginationInfo', totalCount: number, hasNextPage: boolean, hasPreviousPage: boolean } } };
 
 export type LegalCaseQueryVariables = Exact<{
   id?: InputMaybe<Scalars['String']['input']>;
@@ -540,7 +565,7 @@ export type RecentLegalCasesQueryVariables = Exact<{
 }>;
 
 
-export type RecentLegalCasesQuery = { __typename?: 'Query', legalCases: Array<{ __typename?: 'LegalCase', id: string, caseNumber: string, caseName: string, summary?: string | null, parties?: string | null, plaintiff?: string | null, defendant?: string | null, jurisdiction?: Jurisdiction | null, caseType?: CaseType | null, caseDate?: Date | null, resolutionDate?: Date | null, createdAt: Date, court?: { __typename?: 'Court', id: string, name: string, type?: CourtType | null, jurisdiction?: Jurisdiction | null } | null }> };
+export type RecentLegalCasesQuery = { __typename?: 'Query', legalCases: { __typename?: 'LegalCasesConnection', items: Array<{ __typename?: 'LegalCase', id: string, caseNumber: string, caseName: string, summary?: string | null, parties?: string | null, plaintiff?: string | null, defendant?: string | null, jurisdiction?: Jurisdiction | null, caseType?: CaseType | null, caseDate?: Date | null, resolutionDate?: Date | null, createdAt: Date, court?: { __typename?: 'Court', id: string, name: string, type?: CourtType | null, jurisdiction?: Jurisdiction | null } | null }>, pageInfo: { __typename?: 'PaginationInfo', totalCount: number, hasNextPage: boolean, hasPreviousPage: boolean } } };
 
 export type MediasQueryVariables = Exact<{
   take?: InputMaybe<Scalars['Int']['input']>;
@@ -752,32 +777,39 @@ export function useArticleQuery(options: Omit<Urql.UseQueryArgs<ArticleQueryVari
 export const RecentArticlesDocument = gql`
     query RecentArticles($take: Int, $skip: Int) {
   articles(take: $take, skip: $skip, status: "PUBLISHED") {
-    id
-    title
-    slug
-    excerpt
-    publishedAt
-    readingTimeMin
-    views
-    author {
+    items {
       id
-      name
-      image
-    }
-    featuredImage {
-      id
-      url
-      alt
-    }
-    categories {
-      id
-      name
+      title
       slug
+      excerpt
+      publishedAt
+      readingTimeMin
+      views
+      author {
+        id
+        name
+        image
+      }
+      featuredImage {
+        id
+        url
+        alt
+      }
+      categories {
+        id
+        name
+        slug
+      }
+      tags {
+        id
+        name
+        slug
+      }
     }
-    tags {
-      id
-      name
-      slug
+    pageInfo {
+      totalCount
+      hasNextPage
+      hasPreviousPage
     }
   }
 }
@@ -838,23 +870,30 @@ export const RecentLegalCasesDocument = gql`
     caseType: $caseType
     courtId: $courtId
   ) {
-    id
-    caseNumber
-    caseName
-    summary
-    parties
-    plaintiff
-    defendant
-    jurisdiction
-    caseType
-    caseDate
-    resolutionDate
-    createdAt
-    court {
+    items {
       id
-      name
-      type
+      caseNumber
+      caseName
+      summary
+      parties
+      plaintiff
+      defendant
       jurisdiction
+      caseType
+      caseDate
+      resolutionDate
+      createdAt
+      court {
+        id
+        name
+        type
+        jurisdiction
+      }
+    }
+    pageInfo {
+      totalCount
+      hasNextPage
+      hasPreviousPage
     }
   }
 }

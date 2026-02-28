@@ -44,9 +44,9 @@ export function RecentCasesList({ initialTake = 10 }: RecentCasesListProps) {
     setPage((prev) => Math.max(1, prev - 1));
   }, []);
 
-  const hasResults = data?.legalCases && data.legalCases.length > 0;
-  const hasMore = data?.legalCases && data.legalCases.length === itemsPerPage;
-  const hasPrev = page > 1;
+  const hasResults = data?.legalCases?.items && data.legalCases.items.length > 0;
+  const hasMore = data?.legalCases?.pageInfo?.hasNextPage ?? false;
+  const hasPrev = data?.legalCases?.pageInfo?.hasPreviousPage ?? false;
 
   return (
     <div className="space-y-6">
@@ -94,8 +94,8 @@ export function RecentCasesList({ initialTake = 10 }: RecentCasesListProps) {
           <div className="space-y-0">
             <div className="mb-4 flex items-baseline justify-between border-b pb-3">
               <h2 className="font-medium text-muted-foreground text-sm uppercase tracking-wide">
-                {data.legalCases.length}{" "}
-                {data.legalCases.length === 1
+                {data.legalCases.items.length}{" "}
+                {data.legalCases.items.length === 1
                   ? "caso encontrado"
                   : "casos encontrados"}
                 {search && (
@@ -105,7 +105,7 @@ export function RecentCasesList({ initialTake = 10 }: RecentCasesListProps) {
             </div>
 
             <div className="divide-y">
-              {data.legalCases.map((legalCase) => (
+              {data.legalCases.items.map((legalCase) => (
                 <LegalCaseItem
                   key={legalCase.id}
                   id={legalCase.id}

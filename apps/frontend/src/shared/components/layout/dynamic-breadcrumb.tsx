@@ -11,19 +11,12 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/shared/components/ui/breadcrumb";
+import { ROUTE_LABELS } from "@/shared/config/constants";
 
 interface BreadcrumbSegment {
   label: string;
   href?: string;
 }
-
-const routeLabels: Record<string, string> = {
-  articulos: "Artículos",
-  casos: "Casos Legales",
-  admin: "Administración",
-  perfil: "Perfil",
-  configuracion: "Configuración",
-};
 
 function getSegmentLabel(
   segment: string,
@@ -33,8 +26,8 @@ function getSegmentLabel(
   const isLast = index === segments.length - 1;
 
   // Si ya está en el diccionario, usar ese label
-  if (routeLabels[segment]) {
-    return routeLabels[segment];
+  if (ROUTE_LABELS[segment]) {
+    return ROUTE_LABELS[segment];
   }
 
   // Si es el último segmento y es una página de detalle

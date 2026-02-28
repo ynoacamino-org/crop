@@ -1,13 +1,20 @@
-import type { CaseType, Jurisdiction } from "@prisma/client/client";
+import type { CaseType, Jurisdiction, Prisma } from "@prisma/client/client";
 import { handlePrismaError } from "@prisma/lib/error-handler";
 import { builder } from "@/builder";
 import { db } from "@/lib/db";
 import { NotFoundError } from "@/lib/errors/gql";
 import { sanitize } from "@/lib/utils/sanitize";
+import {
+  calculatePaginationInfo,
+  createPaginatedResponse,
+} from "@/schema/pagination/model";
+
+// Create paginated type for legal cases
+const LegalCasesConnection = createPaginatedResponse("LegalCases", "LegalCase");
 
 builder.queryField("legalCases", (t) =>
-  t.prismaField({
-    type: ["LegalCase"],
+  t.field({
+    type: LegalCasesConnection,
     args: {
       take: t.arg.int({
         required: false,
@@ -36,36 +43,71 @@ builder.queryField("legalCases", (t) =>
         description: "Search term for case name, case number, or parties",
       }),
     },
-    resolve: async (query, _root, rawArgs) => {
+    resolve: async (_root, rawArgs) => {
       const args = sanitize(rawArgs);
 
+      const whereClause = {
+        ...(args.jurisdiction && {
+          jurisdiction: args.jurisdiction as Jurisdiction,
+        }),
+        ...(args.caseType && {
+          caseType: args.caseType as CaseType,
+        }),
+        ...(args.courtId && {
+          courtId: args.courtId,
+        }),
+        ...(args.search && {
+          OR: [
+            {
+              caseName: {
+                contains: args.search,
+                mode: "insensitive" as Prisma.QueryMode,
+              },
+            },
+            {
+              caseNumber: {
+                contains: args.search,
+                mode: "insensitive" as Prisma.QueryMode,
+              },
+            },
+            {
+              parties: {
+                contains: args.search,
+                mode: "insensitive" as Prisma.QueryMode,
+              },
+            },
+          ],
+        }),
+      };
+
       try {
-        return await db.legalCase.findMany({
-          ...query,
-          take: args.take,
-          skip: args.skip,
-          where: {
-            ...(args.jurisdiction && {
-              jurisdiction: args.jurisdiction as Jurisdiction,
-            }),
-            ...(args.caseType && {
-              caseType: args.caseType as CaseType,
-            }),
-            ...(args.courtId && {
-              courtId: args.courtId,
-            }),
-            ...(args.search && {
-              OR: [
-                { caseName: { contains: args.search, mode: "insensitive" } },
-                { caseNumber: { contains: args.search, mode: "insensitive" } },
-                { parties: { contains: args.search, mode: "insensitive" } },
-              ],
-            }),
-          },
-          orderBy: {
-            caseDate: "desc",
-          },
+        const [items, totalCount] = await Promise.all([
+          db.legalCase.findMany({
+            take: args.take,
+            skip: args.skip,
+            where: whereClause,
+            orderBy: {
+              caseDate: "desc",
+            },
+            include: {
+              court: true,
+            },
+          }),
+          db.legalCase.count({
+            where: whereClause,
+          }),
+        ]);
+
+        const pageInfo = calculatePaginationInfo({
+          totalCount,
+          take: args.take ?? 10,
+          skip: args.skip ?? 0,
         });
+
+        return {
+          items,
+          pageInfo,
+        };
       } catch (error) {
         handlePrismaError(error);
       }

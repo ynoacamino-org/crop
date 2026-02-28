@@ -14,23 +14,30 @@ query RecentLegalCases(
     caseType: $caseType
     courtId: $courtId
   ) {
-    id
-    caseNumber
-    caseName
-    summary
-    parties
-    plaintiff
-    defendant
-    jurisdiction
-    caseType
-    caseDate
-    resolutionDate
-    createdAt
-    court {
+    items {
       id
-      name
-      type
+      caseNumber
+      caseName
+      summary
+      parties
+      plaintiff
+      defendant
       jurisdiction
+      caseType
+      caseDate
+      resolutionDate
+      createdAt
+      court {
+        id
+        name
+        type
+        jurisdiction
+      }
+    }
+    pageInfo {
+      totalCount
+      hasNextPage
+      hasPreviousPage
     }
   }
 }

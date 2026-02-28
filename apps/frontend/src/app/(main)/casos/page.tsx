@@ -6,6 +6,7 @@ import {
   type RecentLegalCasesQueryVariables,
 } from "@/service/gql/generated/gql.node";
 import { getService } from "@/service/service.server";
+import { PaginatedListWrapper } from "@/shared/components/paginated-list-wrapper";
 import { Badge } from "@/shared/components/ui/badge";
 import {
   Card,
@@ -14,38 +15,39 @@ import {
   CardHeader,
   CardTitle,
 } from "@/shared/components/ui/card";
+import {
+  CASE_TYPE_LABELS,
+  JURISDICTION_LABELS,
+} from "@/shared/config/constants";
 import { formatLongDate } from "@/shared/lib/format-date";
 
-const caseTypeLabels: Record<string, string> = {
-  CIVIL: "Civil",
-  PENAL: "Penal",
-  CONSTITUCIONAL: "Constitucional",
-  LABORAL: "Laboral",
-  ADMINISTRATIVO: "Administrativo",
-  COMERCIAL: "Comercial",
-  FAMILIA: "Familia",
-  TRIBUTARIO: "Tributario",
-  AMBIENTAL: "Ambiental",
-};
+const DEFAULT_LIMIT = 12;
 
-const jurisdictionLabels: Record<string, string> = {
-  NACIONAL: "Nacional",
-  REGIONAL: "Regional",
-  LOCAL: "Local",
-  INTERNACIONAL: "Internacional",
-};
+interface LegalCasesPageProps {
+  searchParams: Promise<{ limit?: string; offset?: string }>;
+}
 
-export default async function LegalCasesPage() {
+export default async function LegalCasesPage({
+  searchParams,
+}: LegalCasesPageProps) {
+  const params = await searchParams;
+  const limit = Number(params.limit) || DEFAULT_LIMIT;
+  const offset = Number(params.offset) || 0;
+
   const { gql } = await getService();
 
   const result = await gql.query<
     RecentLegalCasesQuery,
     RecentLegalCasesQueryVariables
   >(RecentLegalCasesDocument, {
-    take: 20,
+    take: limit,
+    skip: offset,
   });
 
-  const legalCases = result.data?.legalCases || [];
+  const casesData = result.data?.legalCases;
+  const legalCases = casesData?.items || [];
+  const pageInfo = casesData?.pageInfo;
+  const totalItems = pageInfo?.totalCount || 0;
 
   return (
     <div className="space-y-8">
@@ -60,16 +62,22 @@ export default async function LegalCasesPage() {
         </p>
       </div>
 
-      {legalCases.length === 0 ? (
-        <Card>
-          <CardContent className="flex min-h-100 flex-col items-center justify-center gap-2 py-8">
-            <Search className="size-12 text-muted-foreground" />
-            <p className="text-muted-foreground">
-              No se encontraron casos legales
-            </p>
-          </CardContent>
-        </Card>
-      ) : (
+      {/* Search / Filters */}
+      {/* TODO: Add search and filter components */}
+
+      <PaginatedListWrapper
+        totalItems={totalItems}
+        emptyState={
+          <Card>
+            <CardContent className="flex min-h-100 flex-col items-center justify-center gap-2 py-8">
+              <Search className="size-12 text-muted-foreground" />
+              <p className="text-muted-foreground">
+                No se encontraron casos legales
+              </p>
+            </CardContent>
+          </Card>
+        }
+      >
         <div className="grid gap-6 md:grid-cols-2">
           {legalCases.map((legalCase) => (
             <Link
@@ -82,13 +90,13 @@ export default async function LegalCasesPage() {
                   <div className="mb-2 flex flex-wrap items-center gap-2">
                     {legalCase.caseType && (
                       <Badge variant="secondary">
-                        {caseTypeLabels[legalCase.caseType] ||
+                        {CASE_TYPE_LABELS[legalCase.caseType] ||
                           legalCase.caseType}
                       </Badge>
                     )}
                     {legalCase.jurisdiction && (
                       <Badge variant="outline">
-                        {jurisdictionLabels[legalCase.jurisdiction] ||
+                        {JURISDICTION_LABELS[legalCase.jurisdiction] ||
                           legalCase.jurisdiction}
                       </Badge>
                     )}
@@ -138,7 +146,7 @@ export default async function LegalCasesPage() {
             </Link>
           ))}
         </div>
-      )}
+      </PaginatedListWrapper>
     </div>
   );
 }

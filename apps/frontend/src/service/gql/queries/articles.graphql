@@ -1,31 +1,38 @@
 query RecentArticles($take: Int, $skip: Int) {
   articles(take: $take, skip: $skip, status: "PUBLISHED") {
-    id
-    title
-    slug
-    excerpt
-    publishedAt
-    readingTimeMin
-    views
-    author {
+    items {
       id
-      name
-      image
-    }
-    featuredImage {
-      id
-      url
-      alt
-    }
-    categories {
-      id
-      name
+      title
       slug
+      excerpt
+      publishedAt
+      readingTimeMin
+      views
+      author {
+        id
+        name
+        image
+      }
+      featuredImage {
+        id
+        url
+        alt
+      }
+      categories {
+        id
+        name
+        slug
+      }
+      tags {
+        id
+        name
+        slug
+      }
     }
-    tags {
-      id
-      name
-      slug
+    pageInfo {
+      totalCount
+      hasNextPage
+      hasPreviousPage
     }
   }
 }

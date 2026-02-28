@@ -1,13 +1,20 @@
-import type { ArticleStatus } from "@prisma/client/client";
+import type { ArticleStatus, Prisma } from "@prisma/client/client";
 import { handlePrismaError } from "@prisma/lib/error-handler";
 import { builder } from "@/builder";
 import { db } from "@/lib/db";
 import { NotFoundError } from "@/lib/errors/gql";
 import { sanitize } from "@/lib/utils/sanitize";
+import {
+  calculatePaginationInfo,
+  createPaginatedResponse,
+} from "@/schema/pagination/model";
+
+// Create paginated type for articles
+const ArticlesConnection = createPaginatedResponse("Articles", "Article");
 
 builder.queryField("articles", (t) =>
-  t.prismaField({
-    type: ["Article"],
+  t.field({
+    type: ArticlesConnection,
     args: {
       take: t.arg.int({
         required: false,
@@ -40,47 +47,85 @@ builder.queryField("articles", (t) =>
         description: "Filter by tag ID",
       }),
     },
-    resolve: async (query, _root, rawArgs) => {
+    resolve: async (_root, rawArgs) => {
       const args = sanitize(rawArgs);
 
+      const whereClause = {
+        ...(args.status && {
+          status: args.status as ArticleStatus,
+        }),
+        ...(args.authorId && {
+          authorId: args.authorId,
+        }),
+        ...(args.categoryId && {
+          categories: {
+            some: {
+              id: args.categoryId,
+            },
+          },
+        }),
+        ...(args.tagId && {
+          tags: {
+            some: {
+              id: args.tagId,
+            },
+          },
+        }),
+        ...(args.search && {
+          OR: [
+            {
+              title: {
+                contains: args.search,
+                mode: "insensitive" as Prisma.QueryMode,
+              },
+            },
+            {
+              content: {
+                contains: args.search,
+                mode: "insensitive" as Prisma.QueryMode,
+              },
+            },
+            {
+              excerpt: {
+                contains: args.search,
+                mode: "insensitive" as Prisma.QueryMode,
+              },
+            },
+          ],
+        }),
+      };
+
       try {
-        return await db.article.findMany({
-          ...query,
-          take: args.take,
-          skip: args.skip,
-          where: {
-            ...(args.status && {
-              status: args.status as ArticleStatus,
-            }),
-            ...(args.authorId && {
-              authorId: args.authorId,
-            }),
-            ...(args.categoryId && {
-              categories: {
-                some: {
-                  id: args.categoryId,
-                },
-              },
-            }),
-            ...(args.tagId && {
-              tags: {
-                some: {
-                  id: args.tagId,
-                },
-              },
-            }),
-            ...(args.search && {
-              OR: [
-                { title: { contains: args.search, mode: "insensitive" } },
-                { content: { contains: args.search, mode: "insensitive" } },
-                { excerpt: { contains: args.search, mode: "insensitive" } },
-              ],
-            }),
-          },
-          orderBy: {
-            publishedAt: "desc",
-          },
+        const [items, totalCount] = await Promise.all([
+          db.article.findMany({
+            take: args.take,
+            skip: args.skip,
+            where: whereClause,
+            orderBy: {
+              publishedAt: "desc",
+            },
+            include: {
+              author: true,
+              featuredImage: true,
+              categories: true,
+              tags: true,
+            },
+          }),
+          db.article.count({
+            where: whereClause,
+          }),
+        ]);
+
+        const pageInfo = calculatePaginationInfo({
+          totalCount,
+          take: args.take ?? 10,
+          skip: args.skip ?? 0,
         });
+
+        return {
+          items,
+          pageInfo,
+        };
       } catch (error) {
         handlePrismaError(error);
       }

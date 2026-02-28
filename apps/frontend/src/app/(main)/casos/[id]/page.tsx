@@ -19,26 +19,11 @@ import {
   AlertTitle,
 } from "@/shared/components/ui/alert";
 import { Badge } from "@/shared/components/ui/badge";
+import {
+  CASE_TYPE_LABELS,
+  JURISDICTION_LABELS,
+} from "@/shared/config/constants";
 import { formatLongDate } from "@/shared/lib/format-date";
-
-const caseTypeLabels: Record<string, string> = {
-  CIVIL: "Civil",
-  PENAL: "Penal",
-  CONSTITUCIONAL: "Constitucional",
-  LABORAL: "Laboral",
-  ADMINISTRATIVO: "Administrativo",
-  COMERCIAL: "Comercial",
-  FAMILIA: "Familia",
-  TRIBUTARIO: "Tributario",
-  AMBIENTAL: "Ambiental",
-};
-
-const jurisdictionLabels: Record<string, string> = {
-  NACIONAL: "Nacional",
-  REGIONAL: "Regional",
-  LOCAL: "Local",
-  INTERNACIONAL: "Internacional",
-};
 
 interface LegalCasePageProps {
   params: Promise<{ id: string }>;
@@ -82,12 +67,12 @@ export default async function LegalCasePage({ params }: LegalCasePageProps) {
           {legalCase.caseType && (
             <Badge variant="secondary" className="text-xs">
               <Scale className="mr-1 h-3.5 w-3.5" />
-              {caseTypeLabels[legalCase.caseType] || legalCase.caseType}
+              {CASE_TYPE_LABELS[legalCase.caseType] || legalCase.caseType}
             </Badge>
           )}
           {legalCase.jurisdiction && (
             <Badge variant="outline" className="text-xs">
-              {jurisdictionLabels[legalCase.jurisdiction] ||
+              {JURISDICTION_LABELS[legalCase.jurisdiction] ||
                 legalCase.jurisdiction}
             </Badge>
           )}
@@ -151,7 +136,7 @@ export default async function LegalCasePage({ params }: LegalCasePageProps) {
                 <>
                   <dt className="font-medium">Jurisdicción</dt>
                   <dd className="text-muted-foreground">
-                    {jurisdictionLabels[legalCase.court.jurisdiction] ||
+                    {JURISDICTION_LABELS[legalCase.court.jurisdiction] ||
                       legalCase.court.jurisdiction}
                   </dd>
                 </>

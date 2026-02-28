@@ -7,6 +7,7 @@ import {
   type RecentArticlesQueryVariables,
 } from "@/service/gql/generated/gql.node";
 import { getService } from "@/service/service.server";
+import { PaginatedListWrapper } from "@/shared/components/paginated-list-wrapper";
 import {
   Avatar,
   AvatarFallback,
@@ -23,17 +24,33 @@ import {
 } from "@/shared/components/ui/card";
 import { formatLongDate } from "@/shared/lib/format-date";
 
-export default async function ArticlesPage() {
+const DEFAULT_LIMIT = 12;
+
+interface ArticlesPageProps {
+  searchParams: Promise<{ limit?: string; offset?: string }>;
+}
+
+export default async function ArticlesPage({
+  searchParams,
+}: ArticlesPageProps) {
+  const params = await searchParams;
+  const limit = Number(params.limit) || DEFAULT_LIMIT;
+  const offset = Number(params.offset) || 0;
+
   const { gql } = await getService();
 
   const result = await gql.query<
     RecentArticlesQuery,
     RecentArticlesQueryVariables
   >(RecentArticlesDocument, {
-    take: 20,
+    take: limit,
+    skip: offset,
   });
 
-  const articles = result.data?.articles || [];
+  const articlesData = result.data?.articles;
+  const articles = articlesData?.items || [];
+  const pageInfo = articlesData?.pageInfo;
+  const totalItems = pageInfo?.totalCount || 0;
 
   return (
     <div className="space-y-8">
@@ -48,17 +65,19 @@ export default async function ArticlesPage() {
         </p>
       </div>
 
-      {/* Articles Grid */}
-      {articles.length === 0 ? (
-        <Card>
-          <CardContent className="flex min-h-100 flex-col items-center justify-center gap-2 py-8">
-            <Search className="size-12 text-muted-foreground" />
-            <p className="text-muted-foreground">
-              No se encontraron artículos publicados
-            </p>
-          </CardContent>
-        </Card>
-      ) : (
+      <PaginatedListWrapper
+        totalItems={totalItems}
+        emptyState={
+          <Card>
+            <CardContent className="flex min-h-100 flex-col items-center justify-center gap-2 py-8">
+              <Search className="size-12 text-muted-foreground" />
+              <p className="text-muted-foreground">
+                No se encontraron artículos publicados
+              </p>
+            </CardContent>
+          </Card>
+        }
+      >
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {articles.map((article) => (
             <Link
@@ -66,9 +85,9 @@ export default async function ArticlesPage() {
               href={`/articulos/${article.slug}`}
               className="group"
             >
-              <Card className="h-full overflow-hidden transition-all hover:border-primary hover:shadow-md">
+              <Card className="h-full overflow-hidden pt-0 transition-all hover:border-primary hover:shadow-md">
                 {/* Featured Image */}
-                {article.featuredImage && (
+                {article.featuredImage ? (
                   <div className="relative aspect-video w-full overflow-hidden bg-muted">
                     <Image
                       src={article.featuredImage.url}
@@ -77,6 +96,8 @@ export default async function ArticlesPage() {
                       className="object-cover transition-transform group-hover:scale-105"
                     />
                   </div>
+                ) : (
+                  <div className="aspect-video w-full bg-muted" />
                 )}
 
                 <CardHeader>
@@ -139,7 +160,7 @@ export default async function ArticlesPage() {
             </Link>
           ))}
         </div>
-      )}
+      </PaginatedListWrapper>
     </div>
   );
 }

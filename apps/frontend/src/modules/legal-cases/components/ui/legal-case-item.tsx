@@ -3,6 +3,10 @@
 import { Calendar, Gavel, MapPin } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/shared/components/ui/badge";
+import {
+  CASE_TYPE_LABELS,
+  JURISDICTION_LABELS,
+} from "@/shared/config/constants";
 import { formatMediumDate } from "@/shared/lib/format-date";
 
 interface LegalCaseItemProps {
@@ -18,25 +22,6 @@ interface LegalCaseItemProps {
     jurisdiction?: string | null;
   } | null;
 }
-
-const caseTypeLabels: Record<string, string> = {
-  CIVIL: "Civil",
-  PENAL: "Penal",
-  CONSTITUCIONAL: "Constitucional",
-  LABORAL: "Laboral",
-  ADMINISTRATIVO: "Administrativo",
-  COMERCIAL: "Comercial",
-  FAMILIA: "Familia",
-  TRIBUTARIO: "Tributario",
-  AMBIENTAL: "Ambiental",
-};
-
-const jurisdictionLabels: Record<string, string> = {
-  NACIONAL: "Nacional",
-  REGIONAL: "Regional",
-  LOCAL: "Local",
-  INTERNACIONAL: "Internacional",
-};
 
 export function LegalCaseItem({
   id,
@@ -70,12 +55,12 @@ export function LegalCaseItem({
           <div className="flex flex-wrap items-center gap-1.5">
             {caseType && (
               <Badge variant="secondary" className="text-xs">
-                {caseTypeLabels[caseType] || caseType}
+                {CASE_TYPE_LABELS[caseType] || caseType}
               </Badge>
             )}
             {jurisdiction && (
               <Badge variant="outline" className="text-xs">
-                {jurisdictionLabels[jurisdiction] || jurisdiction}
+                {JURISDICTION_LABELS[jurisdiction] || jurisdiction}
               </Badge>
             )}
           </div>
@@ -106,7 +91,7 @@ export function LegalCaseItem({
             <div className="flex items-center gap-1.5">
               <MapPin className="h-3.5 w-3.5" />
               <span>
-                {jurisdictionLabels[court.jurisdiction] || court.jurisdiction}
+                {JURISDICTION_LABELS[court.jurisdiction] || court.jurisdiction}
               </span>
             </div>
           )}

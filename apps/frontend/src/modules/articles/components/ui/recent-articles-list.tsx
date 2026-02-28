@@ -48,7 +48,7 @@ export function RecentArticlesList({ take = 8 }: RecentArticlesListProps) {
     );
   }
 
-  if (!data?.articles || data.articles.length === 0) {
+  if (!data?.articles?.items || data.articles.items.length === 0) {
     return (
       <Alert>
         <AlertCircle className="h-4 w-4" />
@@ -62,7 +62,7 @@ export function RecentArticlesList({ take = 8 }: RecentArticlesListProps) {
 
   return (
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {data.articles.map((article) => (
+      {data.articles.items.map((article) => (
         <ArticleCard
           key={article.id}
           id={article.id}
