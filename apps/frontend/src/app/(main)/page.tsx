@@ -31,7 +31,7 @@ export default function HomePage() {
           <FileText className="h-5 w-5 text-primary" />
           <h2 className="font-semibold text-2xl">Artículos Recientes</h2>
         </div>
-        <RecentArticlesList take={8} />
+        <RecentArticlesList take={6} />
       </section>
 
       {/* Legal Cases Section */}
@@ -40,7 +40,7 @@ export default function HomePage() {
           <Scale className="h-5 w-5 text-primary" />
           <h2 className="font-semibold text-2xl">Casos Legales Recientes</h2>
         </div>
-        <RecentCasesList initialTake={8} />
+        <RecentCasesList take={4} />
       </section>
     </div>
   );

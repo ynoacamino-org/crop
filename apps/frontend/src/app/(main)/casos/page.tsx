@@ -1,5 +1,5 @@
-import { Calendar, FileText, Scale, Search } from "lucide-react";
-import Link from "next/link";
+import { Scale, Search } from "lucide-react";
+import { LegalCaseCard } from "@/modules/legal-cases/components/ui/legal-case-card";
 import {
   RecentLegalCasesDocument,
   type RecentLegalCasesQuery,
@@ -7,19 +7,7 @@ import {
 } from "@/service/gql/generated/gql.node";
 import { getService } from "@/service/service.server";
 import { PaginatedListWrapper } from "@/shared/components/paginated-list-wrapper";
-import { Badge } from "@/shared/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/shared/components/ui/card";
-import {
-  CASE_TYPE_LABELS,
-  JURISDICTION_LABELS,
-} from "@/shared/config/constants";
-import { formatLongDate } from "@/shared/lib/format-date";
+import { Card, CardContent } from "@/shared/components/ui/card";
 
 const DEFAULT_LIMIT = 12;
 
@@ -78,72 +66,21 @@ export default async function LegalCasesPage({
           </Card>
         }
       >
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {legalCases.map((legalCase) => (
-            <Link
+            <LegalCaseCard
               key={legalCase.id}
-              href={`/casos/${legalCase.id}`}
-              className="group"
-            >
-              <Card className="h-full transition-all hover:border-primary hover:shadow-md">
-                <CardHeader>
-                  <div className="mb-2 flex flex-wrap items-center gap-2">
-                    {legalCase.caseType && (
-                      <Badge variant="secondary">
-                        {CASE_TYPE_LABELS[legalCase.caseType] ||
-                          legalCase.caseType}
-                      </Badge>
-                    )}
-                    {legalCase.jurisdiction && (
-                      <Badge variant="outline">
-                        {JURISDICTION_LABELS[legalCase.jurisdiction] ||
-                          legalCase.jurisdiction}
-                      </Badge>
-                    )}
-                  </div>
-                  <CardTitle className="line-clamp-2 group-hover:text-primary">
-                    {legalCase.caseName}
-                  </CardTitle>
-                  <CardDescription className="flex items-center gap-1 font-mono text-xs">
-                    <FileText className="size-3" />
-                    {legalCase.caseNumber}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="line-clamp-3 text-muted-foreground text-sm">
-                    {legalCase.summary}
-                  </p>
-
-                  <div className="space-y-2 border-t pt-4 text-muted-foreground text-sm">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="size-4" />
-                      <span>Fecha: {formatLongDate(legalCase.caseDate)}</span>
-                    </div>
-
-                    {legalCase.court && (
-                      <div className="flex items-center gap-2">
-                        <Scale className="size-4" />
-                        <span>{legalCase.court.name}</span>
-                      </div>
-                    )}
-
-                    {legalCase.plaintiff && (
-                      <div className="text-xs">
-                        <span className="font-medium">Demandante:</span>{" "}
-                        {legalCase.plaintiff}
-                      </div>
-                    )}
-
-                    {legalCase.defendant && (
-                      <div className="text-xs">
-                        <span className="font-medium">Demandado:</span>{" "}
-                        {legalCase.defendant}
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
+              id={legalCase.id}
+              caseNumber={legalCase.caseNumber}
+              caseName={legalCase.caseName}
+              summary={legalCase.summary}
+              jurisdiction={legalCase.jurisdiction}
+              caseType={legalCase.caseType}
+              caseDate={legalCase.caseDate}
+              plaintiff={legalCase.plaintiff}
+              defendant={legalCase.defendant}
+              court={legalCase.court}
+            />
           ))}
         </div>
       </PaginatedListWrapper>

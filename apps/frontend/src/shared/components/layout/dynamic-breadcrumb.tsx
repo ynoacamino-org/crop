@@ -1,6 +1,5 @@
 "use client";
 
-import { Home } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -25,12 +24,10 @@ function getSegmentLabel(
 ): string {
   const isLast = index === segments.length - 1;
 
-  // Si ya está en el diccionario, usar ese label
   if (ROUTE_LABELS[segment]) {
     return ROUTE_LABELS[segment];
   }
 
-  // Si es el último segmento y es una página de detalle
   if (isLast && segments.length > 1) {
     const parentSegment = segments[index - 1];
     if (parentSegment === "articulos") {
@@ -41,7 +38,6 @@ function getSegmentLabel(
     }
   }
 
-  // Capitalizar primera letra y reemplazar guiones por espacios
   return segment
     .split("-")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
@@ -51,7 +47,6 @@ function getSegmentLabel(
 export function DynamicBreadcrumb() {
   const pathname = usePathname();
 
-  // No mostrar breadcrumb en la página principal
   if (pathname === "/") {
     return null;
   }
@@ -59,16 +54,13 @@ export function DynamicBreadcrumb() {
   const segments = pathname.split("/").filter(Boolean);
   const breadcrumbs: BreadcrumbSegment[] = [{ label: "Inicio", href: "/" }];
 
-  // Construir breadcrumbs basados en los segmentos
   let currentPath = "";
   for (let i = 0; i < segments.length; i++) {
     const segment = segments[i];
     currentPath += `/${segment}`;
 
-    // Si es el último segmento (página actual), no incluir href
     const isLast = i === segments.length - 1;
 
-    // Obtener label del segmento
     const label = getSegmentLabel(segment, segments, i);
 
     breadcrumbs.push({
@@ -89,7 +81,6 @@ export function DynamicBreadcrumb() {
               {crumb.href ? (
                 <BreadcrumbLink asChild>
                   <Link href={crumb.href} className="inline-flex items-center">
-                    {index === 0 && <Home className="mr-1.5 size-4" />}
                     {crumb.label}
                   </Link>
                 </BreadcrumbLink>
