@@ -1,11 +1,9 @@
 import { faker } from "@faker-js/faker";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { DATABASE_URL } from "../src/config/env";
+import { DATABASE_URL } from "@/config/env";
 import { PrismaClient } from "./client/client";
+import { storage } from "@/lib/storage";
 
-/**
- * Genera contenido legal en formato JSON de Lexical
- */
 function generateLexicalContent(caseData: {
 	caseNumber: string;
 	parties: string;
@@ -104,6 +102,50 @@ function generateLexicalContent(caseData: {
 	};
 
 	return JSON.stringify(content);
+}
+
+/**
+ * Descarga una imagen desde una URL y la sube a MinIO
+ */
+async function downloadAndUploadImage(seed: string, width = 1200, height = 800): Promise<{
+	url: string;
+	objectKey: string;
+	size: number;
+}> {
+	const imageUrl = `https://picsum.photos/seed/${seed}/${width}/${height}`;
+	
+	try {
+		const response = await fetch(imageUrl);
+		if (!response.ok) {
+			throw new Error(`Failed to download image: ${response.statusText}`);
+		}
+
+		const buffer = await response.arrayBuffer();
+		const uint8Array = new Uint8Array(buffer);
+		
+		// Generar un key único para MinIO
+		const objectKey = storage.generateKey("seed-images");
+		
+		// Subir a MinIO
+		const url = await storage.upload({
+			key: objectKey,
+			body: uint8Array,
+			contentType: "image/jpeg",
+			metadata: {
+				source: "seed-script",
+				originalUrl: imageUrl,
+			},
+		});
+
+		return {
+			url,
+			objectKey,
+			size: buffer.byteLength,
+		};
+	} catch (error) {
+		console.error(`Error downloading/uploading image from ${imageUrl}:`, error);
+		throw error;
+	}
 }
 
 const adapter = new PrismaPg({
@@ -387,29 +429,41 @@ async function main() {
 
 	// Create media
 	await prisma.media.deleteMany({});
-	console.log("🖼️  Creating media...");
+	console.log("🖼️  Creating media (uploading to MinIO)...");
 
 	const mediaItems = [];
 	for (let i = 0; i < 30; i++) {
 		const randomUser = users[Math.floor(Math.random() * users.length)];
 		if (!randomUser) continue;
 
-		mediaItems.push({
-			objectKey: faker.string.uuid(),
-			url: faker.image.url({ width: 1200, height: 800 }),
-			alt: faker.lorem.sentence(),
-			type: "IMAGE" as const,
-			size: faker.number.int({ min: 100000, max: 5000000 }),
-			mimeType: "image/jpeg",
-			filename: `legal-image-${i}.jpg`,
-			uploadedBy: randomUser.id,
-		});
+		console.log(`  Uploading image ${i + 1}/30...`);
+		
+		// Generar un seed único para cada imagen
+		const imageSeed = faker.string.alphanumeric(10);
+		
+		try {
+			const { url, objectKey, size } = await downloadAndUploadImage(imageSeed);
+			
+			mediaItems.push({
+				objectKey,
+				url,
+				alt: faker.lorem.sentence(),
+				type: "IMAGE" as const,
+				size,
+				mimeType: "image/jpeg",
+				filename: `legal-image-${i}.jpg`,
+				uploadedBy: randomUser.id,
+			});
+		} catch (error) {
+			console.error(`  ❌ Failed to upload image ${i + 1}:`, error);
+			// Continue with next image even if one fails
+		}
 	}
 
 	const createdMedia = await prisma.media.createManyAndReturn({
 		data: mediaItems,
 	});
-	console.log(`✅ Created ${createdMedia.length} media items`);
+	console.log(`✅ Created ${createdMedia.length} media items in MinIO`);
 
 	// Create articles
 	await prisma.article.deleteMany({});

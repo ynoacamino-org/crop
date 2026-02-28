@@ -18,3 +18,14 @@ services:
         paths:
           - /api
         strip_path: false
+
+  - name: storage
+    url: http://host.docker.internal:9000
+    routes:
+      - name: storage-route
+        preserve_host: false
+        paths:
+          - /crop-media
+        strip_path: false
+        request_buffering: false
+        response_buffering: false

@@ -50,7 +50,7 @@ services:
     entrypoint: >
       sh -c "
       mc alias set minio http://storage:9000 $${MINIO_ROOT_USER} $${MINIO_ROOT_PASSWORD};
-      mc mb minio/crop;
-      mc anonymous set-json /data/policy.json minio/crop;
+      mc mb minio/crop-media;
+      mc anonymous set-json /data/policy.json minio/crop-media;
       exit 0;
       "

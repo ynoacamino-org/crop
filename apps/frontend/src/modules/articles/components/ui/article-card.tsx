@@ -1,7 +1,6 @@
 "use client";
 
 import { Calendar, Clock, Eye, User } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/shared/components/ui/badge";
 import {
@@ -54,10 +53,9 @@ export function ArticleCard({
       <Card className="group h-full overflow-hidden pt-0 transition-all hover:border-primary/50">
         {featuredImage ? (
           <div className="relative aspect-video w-full overflow-hidden bg-muted">
-            <Image
+            <img
               src={featuredImage.url}
               alt={featuredImage.alt || title}
-              fill
               className="object-cover transition-transform duration-700 group-hover:scale-103"
             />
           </div>

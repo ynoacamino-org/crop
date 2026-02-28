@@ -7,7 +7,6 @@ import {
   Tag,
   User,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
@@ -128,12 +127,10 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
       {/* Featured Image */}
       {article.featuredImage && (
         <div className="relative aspect-video w-full overflow-hidden rounded-lg">
-          <Image
+          <img
             src={article.featuredImage.url}
             alt={article.featuredImage.alt || article.title}
-            fill
             className="object-cover"
-            priority
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
           />
         </div>
