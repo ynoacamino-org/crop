@@ -21,7 +21,7 @@ import {
   $isMediaNode,
   type MediaPayload,
   type MediaType,
-} from "../nodes/media-node";
+} from "../nodes/media-node.client";
 
 export type InsertMediaPayload = Readonly<MediaPayload>;
 

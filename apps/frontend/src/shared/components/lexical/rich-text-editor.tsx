@@ -16,7 +16,7 @@ import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import type { EditorThemeClasses } from "lexical";
 
-import { MediaNode } from "./nodes/media-node";
+import { MediaNode } from "./nodes/media-node.client";
 import DragDropPastePlugin from "./plugins/drag-drop-paste-plugin";
 import { MediaPlugin } from "./plugins/media-plugin";
 import { ToolbarPlugin } from "./plugins/toolbar-plugin";

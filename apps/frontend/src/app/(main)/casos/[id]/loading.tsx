@@ -2,7 +2,7 @@ import { Skeleton } from "@/shared/components/ui/skeleton";
 
 export default function LegalCaseLoading() {
   return (
-    <div className="mx-auto max-w-7xl space-y-8">
+    <div className="mx-auto max-w-6xl space-y-8">
       {/* Header skeleton */}
       <div className="space-y-4 border-b pb-6">
         <div className="flex gap-2">

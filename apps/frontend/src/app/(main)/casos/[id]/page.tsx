@@ -75,7 +75,7 @@ export default async function LegalCasePage({ params }: LegalCasePageProps) {
   const resolutionDate = formatLongDate(legalCase.resolutionDate);
 
   return (
-    <article className="mx-auto max-w-7xl space-y-8">
+    <article className="mx-auto max-w-6xl space-y-8">
       {/* Header */}
       <header className="space-y-4 border-b pb-6">
         <div className="flex flex-wrap items-center gap-2">
