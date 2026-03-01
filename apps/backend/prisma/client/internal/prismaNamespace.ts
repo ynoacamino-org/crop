@@ -393,7 +393,8 @@ export const ModelName = {
   LegalCase: 'LegalCase',
   Court: 'Court',
   Category: 'Category',
-  Tag: 'Tag'
+  Tag: 'Tag',
+  CaseType: 'CaseType'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -409,7 +410,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "account" | "verification" | "media" | "article" | "legalCase" | "court" | "category" | "tag"
+    modelProps: "user" | "session" | "account" | "verification" | "media" | "article" | "legalCase" | "court" | "category" | "tag" | "caseType"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1153,6 +1154,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    CaseType: {
+      payload: Prisma.$CaseTypePayload<ExtArgs>
+      fields: Prisma.CaseTypeFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CaseTypeFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CaseTypePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CaseTypeFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CaseTypePayload>
+        }
+        findFirst: {
+          args: Prisma.CaseTypeFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CaseTypePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CaseTypeFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CaseTypePayload>
+        }
+        findMany: {
+          args: Prisma.CaseTypeFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CaseTypePayload>[]
+        }
+        create: {
+          args: Prisma.CaseTypeCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CaseTypePayload>
+        }
+        createMany: {
+          args: Prisma.CaseTypeCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CaseTypeCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CaseTypePayload>[]
+        }
+        delete: {
+          args: Prisma.CaseTypeDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CaseTypePayload>
+        }
+        update: {
+          args: Prisma.CaseTypeUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CaseTypePayload>
+        }
+        deleteMany: {
+          args: Prisma.CaseTypeDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CaseTypeUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CaseTypeUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CaseTypePayload>[]
+        }
+        upsert: {
+          args: Prisma.CaseTypeUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CaseTypePayload>
+        }
+        aggregate: {
+          args: Prisma.CaseTypeAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCaseType>
+        }
+        groupBy: {
+          args: Prisma.CaseTypeGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CaseTypeGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CaseTypeCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CaseTypeCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1305,8 +1380,8 @@ export const LegalCaseScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   courtId: 'courtId',
-  jurisdiction: 'jurisdiction',
-  caseType: 'caseType'
+  caseTypeId: 'caseTypeId',
+  jurisdiction: 'jurisdiction'
 } as const
 
 export type LegalCaseScalarFieldEnum = (typeof LegalCaseScalarFieldEnum)[keyof typeof LegalCaseScalarFieldEnum]
@@ -1346,6 +1421,22 @@ export const TagScalarFieldEnum = {
 } as const
 
 export type TagScalarFieldEnum = (typeof TagScalarFieldEnum)[keyof typeof TagScalarFieldEnum]
+
+
+export const CaseTypeScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  slug: 'slug',
+  description: 'description',
+  color: 'color',
+  icon: 'icon',
+  order: 'order',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CaseTypeScalarFieldEnum = (typeof CaseTypeScalarFieldEnum)[keyof typeof CaseTypeScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1484,20 +1575,6 @@ export type ListEnumJurisdictionFieldRefInput<$PrismaModel> = FieldRefInputType<
 
 
 /**
- * Reference to a field of type 'CaseType'
- */
-export type EnumCaseTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CaseType'>
-    
-
-
-/**
- * Reference to a field of type 'CaseType[]'
- */
-export type ListEnumCaseTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CaseType[]'>
-    
-
-
-/**
  * Reference to a field of type 'CourtType'
  */
 export type EnumCourtTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CourtType'>
@@ -1629,6 +1706,7 @@ export type GlobalOmitConfig = {
   court?: Prisma.CourtOmit
   category?: Prisma.CategoryOmit
   tag?: Prisma.TagOmit
+  caseType?: Prisma.CaseTypeOmit
 }
 
 /* Types for Logging */

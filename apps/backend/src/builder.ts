@@ -13,6 +13,7 @@ export const builder = new SchemaBuilder<{
   AuthScopes: {
     public: boolean;
     authenticated: boolean;
+    collaborator: boolean;
     admin: boolean;
   };
   PrismaTypes: PrismaTypes;
@@ -39,6 +40,8 @@ export const builder = new SchemaBuilder<{
   authScopes: (context) => ({
     public: true,
     authenticated: !!context.user,
+    collaborator:
+      context.user?.role === "COLLABORATOR" || context.user?.role === "ADMIN",
     admin: context.user?.role === "ADMIN",
   }),
 });

@@ -64,17 +64,27 @@ export type ArticlesConnection = {
   pageInfo: PaginationInfo;
 };
 
-export enum CaseType {
-  Administrativo = 'ADMINISTRATIVO',
-  Ambiental = 'AMBIENTAL',
-  Civil = 'CIVIL',
-  Comercial = 'COMERCIAL',
-  Constitucional = 'CONSTITUCIONAL',
-  Familia = 'FAMILIA',
-  Laboral = 'LABORAL',
-  Penal = 'PENAL',
-  Tributario = 'TRIBUTARIO'
-}
+export type CaseType = {
+  __typename?: 'CaseType';
+  active: Scalars['Boolean']['output'];
+  color?: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  icon?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  legalCases: Array<LegalCase>;
+  name: Scalars['String']['output'];
+  order?: Maybe<Scalars['Int']['output']>;
+  slug: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+/** Paginated list of CaseType */
+export type CaseTypesConnection = {
+  __typename?: 'CaseTypesConnection';
+  items: Array<CaseType>;
+  pageInfo: PaginationInfo;
+};
 
 export type Category = {
   __typename?: 'Category';
@@ -132,11 +142,28 @@ export type CreateArticleInput = {
   title: Scalars['String']['input'];
 };
 
+export type CreateCaseTypeInput = {
+  /** Whether this case type is active */
+  active?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Hex color code for UI display (e.g., '#3B82F6') */
+  color?: InputMaybe<Scalars['String']['input']>;
+  /** Optional description of the case type */
+  description?: InputMaybe<Scalars['String']['input']>;
+  /** Icon name for UI display (e.g., 'FileText') */
+  icon?: InputMaybe<Scalars['String']['input']>;
+  /** Case type name (e.g., 'Civil', 'Penal') */
+  name: Scalars['String']['input'];
+  /** Display order (lower numbers appear first) */
+  order?: InputMaybe<Scalars['Int']['input']>;
+  /** URL-friendly slug (e.g., 'civil', 'penal') */
+  slug: Scalars['String']['input'];
+};
+
 export type CreateLegalCaseInput = {
   caseDate?: InputMaybe<Scalars['DateTime']['input']>;
   caseName: Scalars['String']['input'];
   caseNumber: Scalars['String']['input'];
-  caseType?: InputMaybe<Scalars['String']['input']>;
+  caseTypeId?: InputMaybe<Scalars['String']['input']>;
   courtId?: InputMaybe<Scalars['String']['input']>;
   defendant?: InputMaybe<Scalars['String']['input']>;
   judges?: InputMaybe<Scalars['String']['input']>;
@@ -228,14 +255,17 @@ export enum MediaType {
 export type Mutation = {
   __typename?: 'Mutation';
   createArticle: Article;
+  createCaseType: CaseType;
   createLegalCase: LegalCase;
   createMedia: Media;
   deleteArticle: Article;
+  deleteCaseType: CaseType;
   deleteLegalCase: LegalCase;
   deleteMe: User;
   deleteMedia: Media;
   deleteUser: User;
   updateArticle: Article;
+  updateCaseType: CaseType;
   updateLegalCase: LegalCase;
   updateMe: User;
   updateMedia: Media;
@@ -245,6 +275,11 @@ export type Mutation = {
 
 export type MutationCreateArticleArgs = {
   input: CreateArticleInput;
+};
+
+
+export type MutationCreateCaseTypeArgs = {
+  input: CreateCaseTypeInput;
 };
 
 
@@ -259,6 +294,11 @@ export type MutationCreateMediaArgs = {
 
 
 export type MutationDeleteArticleArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type MutationDeleteCaseTypeArgs = {
   id: Scalars['String']['input'];
 };
 
@@ -281,6 +321,12 @@ export type MutationDeleteUserArgs = {
 export type MutationUpdateArticleArgs = {
   id: Scalars['String']['input'];
   input: UpdateArticleInput;
+};
+
+
+export type MutationUpdateCaseTypeArgs = {
+  id: Scalars['String']['input'];
+  input: UpdateCaseTypeInput;
 };
 
 
@@ -321,6 +367,10 @@ export type Query = {
   __typename?: 'Query';
   article: Article;
   articles: ArticlesConnection;
+  /** Get a single case type by ID or slug */
+  caseType?: Maybe<CaseType>;
+  /** Get all case types with pagination */
+  caseTypes: CaseTypesConnection;
   categories: Array<Category>;
   court: Court;
   courts: Array<Court>;
@@ -330,7 +380,7 @@ export type Query = {
   media?: Maybe<Media>;
   medias: Array<Media>;
   tags: Array<Tag>;
-  users: Array<User>;
+  users: UsersConnection;
 };
 
 
@@ -347,6 +397,19 @@ export type QueryArticlesArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   status?: InputMaybe<Scalars['String']['input']>;
   tagId?: InputMaybe<Scalars['String']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryCaseTypeArgs = {
+  id?: InputMaybe<Scalars['String']['input']>;
+  slug?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryCaseTypesArgs = {
+  includeInactive?: InputMaybe<Scalars['Boolean']['input']>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
 };
 
@@ -373,7 +436,7 @@ export type QueryLegalCaseArgs = {
 
 
 export type QueryLegalCasesArgs = {
-  caseType?: InputMaybe<Scalars['String']['input']>;
+  caseTypeId?: InputMaybe<Scalars['String']['input']>;
   courtId?: InputMaybe<Scalars['String']['input']>;
   jurisdiction?: InputMaybe<Scalars['String']['input']>;
   search?: InputMaybe<Scalars['String']['input']>;
@@ -442,11 +505,28 @@ export type UpdateArticleInput = {
   title?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type UpdateCaseTypeInput = {
+  /** Whether this case type is active */
+  active?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Hex color code for UI display */
+  color?: InputMaybe<Scalars['String']['input']>;
+  /** Description of the case type */
+  description?: InputMaybe<Scalars['String']['input']>;
+  /** Icon name for UI display */
+  icon?: InputMaybe<Scalars['String']['input']>;
+  /** Case type name */
+  name?: InputMaybe<Scalars['String']['input']>;
+  /** Display order */
+  order?: InputMaybe<Scalars['Int']['input']>;
+  /** URL-friendly slug */
+  slug?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type UpdateLegalCaseInput = {
   caseDate?: InputMaybe<Scalars['DateTime']['input']>;
   caseName?: InputMaybe<Scalars['String']['input']>;
   caseNumber?: InputMaybe<Scalars['String']['input']>;
-  caseType?: InputMaybe<Scalars['String']['input']>;
+  caseTypeId?: InputMaybe<Scalars['String']['input']>;
   courtId?: InputMaybe<Scalars['String']['input']>;
   defendant?: InputMaybe<Scalars['String']['input']>;
   judges?: InputMaybe<Scalars['String']['input']>;
@@ -484,6 +564,35 @@ export type User = {
   role: Role;
   updatedAt: Scalars['DateTime']['output'];
 };
+
+/** Paginated list of User */
+export type UsersConnection = {
+  __typename?: 'UsersConnection';
+  items: Array<User>;
+  pageInfo: PaginationInfo;
+};
+
+export type CreateCaseTypeMutationVariables = Exact<{
+  input: CreateCaseTypeInput;
+}>;
+
+
+export type CreateCaseTypeMutation = { __typename?: 'Mutation', createCaseType: { __typename?: 'CaseType', id: string, name: string, slug: string, description?: string | null, color?: string | null, icon?: string | null, order?: number | null, active: boolean, createdAt: Date, updatedAt: Date } };
+
+export type UpdateCaseTypeMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+  input: UpdateCaseTypeInput;
+}>;
+
+
+export type UpdateCaseTypeMutation = { __typename?: 'Mutation', updateCaseType: { __typename?: 'CaseType', id: string, name: string, slug: string, description?: string | null, color?: string | null, icon?: string | null, order?: number | null, active: boolean, createdAt: Date, updatedAt: Date } };
+
+export type DeleteCaseTypeMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type DeleteCaseTypeMutation = { __typename?: 'Mutation', deleteCaseType: { __typename?: 'CaseType', id: string, name: string } };
 
 export type CreateMediaMutationVariables = Exact<{
   input: CreateMediaInput;
@@ -534,20 +643,35 @@ export type DeleteUserMutationVariables = Exact<{
 
 export type DeleteUserMutation = { __typename?: 'Mutation', deleteUser: { __typename?: 'User', id: string, email: string } };
 
+export type AdminStatsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type AdminStatsQuery = { __typename?: 'Query', articles: { __typename?: 'ArticlesConnection', pageInfo: { __typename?: 'PaginationInfo', totalCount: number } }, legalCases: { __typename?: 'LegalCasesConnection', pageInfo: { __typename?: 'PaginationInfo', totalCount: number } }, users: { __typename?: 'UsersConnection', pageInfo: { __typename?: 'PaginationInfo', totalCount: number } }, caseTypes: { __typename?: 'CaseTypesConnection', pageInfo: { __typename?: 'PaginationInfo', totalCount: number } } };
+
 export type ArticleQueryVariables = Exact<{
   slug: Scalars['String']['input'];
 }>;
 
 
-export type ArticleQuery = { __typename?: 'Query', article: { __typename?: 'Article', id: string, title: string, slug: string, content: string, excerpt?: string | null, publishedAt?: Date | null, readingTimeMin?: number | null, views: number, author: { __typename?: 'User', id: string, name?: string | null, image?: string | null }, featuredImage?: { __typename?: 'Media', id: string, url: string, alt?: string | null } | null, categories: Array<{ __typename?: 'Category', id: string, name: string, slug: string }>, tags: Array<{ __typename?: 'Tag', id: string, name: string, slug: string }>, legalCases: Array<{ __typename?: 'LegalCase', id: string, slug: string, caseNumber: string, caseName: string, jurisdiction?: Jurisdiction | null, caseType?: CaseType | null }> } };
+export type ArticleQuery = { __typename?: 'Query', article: { __typename?: 'Article', id: string, title: string, slug: string, content: string, excerpt?: string | null, publishedAt?: Date | null, readingTimeMin?: number | null, views: number, author: { __typename?: 'User', id: string, name?: string | null, image?: string | null }, featuredImage?: { __typename?: 'Media', id: string, url: string, alt?: string | null } | null, categories: Array<{ __typename?: 'Category', id: string, name: string, slug: string }>, tags: Array<{ __typename?: 'Tag', id: string, name: string, slug: string }>, legalCases: Array<{ __typename?: 'LegalCase', id: string, slug: string, caseNumber: string, caseName: string, jurisdiction?: Jurisdiction | null, caseType?: { __typename?: 'CaseType', id: string, name: string, slug: string, color?: string | null, icon?: string | null } | null }> } };
 
 export type RecentArticlesQueryVariables = Exact<{
   take?: InputMaybe<Scalars['Int']['input']>;
   skip?: InputMaybe<Scalars['Int']['input']>;
+  search?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
 export type RecentArticlesQuery = { __typename?: 'Query', articles: { __typename?: 'ArticlesConnection', items: Array<{ __typename?: 'Article', id: string, title: string, slug: string, excerpt?: string | null, publishedAt?: Date | null, readingTimeMin?: number | null, views: number, author: { __typename?: 'User', id: string, name?: string | null, image?: string | null }, featuredImage?: { __typename?: 'Media', id: string, url: string, alt?: string | null } | null, categories: Array<{ __typename?: 'Category', id: string, name: string, slug: string }>, tags: Array<{ __typename?: 'Tag', id: string, name: string, slug: string }> }>, pageInfo: { __typename?: 'PaginationInfo', totalCount: number, hasNextPage: boolean, hasPreviousPage: boolean } } };
+
+export type CaseTypesQueryVariables = Exact<{
+  take?: InputMaybe<Scalars['Int']['input']>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  includeInactive?: InputMaybe<Scalars['Boolean']['input']>;
+}>;
+
+
+export type CaseTypesQuery = { __typename?: 'Query', caseTypes: { __typename?: 'CaseTypesConnection', items: Array<{ __typename?: 'CaseType', id: string, name: string, slug: string, description?: string | null, color?: string | null, icon?: string | null, order?: number | null, active: boolean }>, pageInfo: { __typename?: 'PaginationInfo', totalCount: number, hasNextPage: boolean, hasPreviousPage: boolean } } };
 
 export type LegalCaseQueryVariables = Exact<{
   id?: InputMaybe<Scalars['String']['input']>;
@@ -556,19 +680,19 @@ export type LegalCaseQueryVariables = Exact<{
 }>;
 
 
-export type LegalCaseQuery = { __typename?: 'Query', legalCase: { __typename?: 'LegalCase', id: string, caseNumber: string, caseName: string, slug: string, summary?: string | null, parties?: string | null, plaintiff?: string | null, defendant?: string | null, judges?: string | null, verdict?: string | null, legalBasis?: string | null, jurisdiction?: Jurisdiction | null, caseType?: CaseType | null, caseDate?: Date | null, resolutionDate?: Date | null, createdAt: Date, updatedAt: Date, court?: { __typename?: 'Court', id: string, name: string, type?: CourtType | null, jurisdiction?: Jurisdiction | null, description?: string | null } | null, articles: Array<{ __typename?: 'Article', id: string, title: string, slug: string, excerpt?: string | null, status: ArticleStatus, publishedAt?: Date | null, createdAt: Date }> } };
+export type LegalCaseQuery = { __typename?: 'Query', legalCase: { __typename?: 'LegalCase', id: string, caseNumber: string, caseName: string, slug: string, summary?: string | null, parties?: string | null, plaintiff?: string | null, defendant?: string | null, judges?: string | null, verdict?: string | null, legalBasis?: string | null, jurisdiction?: Jurisdiction | null, caseDate?: Date | null, resolutionDate?: Date | null, createdAt: Date, updatedAt: Date, caseType?: { __typename?: 'CaseType', id: string, name: string, slug: string, color?: string | null, icon?: string | null } | null, court?: { __typename?: 'Court', id: string, name: string, type?: CourtType | null, jurisdiction?: Jurisdiction | null, description?: string | null } | null, articles: Array<{ __typename?: 'Article', id: string, title: string, slug: string, excerpt?: string | null, status: ArticleStatus, publishedAt?: Date | null, createdAt: Date }> } };
 
 export type RecentLegalCasesQueryVariables = Exact<{
   take?: InputMaybe<Scalars['Int']['input']>;
   skip?: InputMaybe<Scalars['Int']['input']>;
   search?: InputMaybe<Scalars['String']['input']>;
   jurisdiction?: InputMaybe<Scalars['String']['input']>;
-  caseType?: InputMaybe<Scalars['String']['input']>;
+  caseTypeId?: InputMaybe<Scalars['String']['input']>;
   courtId?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
-export type RecentLegalCasesQuery = { __typename?: 'Query', legalCases: { __typename?: 'LegalCasesConnection', items: Array<{ __typename?: 'LegalCase', id: string, caseNumber: string, caseName: string, slug: string, summary?: string | null, parties?: string | null, plaintiff?: string | null, defendant?: string | null, jurisdiction?: Jurisdiction | null, caseType?: CaseType | null, caseDate?: Date | null, resolutionDate?: Date | null, createdAt: Date, court?: { __typename?: 'Court', id: string, name: string, type?: CourtType | null, jurisdiction?: Jurisdiction | null } | null }>, pageInfo: { __typename?: 'PaginationInfo', totalCount: number, hasNextPage: boolean, hasPreviousPage: boolean } } };
+export type RecentLegalCasesQuery = { __typename?: 'Query', legalCases: { __typename?: 'LegalCasesConnection', items: Array<{ __typename?: 'LegalCase', id: string, caseNumber: string, caseName: string, slug: string, summary?: string | null, parties?: string | null, plaintiff?: string | null, defendant?: string | null, jurisdiction?: Jurisdiction | null, caseDate?: Date | null, resolutionDate?: Date | null, createdAt: Date, caseType?: { __typename?: 'CaseType', id: string, name: string, slug: string, color?: string | null, icon?: string | null } | null, court?: { __typename?: 'Court', id: string, name: string, type?: CourtType | null, jurisdiction?: Jurisdiction | null } | null }>, pageInfo: { __typename?: 'PaginationInfo', totalCount: number, hasNextPage: boolean, hasPreviousPage: boolean } } };
 
 export type MediasQueryVariables = Exact<{
   take?: InputMaybe<Scalars['Int']['input']>;
@@ -594,7 +718,7 @@ export type UsersQueryVariables = Exact<{
 }>;
 
 
-export type UsersQuery = { __typename?: 'Query', users: Array<{ __typename?: 'User', id: string, email: string, name?: string | null, image?: string | null, role: Role, createdAt: Date, updatedAt: Date }> };
+export type UsersQuery = { __typename?: 'Query', users: { __typename?: 'UsersConnection', items: Array<{ __typename?: 'User', id: string, email: string, name?: string | null, image?: string | null, role: Role, createdAt: Date, updatedAt: Date }>, pageInfo: { __typename?: 'PaginationInfo', totalCount: number, hasNextPage: boolean, hasPreviousPage: boolean } } };
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -602,6 +726,58 @@ export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 export type MeQuery = { __typename?: 'Query', me?: { __typename?: 'User', id: string, name?: string | null, email: string, emailVerified: boolean, role: Role, image?: string | null, createdAt: Date, updatedAt: Date } | null };
 
 
+export const CreateCaseTypeDocument = gql`
+    mutation CreateCaseType($input: CreateCaseTypeInput!) {
+  createCaseType(input: $input) {
+    id
+    name
+    slug
+    description
+    color
+    icon
+    order
+    active
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+export function useCreateCaseTypeMutation() {
+  return Urql.useMutation<CreateCaseTypeMutation, CreateCaseTypeMutationVariables>(CreateCaseTypeDocument);
+};
+export const UpdateCaseTypeDocument = gql`
+    mutation UpdateCaseType($id: String!, $input: UpdateCaseTypeInput!) {
+  updateCaseType(id: $id, input: $input) {
+    id
+    name
+    slug
+    description
+    color
+    icon
+    order
+    active
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+export function useUpdateCaseTypeMutation() {
+  return Urql.useMutation<UpdateCaseTypeMutation, UpdateCaseTypeMutationVariables>(UpdateCaseTypeDocument);
+};
+export const DeleteCaseTypeDocument = gql`
+    mutation DeleteCaseType($id: String!) {
+  deleteCaseType(id: $id) {
+    id
+    name
+  }
+}
+    `;
+
+export function useDeleteCaseTypeMutation() {
+  return Urql.useMutation<DeleteCaseTypeMutation, DeleteCaseTypeMutationVariables>(DeleteCaseTypeDocument);
+};
 export const CreateMediaDocument = gql`
     mutation CreateMedia($input: CreateMediaInput!) {
   createMedia(input: $input) {
@@ -732,6 +908,34 @@ export const DeleteUserDocument = gql`
 export function useDeleteUserMutation() {
   return Urql.useMutation<DeleteUserMutation, DeleteUserMutationVariables>(DeleteUserDocument);
 };
+export const AdminStatsDocument = gql`
+    query AdminStats {
+  articles(take: 1) {
+    pageInfo {
+      totalCount
+    }
+  }
+  legalCases(take: 1) {
+    pageInfo {
+      totalCount
+    }
+  }
+  users(take: 1) {
+    pageInfo {
+      totalCount
+    }
+  }
+  caseTypes(take: 1) {
+    pageInfo {
+      totalCount
+    }
+  }
+}
+    `;
+
+export function useAdminStatsQuery(options?: Omit<Urql.UseQueryArgs<AdminStatsQueryVariables>, 'query'>) {
+  return Urql.useQuery<AdminStatsQuery, AdminStatsQueryVariables>({ query: AdminStatsDocument, ...options });
+};
 export const ArticleDocument = gql`
     query Article($slug: String!) {
   article(slug: $slug) {
@@ -769,7 +973,13 @@ export const ArticleDocument = gql`
       caseNumber
       caseName
       jurisdiction
-      caseType
+      caseType {
+        id
+        name
+        slug
+        color
+        icon
+      }
     }
   }
 }
@@ -779,8 +989,8 @@ export function useArticleQuery(options: Omit<Urql.UseQueryArgs<ArticleQueryVari
   return Urql.useQuery<ArticleQuery, ArticleQueryVariables>({ query: ArticleDocument, ...options });
 };
 export const RecentArticlesDocument = gql`
-    query RecentArticles($take: Int, $skip: Int) {
-  articles(take: $take, skip: $skip, status: "PUBLISHED") {
+    query RecentArticles($take: Int, $skip: Int, $search: String) {
+  articles(take: $take, skip: $skip, status: "PUBLISHED", search: $search) {
     items {
       id
       title
@@ -822,6 +1032,31 @@ export const RecentArticlesDocument = gql`
 export function useRecentArticlesQuery(options?: Omit<Urql.UseQueryArgs<RecentArticlesQueryVariables>, 'query'>) {
   return Urql.useQuery<RecentArticlesQuery, RecentArticlesQueryVariables>({ query: RecentArticlesDocument, ...options });
 };
+export const CaseTypesDocument = gql`
+    query CaseTypes($take: Int, $skip: Int, $includeInactive: Boolean) {
+  caseTypes(take: $take, skip: $skip, includeInactive: $includeInactive) {
+    items {
+      id
+      name
+      slug
+      description
+      color
+      icon
+      order
+      active
+    }
+    pageInfo {
+      totalCount
+      hasNextPage
+      hasPreviousPage
+    }
+  }
+}
+    `;
+
+export function useCaseTypesQuery(options?: Omit<Urql.UseQueryArgs<CaseTypesQueryVariables>, 'query'>) {
+  return Urql.useQuery<CaseTypesQuery, CaseTypesQueryVariables>({ query: CaseTypesDocument, ...options });
+};
 export const LegalCaseDocument = gql`
     query LegalCase($id: String, $slug: String, $caseNumber: String) {
   legalCase(id: $id, slug: $slug, caseNumber: $caseNumber) {
@@ -837,7 +1072,13 @@ export const LegalCaseDocument = gql`
     verdict
     legalBasis
     jurisdiction
-    caseType
+    caseType {
+      id
+      name
+      slug
+      color
+      icon
+    }
     caseDate
     resolutionDate
     createdAt
@@ -866,13 +1107,13 @@ export function useLegalCaseQuery(options?: Omit<Urql.UseQueryArgs<LegalCaseQuer
   return Urql.useQuery<LegalCaseQuery, LegalCaseQueryVariables>({ query: LegalCaseDocument, ...options });
 };
 export const RecentLegalCasesDocument = gql`
-    query RecentLegalCases($take: Int, $skip: Int, $search: String, $jurisdiction: String, $caseType: String, $courtId: String) {
+    query RecentLegalCases($take: Int, $skip: Int, $search: String, $jurisdiction: String, $caseTypeId: String, $courtId: String) {
   legalCases(
     take: $take
     skip: $skip
     search: $search
     jurisdiction: $jurisdiction
-    caseType: $caseType
+    caseTypeId: $caseTypeId
     courtId: $courtId
   ) {
     items {
@@ -885,7 +1126,13 @@ export const RecentLegalCasesDocument = gql`
       plaintiff
       defendant
       jurisdiction
-      caseType
+      caseType {
+        id
+        name
+        slug
+        color
+        icon
+      }
       caseDate
       resolutionDate
       createdAt
@@ -963,13 +1210,20 @@ export function useMediaQuery(options: Omit<Urql.UseQueryArgs<MediaQueryVariable
 export const UsersDocument = gql`
     query users($take: Int, $skip: Int, $search: String) {
   users(take: $take, skip: $skip, search: $search) {
-    id
-    email
-    name
-    image
-    role
-    createdAt
-    updatedAt
+    items {
+      id
+      email
+      name
+      image
+      role
+      createdAt
+      updatedAt
+    }
+    pageInfo {
+      totalCount
+      hasNextPage
+      hasPreviousPage
+    }
   }
 }
     `;

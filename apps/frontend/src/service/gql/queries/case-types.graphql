@@ -1,0 +1,19 @@
+query CaseTypes($take: Int, $skip: Int, $includeInactive: Boolean) {
+  caseTypes(take: $take, skip: $skip, includeInactive: $includeInactive) {
+    items {
+      id
+      name
+      slug
+      description
+      color
+      icon
+      order
+      active
+    }
+    pageInfo {
+      totalCount
+      hasNextPage
+      hasPreviousPage
+    }
+  }
+}

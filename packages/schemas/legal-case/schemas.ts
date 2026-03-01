@@ -5,13 +5,6 @@ export const JurisdictionEnum = z.enum(["NACIONAL", "REGIONAL", "LOCAL", "INTERN
   message: "La jurisdicción debe ser NACIONAL, REGIONAL, LOCAL o INTERNACIONAL",
 });
 
-export const CaseTypeEnum = z.enum(
-  ["CIVIL", "PENAL", "CONSTITUCIONAL", "LABORAL", "ADMINISTRATIVO", "COMERCIAL", "FAMILIA", "TRIBUTARIO", "AMBIENTAL"],
-  {
-    message: "El tipo de caso debe ser un valor válido",
-  },
-);
-
 // Keep legacy enums for backward compatibility
 export const CaseStatusEnum = z.enum(["DRAFT", "PUBLISHED", "ARCHIVED"], {
   message: "El estado del caso debe ser DRAFT, PUBLISHED o ARCHIVED",
@@ -46,7 +39,7 @@ export const createLegalCaseSchema = z.object({
   verdict: z.string().max(5000, { message: "El veredicto no puede tener más de 5000 caracteres" }).optional(),
   legalBasis: z.string().max(5000, { message: "La base legal no puede tener más de 5000 caracteres" }).optional(),
   jurisdiction: JurisdictionEnum.optional(),
-  caseType: CaseTypeEnum.optional(),
+  caseTypeId: z.string().cuid({ message: "El ID del tipo de caso debe ser un CUID válido" }).optional(),
   courtId: z.string().cuid({ message: "El ID del tribunal debe ser un CUID válido" }).optional(),
 });
 
@@ -86,14 +79,14 @@ export const updateLegalCaseSchema = z.object({
     .optional()
     .nullable(),
   jurisdiction: JurisdictionEnum.optional().nullable(),
-  caseType: CaseTypeEnum.optional().nullable(),
+  caseTypeId: z.string().cuid({ message: "El ID del tipo de caso debe ser un CUID válido" }).optional().nullable(),
   courtId: z.string().cuid({ message: "El ID del tribunal debe ser un CUID válido" }).optional().nullable(),
 });
 
 // Query schema for fetching legal cases
 export const legalCasesQuerySchema = z.object({
   jurisdiction: JurisdictionEnum.optional(),
-  caseType: CaseTypeEnum.optional(),
+  caseTypeId: z.string().cuid().optional(),
   courtId: z.string().cuid().optional(),
   search: z
     .string()

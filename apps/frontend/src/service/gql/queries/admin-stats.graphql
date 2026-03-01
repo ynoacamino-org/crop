@@ -1,0 +1,23 @@
+# Query to get admin dashboard statistics
+query AdminStats {
+  articles(take: 1) {
+    pageInfo {
+      totalCount
+    }
+  }
+  legalCases(take: 1) {
+    pageInfo {
+      totalCount
+    }
+  }
+  users(take: 1) {
+    pageInfo {
+      totalCount
+    }
+  }
+  caseTypes(take: 1) {
+    pageInfo {
+      totalCount
+    }
+  }
+}

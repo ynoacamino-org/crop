@@ -19,10 +19,7 @@ import {
   AlertTitle,
 } from "@/shared/components/ui/alert";
 import { Badge } from "@/shared/components/ui/badge";
-import {
-  CASE_TYPE_LABELS,
-  JURISDICTION_LABELS,
-} from "@/shared/config/constants";
+import { JURISDICTION_LABELS } from "@/shared/config/constants";
 import { formatLongDate } from "@/shared/lib/format-date";
 
 interface LegalCasePageProps {
@@ -67,7 +64,7 @@ export default async function LegalCasePage({ params }: LegalCasePageProps) {
           {legalCase.caseType && (
             <Badge variant="secondary" className="text-xs">
               <Scale className="mr-1 h-3.5 w-3.5" />
-              {CASE_TYPE_LABELS[legalCase.caseType] || legalCase.caseType}
+              {legalCase.caseType.name}
             </Badge>
           )}
           {legalCase.jurisdiction && (

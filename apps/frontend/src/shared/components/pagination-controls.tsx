@@ -3,7 +3,7 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { REST_QUERY_PARAMS_CONFIG } from "@/service/core/types/search-params-config";
 import { useQueryParams } from "@/shared/lib/hooks/useQueryParams";
-import { getPaginationInfo } from "@/shared/lib/layout/pagination-helpers";
+import { getPaginationInfo } from "@/shared/lib/pagination";
 import { cn } from "@/shared/lib/utils";
 import {
   Pagination,

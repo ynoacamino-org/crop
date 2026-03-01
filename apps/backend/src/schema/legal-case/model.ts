@@ -1,20 +1,6 @@
 import { builder } from "@/builder";
 import { Jurisdiction } from "../court/model";
 
-export const CaseType = builder.enumType("CaseType", {
-  values: [
-    "CIVIL",
-    "PENAL",
-    "CONSTITUCIONAL",
-    "LABORAL",
-    "ADMINISTRATIVO",
-    "COMERCIAL",
-    "FAMILIA",
-    "TRIBUTARIO",
-    "AMBIENTAL",
-  ] as const,
-});
-
 export const LegalCase = builder.prismaObject("LegalCase", {
   fields: (t) => ({
     id: t.exposeID("id"),
@@ -37,7 +23,9 @@ export const LegalCase = builder.prismaObject("LegalCase", {
       type: Jurisdiction,
       nullable: true,
     }),
-    caseType: t.expose("caseType", { type: CaseType, nullable: true }),
+    caseType: t.relation("caseType", {
+      nullable: true,
+    }),
     court: t.relation("court", {
       nullable: true,
     }),

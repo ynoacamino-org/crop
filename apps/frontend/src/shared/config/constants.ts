@@ -16,18 +16,6 @@ export const ROUTE_LABELS: Record<string, string> = {
 
 // ========== CASOS LEGALES ==========
 
-export const CASE_TYPE_LABELS: Record<string, string> = {
-  CIVIL: "Civil",
-  PENAL: "Penal",
-  CONSTITUCIONAL: "Constitucional",
-  LABORAL: "Laboral",
-  ADMINISTRATIVO: "Administrativo",
-  COMERCIAL: "Comercial",
-  FAMILIA: "Familia",
-  TRIBUTARIO: "Tributario",
-  AMBIENTAL: "Ambiental",
-} as const;
-
 export const JURISDICTION_LABELS: Record<string, string> = {
   NACIONAL: "Nacional",
   REGIONAL: "Regional",

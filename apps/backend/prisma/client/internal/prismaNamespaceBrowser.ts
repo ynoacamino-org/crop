@@ -60,7 +60,8 @@ export const ModelName = {
   LegalCase: 'LegalCase',
   Court: 'Court',
   Category: 'Category',
-  Tag: 'Tag'
+  Tag: 'Tag',
+  CaseType: 'CaseType'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -192,8 +193,8 @@ export const LegalCaseScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   courtId: 'courtId',
-  jurisdiction: 'jurisdiction',
-  caseType: 'caseType'
+  caseTypeId: 'caseTypeId',
+  jurisdiction: 'jurisdiction'
 } as const
 
 export type LegalCaseScalarFieldEnum = (typeof LegalCaseScalarFieldEnum)[keyof typeof LegalCaseScalarFieldEnum]
@@ -233,6 +234,22 @@ export const TagScalarFieldEnum = {
 } as const
 
 export type TagScalarFieldEnum = (typeof TagScalarFieldEnum)[keyof typeof TagScalarFieldEnum]
+
+
+export const CaseTypeScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  slug: 'slug',
+  description: 'description',
+  color: 'color',
+  icon: 'icon',
+  order: 'order',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CaseTypeScalarFieldEnum = (typeof CaseTypeScalarFieldEnum)[keyof typeof CaseTypeScalarFieldEnum]
 
 
 export const SortOrder = {

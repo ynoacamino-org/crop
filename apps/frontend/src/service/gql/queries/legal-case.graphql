@@ -12,7 +12,13 @@ query LegalCase($id: String, $slug: String, $caseNumber: String) {
     verdict
     legalBasis
     jurisdiction
-    caseType
+    caseType {
+      id
+      name
+      slug
+      color
+      icon
+    }
     caseDate
     resolutionDate
     createdAt

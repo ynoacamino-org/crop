@@ -59,7 +59,9 @@ const UpdateUserPayloadSchema = z.object({
       .max(100, { message: "El nombre no puede tener más de 100 caracteres" })
       .optional(),
     image: z.url({ message: "La imagen debe ser una URL válida" }).optional(),
-    role: z.enum(["USER", "ADMIN"], { message: "El rol debe ser USER o ADMIN" }).optional(),
+    role: z
+      .enum(["PUBLIC", "COLLABORATOR", "ADMIN"], { message: "El rol debe ser PUBLIC, COLLABORATOR o ADMIN" })
+      .optional(),
   }),
 });
 

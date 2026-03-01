@@ -14,9 +14,20 @@ export {
   updateArticleSchema,
 } from "./article/schemas";
 
+// Case Type schemas
+export type {
+  CaseTypesQueryInput,
+  CreateCaseTypeInput,
+  UpdateCaseTypeInput,
+} from "./case-type/interfaces";
+export {
+  caseTypesQuerySchema,
+  createCaseTypeSchema,
+  updateCaseTypeSchema,
+} from "./case-type/schemas";
+
 // Legal Case schemas
 export type {
-  CaseTypeType,
   CreateLegalCaseInput,
   JurisdictionType,
   LegalCasesQueryInput,
@@ -24,7 +35,6 @@ export type {
 } from "./legal-case/interfaces";
 export {
   CaseStatusEnum,
-  CaseTypeEnum,
   CourtLevelEnum,
   createLegalCaseSchema,
   JurisdictionEnum,

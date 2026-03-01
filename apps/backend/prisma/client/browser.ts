@@ -67,3 +67,8 @@ export type Category = Prisma.CategoryModel
  * 
  */
 export type Tag = Prisma.TagModel
+/**
+ * Model CaseType
+ * 
+ */
+export type CaseType = Prisma.CaseTypeModel

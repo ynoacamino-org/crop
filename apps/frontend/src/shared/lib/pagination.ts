@@ -1,4 +1,4 @@
-import type { QueryParams } from "../hooks/useQueryParams";
+const DEFAULT_LIMIT = 12;
 
 export interface PaginationInfo {
   currentPage: number;
@@ -9,10 +9,26 @@ export interface PaginationInfo {
   take: number;
 }
 
+export interface QueryParams {
+  limit?: number;
+  offset?: number;
+  [key: string]: string | number | undefined;
+}
+
+export async function parsePaginationParams(
+  searchParams: Promise<{ limit?: string; offset?: string }>,
+) {
+  const params = await searchParams;
+  const limit = Number(params.limit) || DEFAULT_LIMIT;
+  const offset = Number(params.offset) || 0;
+
+  return { limit, offset };
+}
+
 export function getPaginationInfo(
   queryParams: QueryParams,
   totalItems: number,
-  defaultLimit = 12,
+  defaultLimit = DEFAULT_LIMIT,
 ): PaginationInfo {
   const pageLimit = queryParams.limit || defaultLimit;
   const offset = queryParams.offset || 0;

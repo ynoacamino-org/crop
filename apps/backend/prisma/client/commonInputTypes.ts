@@ -260,13 +260,6 @@ export type EnumJurisdictionNullableFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumJurisdictionNullableFilter<$PrismaModel> | $Enums.Jurisdiction | null
 }
 
-export type EnumCaseTypeNullableFilter<$PrismaModel = never> = {
-  equals?: $Enums.CaseType | Prisma.EnumCaseTypeFieldRefInput<$PrismaModel> | null
-  in?: $Enums.CaseType[] | Prisma.ListEnumCaseTypeFieldRefInput<$PrismaModel> | null
-  notIn?: $Enums.CaseType[] | Prisma.ListEnumCaseTypeFieldRefInput<$PrismaModel> | null
-  not?: Prisma.NestedEnumCaseTypeNullableFilter<$PrismaModel> | $Enums.CaseType | null
-}
-
 export type EnumJurisdictionNullableWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.Jurisdiction | Prisma.EnumJurisdictionFieldRefInput<$PrismaModel> | null
   in?: $Enums.Jurisdiction[] | Prisma.ListEnumJurisdictionFieldRefInput<$PrismaModel> | null
@@ -275,16 +268,6 @@ export type EnumJurisdictionNullableWithAggregatesFilter<$PrismaModel = never> =
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedEnumJurisdictionNullableFilter<$PrismaModel>
   _max?: Prisma.NestedEnumJurisdictionNullableFilter<$PrismaModel>
-}
-
-export type EnumCaseTypeNullableWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.CaseType | Prisma.EnumCaseTypeFieldRefInput<$PrismaModel> | null
-  in?: $Enums.CaseType[] | Prisma.ListEnumCaseTypeFieldRefInput<$PrismaModel> | null
-  notIn?: $Enums.CaseType[] | Prisma.ListEnumCaseTypeFieldRefInput<$PrismaModel> | null
-  not?: Prisma.NestedEnumCaseTypeNullableWithAggregatesFilter<$PrismaModel> | $Enums.CaseType | null
-  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumCaseTypeNullableFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumCaseTypeNullableFilter<$PrismaModel>
 }
 
 export type EnumCourtTypeNullableFilter<$PrismaModel = never> = {
@@ -563,13 +546,6 @@ export type NestedEnumJurisdictionNullableFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumJurisdictionNullableFilter<$PrismaModel> | $Enums.Jurisdiction | null
 }
 
-export type NestedEnumCaseTypeNullableFilter<$PrismaModel = never> = {
-  equals?: $Enums.CaseType | Prisma.EnumCaseTypeFieldRefInput<$PrismaModel> | null
-  in?: $Enums.CaseType[] | Prisma.ListEnumCaseTypeFieldRefInput<$PrismaModel> | null
-  notIn?: $Enums.CaseType[] | Prisma.ListEnumCaseTypeFieldRefInput<$PrismaModel> | null
-  not?: Prisma.NestedEnumCaseTypeNullableFilter<$PrismaModel> | $Enums.CaseType | null
-}
-
 export type NestedEnumJurisdictionNullableWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.Jurisdiction | Prisma.EnumJurisdictionFieldRefInput<$PrismaModel> | null
   in?: $Enums.Jurisdiction[] | Prisma.ListEnumJurisdictionFieldRefInput<$PrismaModel> | null
@@ -578,16 +554,6 @@ export type NestedEnumJurisdictionNullableWithAggregatesFilter<$PrismaModel = ne
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedEnumJurisdictionNullableFilter<$PrismaModel>
   _max?: Prisma.NestedEnumJurisdictionNullableFilter<$PrismaModel>
-}
-
-export type NestedEnumCaseTypeNullableWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.CaseType | Prisma.EnumCaseTypeFieldRefInput<$PrismaModel> | null
-  in?: $Enums.CaseType[] | Prisma.ListEnumCaseTypeFieldRefInput<$PrismaModel> | null
-  notIn?: $Enums.CaseType[] | Prisma.ListEnumCaseTypeFieldRefInput<$PrismaModel> | null
-  not?: Prisma.NestedEnumCaseTypeNullableWithAggregatesFilter<$PrismaModel> | $Enums.CaseType | null
-  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumCaseTypeNullableFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumCaseTypeNullableFilter<$PrismaModel>
 }
 
 export type NestedEnumCourtTypeNullableFilter<$PrismaModel = never> = {

@@ -47,21 +47,6 @@ export const Jurisdiction = {
 export type Jurisdiction = (typeof Jurisdiction)[keyof typeof Jurisdiction]
 
 
-export const CaseType = {
-  CIVIL: 'CIVIL',
-  PENAL: 'PENAL',
-  CONSTITUCIONAL: 'CONSTITUCIONAL',
-  LABORAL: 'LABORAL',
-  ADMINISTRATIVO: 'ADMINISTRATIVO',
-  COMERCIAL: 'COMERCIAL',
-  FAMILIA: 'FAMILIA',
-  TRIBUTARIO: 'TRIBUTARIO',
-  AMBIENTAL: 'AMBIENTAL'
-} as const
-
-export type CaseType = (typeof CaseType)[keyof typeof CaseType]
-
-
 export const CourtType = {
   SUPREMA: 'SUPREMA',
   SUPERIOR: 'SUPERIOR',

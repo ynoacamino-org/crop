@@ -34,7 +34,13 @@ query Article($slug: String!) {
       caseNumber
       caseName
       jurisdiction
-      caseType
+      caseType {
+        id
+        name
+        slug
+        color
+        icon
+      }
     }
   }
 }

@@ -10,10 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/shared/components/ui/card";
-import {
-  CASE_TYPE_LABELS,
-  JURISDICTION_LABELS,
-} from "@/shared/config/constants";
+import { JURISDICTION_LABELS } from "@/shared/config/constants";
 import { formatLongDate } from "@/shared/lib/format-date";
 
 interface LegalCaseCardProps {
@@ -23,7 +20,13 @@ interface LegalCaseCardProps {
   caseName: string;
   summary?: string | null;
   jurisdiction?: string | null;
-  caseType?: string | null;
+  caseType?: {
+    id: string;
+    name: string;
+    slug: string;
+    color?: string | null;
+    icon?: string | null;
+  } | null;
   caseDate?: Date | null;
   plaintiff?: string | null;
   defendant?: string | null;
@@ -49,12 +52,7 @@ export function LegalCaseCard({
       <Card className="h-full transition-all hover:border-primary hover:shadow-md">
         <CardHeader>
           <div className="mb-2 flex flex-wrap items-center gap-2">
-            {caseType && (
-              <Badge variant="secondary">
-                {(CASE_TYPE_LABELS as Record<string, string>)[caseType] ||
-                  caseType}
-              </Badge>
-            )}
+            {caseType && <Badge variant="secondary">{caseType.name}</Badge>}
             {jurisdiction && (
               <Badge variant="outline">
                 {(JURISDICTION_LABELS as Record<string, string>)[

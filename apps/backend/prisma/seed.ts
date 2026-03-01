@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { DATABASE_URL } from "@/config/env";
-import { PrismaClient } from "./client/client";
+import { PrismaClient, Role, type Prisma } from "./client/client";
 import { storage } from "@/lib/storage";
 
 function generateLexicalContent(caseData: {
@@ -310,7 +310,9 @@ async function main() {
 	if (users.length === 0) {
 		console.log("👤 Creating legal authors...");
 
-		const legalAuthors = [];
+		const legalAuthors: Prisma.UserCreateManyInput[] = [];
+
+		// Regular authors
 		for (let i = 0; i < 5; i++) {
 			legalAuthors.push({
 				id: faker.string.uuid(),
@@ -319,6 +321,7 @@ async function main() {
 				emailVerified: true,
 				image: faker.image.avatar(),
 				bio: `Abogado especializado en ${legalCategories[i % legalCategories.length]?.name}`,
+				role: i === 0 ? Role.COLLABORATOR : Role.PUBLIC,
 			});
 		}
 
@@ -356,9 +359,93 @@ async function main() {
 	});
 	console.log(`✅ Created ${tags.length} tags`);
 
+	// Create case types
+	await prisma.caseType.deleteMany({});
+	console.log("⚖️  Creating case types...");
+
+	const caseTypesData = [
+		{
+			name: "Civil",
+			slug: "civil",
+			description: "Casos relacionados con derecho civil, obligaciones, contratos y responsabilidad civil",
+			color: "#3B82F6",
+			icon: "FileText",
+			order: 1,
+		},
+		{
+			name: "Penal",
+			slug: "penal",
+			description: "Casos de derecho penal, delitos y sanciones",
+			color: "#EF4444",
+			icon: "Gavel",
+			order: 2,
+		},
+		{
+			name: "Constitucional",
+			slug: "constitucional",
+			description: "Casos constitucionales, derechos fundamentales y control de constitucionalidad",
+			color: "#8B5CF6",
+			icon: "Scale",
+			order: 3,
+		},
+		{
+			name: "Laboral",
+			slug: "laboral",
+			description: "Casos laborales, derechos del trabajador y seguridad social",
+			color: "#10B981",
+			icon: "Briefcase",
+			order: 4,
+		},
+		{
+			name: "Administrativo",
+			slug: "administrativo",
+			description: "Casos de derecho administrativo y contencioso administrativo",
+			color: "#F59E0B",
+			icon: "Building",
+			order: 5,
+		},
+		{
+			name: "Comercial",
+			slug: "comercial",
+			description: "Casos de derecho comercial, sociedades y títulos valores",
+			color: "#06B6D4",
+			icon: "TrendingUp",
+			order: 6,
+		},
+		{
+			name: "Familia",
+			slug: "familia",
+			description: "Casos de derecho de familia, divorcio, alimentos y filiación",
+			color: "#EC4899",
+			icon: "Users",
+			order: 7,
+		},
+		{
+			name: "Tributario",
+			slug: "tributario",
+			description: "Casos tributarios y fiscales",
+			color: "#84CC16",
+			icon: "Calculator",
+			order: 8,
+		},
+		{
+			name: "Ambiental",
+			slug: "ambiental",
+			description: "Casos de derecho ambiental y recursos naturales",
+			color: "#22C55E",
+			icon: "Leaf",
+			order: 9,
+		},
+	];
+
+	const createdCaseTypes = await prisma.caseType.createManyAndReturn({
+		data: caseTypesData,
+	});
+	console.log(`✅ Created ${createdCaseTypes.length} case types`);
+
 	// Create courts
 	await prisma.court.deleteMany({});
-	console.log("⚖️  Creating courts...");
+	console.log("🏛️  Creating courts...");
 
 	const createdCourts = await prisma.court.createManyAndReturn({
 		data: courtsData,
@@ -368,18 +455,6 @@ async function main() {
 	// Create legal cases
 	await prisma.legalCase.deleteMany({});
 	console.log("📋 Creating legal cases...");
-
-	const caseTypes = [
-		"CIVIL",
-		"PENAL",
-		"CONSTITUCIONAL",
-		"LABORAL",
-		"ADMINISTRATIVO",
-		"COMERCIAL",
-		"FAMILIA",
-		"TRIBUTARIO",
-		"AMBIENTAL",
-	] as const;
 
 	const verdicts = ["FUNDADA", "INFUNDADA", "IMPROCEDENTE", "NULA", "PROCEDENTE EN PARTE"];
 
@@ -419,7 +494,9 @@ async function main() {
 		const court = createdCourts[Math.floor(Math.random() * createdCourts.length)];
 		if (!court) continue;
 
-		const caseType = caseTypes[Math.floor(Math.random() * caseTypes.length)];
+		const caseType = createdCaseTypes[Math.floor(Math.random() * createdCaseTypes.length)];
+		if (!caseType) continue;
+
 		const caseTitle = caseTitles[Math.floor(Math.random() * caseTitles.length)];
 		const plaintiff = faker.person.fullName();
 		const defendant = faker.person.fullName();
@@ -441,7 +518,7 @@ async function main() {
 			resolutionDate: faker.date.between({ from: "2021-01-01", to: "2026-02-26" }),
 			courtId: court.id,
 			jurisdiction: court.jurisdiction,
-			caseType,
+			caseTypeId: caseType.id,
 		});
 	}
 
@@ -589,6 +666,7 @@ async function main() {
 	console.log(`   - ${createdCases.length} legal cases`);
 	console.log(`   - ${createdMedia.length} media files`);
 	console.log(`   - ${createdArticles.length} articles`);
+	console.log(`\n💡 Tip: Register with ynoacamino@gmail.com to get ADMIN role`);
 }
 
 main()

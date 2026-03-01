@@ -1,4 +1,4 @@
-import type { CaseType, Jurisdiction, Prisma } from "@prisma/client/client";
+import type { Jurisdiction, Prisma } from "@prisma/client/client";
 import { handlePrismaError } from "@prisma/lib/error-handler";
 import { builder } from "@/builder";
 import { db } from "@/lib/db";
@@ -30,9 +30,9 @@ builder.queryField("legalCases", (t) =>
         required: false,
         description: "Filter by jurisdiction",
       }),
-      caseType: t.arg.string({
+      caseTypeId: t.arg.string({
         required: false,
-        description: "Filter by case type",
+        description: "Filter by case type ID",
       }),
       courtId: t.arg.string({
         required: false,
@@ -50,8 +50,8 @@ builder.queryField("legalCases", (t) =>
         ...(args.jurisdiction && {
           jurisdiction: args.jurisdiction as Jurisdiction,
         }),
-        ...(args.caseType && {
-          caseType: args.caseType as CaseType,
+        ...(args.caseTypeId && {
+          caseTypeId: args.caseTypeId,
         }),
         ...(args.courtId && {
           courtId: args.courtId,

@@ -3,10 +3,7 @@
 import { Calendar, Gavel, MapPin } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/shared/components/ui/badge";
-import {
-  CASE_TYPE_LABELS,
-  JURISDICTION_LABELS,
-} from "@/shared/config/constants";
+import { JURISDICTION_LABELS } from "@/shared/config/constants";
 import { formatMediumDate } from "@/shared/lib/format-date";
 
 interface LegalCaseItemProps {
@@ -16,7 +13,13 @@ interface LegalCaseItemProps {
   caseName: string;
   summary?: string | null;
   jurisdiction?: string | null;
-  caseType?: string | null;
+  caseType?: {
+    id: string;
+    name: string;
+    slug: string;
+    color?: string | null;
+    icon?: string | null;
+  } | null;
   caseDate?: Date | null;
   court?: {
     name: string;
@@ -56,7 +59,7 @@ export function LegalCaseItem({
           <div className="flex flex-wrap items-center gap-1.5">
             {caseType && (
               <Badge variant="secondary" className="text-xs">
-                {CASE_TYPE_LABELS[caseType] || caseType}
+                {caseType.name}
               </Badge>
             )}
             {jurisdiction && (

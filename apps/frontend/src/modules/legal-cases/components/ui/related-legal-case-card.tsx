@@ -12,7 +12,13 @@ interface RelatedLegalCaseCardProps {
   caseName: string;
   caseNumber: string;
   jurisdiction?: string | null;
-  caseType?: string | null;
+  caseType?: {
+    id: string;
+    name: string;
+    slug: string;
+    color?: string | null;
+    icon?: string | null;
+  } | null;
 }
 
 export function RelatedLegalCaseCard({
@@ -29,7 +35,7 @@ export function RelatedLegalCaseCard({
           <div className="mb-2 flex flex-wrap items-center gap-2">
             {caseType && (
               <Badge variant="secondary" className="text-xs">
-                {caseType}
+                {caseType.name}
               </Badge>
             )}
             {jurisdiction && (

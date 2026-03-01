@@ -149,15 +149,16 @@ model LegalCase {
   updatedAt       DateTime  @updatedAt
   courtId         String?
   court           Court?    @relation(fields: [courtId], references: [id], onDelete: SetNull)
+  caseTypeId      String?
+  caseType        CaseType? @relation(fields: [caseTypeId], references: [id], onDelete: SetNull)
   articles        Article[]
   jurisdiction    Jurisdiction?
-  caseType        CaseType?
 
   @@index([caseNumber])
   @@index([slug])
   @@index([courtId])
   @@index([jurisdiction])
-  @@index([caseType])
+  @@index([caseTypeId])
   @@map("LegalCase")
 }
 
@@ -201,6 +202,24 @@ model Tag {
   @@map("Tag")
 }
 
+model CaseType {
+  id          String      @id @default(cuid())
+  name        String      @unique
+  slug        String      @unique
+  description String?
+  color       String?
+  icon        String?
+  order       Int?
+  active      Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  legalCases  LegalCase[]
+
+  @@index([slug])
+  @@index([active])
+  @@map("CaseType")
+}
+
 enum Role {
   PUBLIC
   COLLABORATOR
@@ -225,18 +244,6 @@ enum Jurisdiction {
   REGIONAL
   LOCAL
   INTERNACIONAL
-}
-
-enum CaseType {
-  CIVIL
-  PENAL
-  CONSTITUCIONAL
-  LABORAL
-  ADMINISTRATIVO
-  COMERCIAL
-  FAMILIA
-  TRIBUTARIO
-  AMBIENTAL
 }
 
 enum CourtType {

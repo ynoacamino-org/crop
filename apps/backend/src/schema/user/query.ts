@@ -1,8 +1,16 @@
+import type { Prisma } from "@prisma/client/client";
 import { handlePrismaError } from "@prisma/lib/error-handler";
 import { UsersPayloadSchema } from "@repo/schemas";
 import { builder } from "@/builder";
 import { db } from "@/lib/db";
 import { sanitize } from "@/lib/utils/sanitize";
+import {
+  calculatePaginationInfo,
+  createPaginatedResponse,
+} from "@/schema/pagination/model";
+
+// Create paginated type for users
+const UsersConnection = createPaginatedResponse("Users", "User");
 
 builder.queryField("me", (t) =>
   t.prismaField({
@@ -28,8 +36,8 @@ builder.queryField("me", (t) =>
 );
 
 builder.queryField("users", (t) =>
-  t.prismaField({
-    type: ["User"],
+  t.field({
+    type: UsersConnection,
     args: {
       take: t.arg.int({
         required: false,
@@ -52,33 +60,51 @@ builder.queryField("users", (t) =>
     authScopes: {
       admin: true,
     },
-    resolve: async (query, _root, rawArgs) => {
+    resolve: async (_root, rawArgs) => {
       const args = sanitize(rawArgs);
 
+      const whereClause = args.search
+        ? {
+            OR: [
+              {
+                name: {
+                  contains: args.search,
+                  mode: "insensitive" as Prisma.QueryMode,
+                },
+              },
+              {
+                email: {
+                  contains: args.search,
+                  mode: "insensitive" as Prisma.QueryMode,
+                },
+              },
+            ],
+          }
+        : undefined;
+
       try {
-        return await db.user.findMany({
-          ...query,
-          take: args.take,
-          skip: args.skip,
-          where: args.search
-            ? {
-                OR: [
-                  {
-                    name: {
-                      contains: args.search,
-                      mode: "insensitive",
-                    },
-                  },
-                  {
-                    email: {
-                      contains: args.search,
-                      mode: "insensitive",
-                    },
-                  },
-                ],
-              }
-            : undefined,
+        const [items, totalCount] = await Promise.all([
+          db.user.findMany({
+            take: args.take,
+            skip: args.skip,
+            where: whereClause,
+            orderBy: {
+              createdAt: "desc",
+            },
+          }),
+          db.user.count({ where: whereClause }),
+        ]);
+
+        const pageInfo = calculatePaginationInfo({
+          totalCount,
+          take: args.take ?? 10,
+          skip: args.skip ?? 0,
         });
+
+        return {
+          items,
+          pageInfo,
+        };
       } catch (error) {
         handlePrismaError(error);
       }

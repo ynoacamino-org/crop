@@ -1,4 +1,4 @@
-import type { CaseType, Jurisdiction } from "@prisma/client/client";
+import type { Jurisdiction } from "@prisma/client/client";
 import { handlePrismaError } from "@prisma/lib/error-handler";
 import { builder } from "@/builder";
 import { db } from "@/lib/db";
@@ -10,7 +10,7 @@ import { CreateLegalCaseInput, UpdateLegalCaseInput } from "./inputs";
 builder.mutationField("createLegalCase", (t) =>
   t.prismaField({
     type: "LegalCase",
-    authScopes: { admin: true },
+    authScopes: { collaborator: true },
     args: {
       input: t.arg({
         type: CreateLegalCaseInput,
@@ -40,7 +40,11 @@ builder.mutationField("createLegalCase", (t) =>
             caseDate: input.caseDate,
             resolutionDate: input.resolutionDate,
             jurisdiction: input.jurisdiction as Jurisdiction | undefined,
-            caseType: input.caseType as CaseType | undefined,
+            caseType: input.caseTypeId
+              ? {
+                  connect: { id: input.caseTypeId },
+                }
+              : undefined,
             court: input.courtId
               ? {
                   connect: { id: input.courtId },
@@ -60,7 +64,7 @@ builder.mutationField("createLegalCase", (t) =>
 builder.mutationField("updateLegalCase", (t) =>
   t.prismaField({
     type: "LegalCase",
-    authScopes: { admin: true },
+    authScopes: { collaborator: true },
     args: {
       id: t.arg.string({
         required: true,
@@ -120,11 +124,23 @@ builder.mutationField("updateLegalCase", (t) =>
             ...(input.jurisdiction !== undefined && {
               jurisdiction: input.jurisdiction as Jurisdiction,
             }),
-            ...(input.caseType !== undefined && {
-              caseType: input.caseType as CaseType,
+            ...(input.caseTypeId !== undefined && {
+              caseType: input.caseTypeId
+                ? {
+                    connect: { id: input.caseTypeId },
+                  }
+                : {
+                    disconnect: true,
+                  },
             }),
             ...(input.courtId !== undefined && {
-              courtId: input.courtId,
+              court: input.courtId
+                ? {
+                    connect: { id: input.courtId },
+                  }
+                : {
+                    disconnect: true,
+                  },
             }),
           },
         });

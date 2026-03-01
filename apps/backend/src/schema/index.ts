@@ -2,6 +2,7 @@ import { builder } from "../builder";
 import "./user";
 import "./media";
 import "./court";
+import "./case-type";
 import "./pagination";
 import "./legal-case";
 import "./article";

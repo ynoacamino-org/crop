@@ -1,5 +1,4 @@
 import {
-  CaseTypeEnum,
   createLegalCaseSchema,
   JurisdictionEnum,
   updateLegalCaseSchema,
@@ -56,9 +55,9 @@ export const CreateLegalCaseInput = builder.inputType("CreateLegalCaseInput", {
       required: false,
       validate: JurisdictionEnum.optional(),
     }),
-    caseType: t.string({
+    caseTypeId: t.string({
       required: false,
-      validate: CaseTypeEnum.optional(),
+      validate: createLegalCaseSchema.shape.caseTypeId,
     }),
     courtId: t.string({
       required: false,
@@ -117,9 +116,9 @@ export const UpdateLegalCaseInput = builder.inputType("UpdateLegalCaseInput", {
       required: false,
       validate: JurisdictionEnum.optional().nullable(),
     }),
-    caseType: t.string({
+    caseTypeId: t.string({
       required: false,
-      validate: CaseTypeEnum.optional().nullable(),
+      validate: updateLegalCaseSchema.shape.caseTypeId,
     }),
     courtId: t.string({
       required: false,
