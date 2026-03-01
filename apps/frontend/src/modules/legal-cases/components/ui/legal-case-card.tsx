@@ -33,7 +33,6 @@ interface LegalCaseCardProps {
 }
 
 export function LegalCaseCard({
-  id,
   slug,
   caseNumber,
   caseName,

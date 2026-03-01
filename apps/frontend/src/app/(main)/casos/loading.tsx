@@ -1,4 +1,3 @@
-import { Scale } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/shared/components/ui/card";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 
@@ -8,7 +7,6 @@ export default function Loading() {
       {/* Header Skeleton */}
       <div className="space-y-2">
         <div className="flex items-center gap-2">
-          <Scale className="size-8" />
           <Skeleton className="h-9 w-64" />
         </div>
         <Skeleton className="h-5 w-96" />

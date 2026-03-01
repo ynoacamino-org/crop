@@ -97,7 +97,7 @@ export default async function LegalCasePage({ params }: LegalCasePageProps) {
               <Calendar className="h-4 w-4" />
               Fechas
             </h3>
-            <dl className="space-y-2 text-sm">
+            <dl className="space-y-2">
               {caseDate && (
                 <>
                   <dt className="font-medium">Fecha del caso</dt>
@@ -121,7 +121,7 @@ export default async function LegalCasePage({ params }: LegalCasePageProps) {
               <Gavel className="h-4 w-4" />
               Tribunal
             </h3>
-            <dl className="space-y-2 text-sm">
+            <dl className="space-y-2">
               <dt className="font-medium">Nombre</dt>
               <dd className="text-muted-foreground">{legalCase.court.name}</dd>
               {legalCase.court.type && (
@@ -168,7 +168,7 @@ export default async function LegalCasePage({ params }: LegalCasePageProps) {
               <Users className="h-5 w-5" />
               Partes Involucradas
             </h2>
-            <dl className="space-y-3 text-sm">
+            <dl className="space-y-3">
               {legalCase.plaintiff && (
                 <div>
                   <dt className="font-semibold">Demandante</dt>
@@ -206,7 +206,7 @@ export default async function LegalCasePage({ params }: LegalCasePageProps) {
               <Scale className="h-5 w-5" />
               Magistrados
             </h2>
-            <p className="text-muted-foreground text-sm">{legalCase.judges}</p>
+            <p className="text-muted-foreground">{legalCase.judges}</p>
           </div>
         )}
 
@@ -230,7 +230,7 @@ export default async function LegalCasePage({ params }: LegalCasePageProps) {
               <FileText className="h-5 w-5" />
               Fundamentación Legal
             </h2>
-            <p className="whitespace-pre-wrap text-muted-foreground text-sm leading-relaxed">
+            <p className="whitespace-pre-wrap text-muted-foreground leading-relaxed">
               {legalCase.legalBasis}
             </p>
           </div>
@@ -249,7 +249,7 @@ export default async function LegalCasePage({ params }: LegalCasePageProps) {
               >
                 <h3 className="font-medium">{article.title}</h3>
                 {article.excerpt && (
-                  <p className="mt-1 line-clamp-2 text-muted-foreground text-sm">
+                  <p className="mt-1 line-clamp-2 text-muted-foreground">
                     {article.excerpt}
                   </p>
                 )}

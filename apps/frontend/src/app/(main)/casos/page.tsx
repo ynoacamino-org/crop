@@ -1,4 +1,4 @@
-import { Scale, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { LegalCaseCard } from "@/modules/legal-cases/components/ui/legal-case-card";
 import {
   RecentLegalCasesDocument,
@@ -41,8 +41,7 @@ export default async function LegalCasesPage({
     <div className="space-y-8">
       {/* Header */}
       <div className="space-y-2">
-        <h1 className="flex items-center gap-2 font-bold text-3xl tracking-tight">
-          <Scale className="size-8" />
+        <h1 className="flex items-center gap-2 font-bold text-4xl tracking-tight md:text-5xl">
           Casos Legales
         </h1>
         <p className="text-muted-foreground">
