@@ -18,6 +18,7 @@ query RecentLegalCases(
       id
       caseNumber
       caseName
+      slug
       summary
       parties
       plaintiff

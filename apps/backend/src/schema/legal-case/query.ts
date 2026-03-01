@@ -123,6 +123,10 @@ builder.queryField("legalCase", (t) =>
         required: false,
         description: "Legal case ID",
       }),
+      slug: t.arg.string({
+        required: false,
+        description: "Legal case slug",
+      }),
       caseNumber: t.arg.string({
         required: false,
         description: "Legal case number",
@@ -131,14 +135,18 @@ builder.queryField("legalCase", (t) =>
     resolve: async (query, _root, rawArgs) => {
       const args = sanitize(rawArgs);
 
-      if (!args.id && !args.caseNumber) {
-        throw new NotFoundError("Se debe proporcionar id o caseNumber");
+      if (!args.id && !args.slug && !args.caseNumber) {
+        throw new NotFoundError("Se debe proporcionar id, slug o caseNumber");
       }
 
       try {
         const legalCase = await db.legalCase.findFirst({
           ...query,
-          where: args.id ? { id: args.id } : { caseNumber: args.caseNumber },
+          where: args.id
+            ? { id: args.id }
+            : args.slug
+              ? { slug: args.slug }
+              : { caseNumber: args.caseNumber },
         });
 
         if (!legalCase) {

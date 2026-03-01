@@ -1,4 +1,4 @@
-import { BookOpen, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { ArticleCard } from "@/modules/articles/components/ui/article-card";
 import {
   RecentArticlesDocument,
@@ -41,8 +41,7 @@ export default async function ArticlesPage({
     <div className="space-y-8">
       {/* Header */}
       <div className="space-y-2">
-        <h1 className="flex items-center gap-2 font-bold text-3xl tracking-tight">
-          <BookOpen className="size-8" />
+        <h1 className="flex items-center gap-2 font-bold text-4xl tracking-tight md:text-5xl">
           Artículos
         </h1>
         <p className="text-muted-foreground">

@@ -190,6 +190,7 @@ export type LegalCase = {
   parties?: Maybe<Scalars['String']['output']>;
   plaintiff?: Maybe<Scalars['String']['output']>;
   resolutionDate?: Maybe<Scalars['DateTime']['output']>;
+  slug: Scalars['String']['output'];
   summary?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['DateTime']['output'];
   verdict?: Maybe<Scalars['String']['output']>;
@@ -367,6 +368,7 @@ export type QueryCourtsArgs = {
 export type QueryLegalCaseArgs = {
   caseNumber?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
+  slug?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -537,7 +539,7 @@ export type ArticleQueryVariables = Exact<{
 }>;
 
 
-export type ArticleQuery = { __typename?: 'Query', article: { __typename?: 'Article', id: string, title: string, slug: string, content: string, excerpt?: string | null, publishedAt?: Date | null, readingTimeMin?: number | null, views: number, author: { __typename?: 'User', id: string, name?: string | null, image?: string | null }, featuredImage?: { __typename?: 'Media', id: string, url: string, alt?: string | null } | null, categories: Array<{ __typename?: 'Category', id: string, name: string, slug: string }>, tags: Array<{ __typename?: 'Tag', id: string, name: string, slug: string }>, legalCases: Array<{ __typename?: 'LegalCase', id: string, caseNumber: string, caseName: string, jurisdiction?: Jurisdiction | null, caseType?: CaseType | null }> } };
+export type ArticleQuery = { __typename?: 'Query', article: { __typename?: 'Article', id: string, title: string, slug: string, content: string, excerpt?: string | null, publishedAt?: Date | null, readingTimeMin?: number | null, views: number, author: { __typename?: 'User', id: string, name?: string | null, image?: string | null }, featuredImage?: { __typename?: 'Media', id: string, url: string, alt?: string | null } | null, categories: Array<{ __typename?: 'Category', id: string, name: string, slug: string }>, tags: Array<{ __typename?: 'Tag', id: string, name: string, slug: string }>, legalCases: Array<{ __typename?: 'LegalCase', id: string, slug: string, caseNumber: string, caseName: string, jurisdiction?: Jurisdiction | null, caseType?: CaseType | null }> } };
 
 export type RecentArticlesQueryVariables = Exact<{
   take?: InputMaybe<Scalars['Int']['input']>;
@@ -549,11 +551,12 @@ export type RecentArticlesQuery = { __typename?: 'Query', articles: { __typename
 
 export type LegalCaseQueryVariables = Exact<{
   id?: InputMaybe<Scalars['String']['input']>;
+  slug?: InputMaybe<Scalars['String']['input']>;
   caseNumber?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
-export type LegalCaseQuery = { __typename?: 'Query', legalCase: { __typename?: 'LegalCase', id: string, caseNumber: string, caseName: string, summary?: string | null, parties?: string | null, plaintiff?: string | null, defendant?: string | null, judges?: string | null, verdict?: string | null, legalBasis?: string | null, jurisdiction?: Jurisdiction | null, caseType?: CaseType | null, caseDate?: Date | null, resolutionDate?: Date | null, createdAt: Date, updatedAt: Date, court?: { __typename?: 'Court', id: string, name: string, type?: CourtType | null, jurisdiction?: Jurisdiction | null, description?: string | null } | null, articles: Array<{ __typename?: 'Article', id: string, title: string, slug: string, excerpt?: string | null, status: ArticleStatus, publishedAt?: Date | null, createdAt: Date }> } };
+export type LegalCaseQuery = { __typename?: 'Query', legalCase: { __typename?: 'LegalCase', id: string, caseNumber: string, caseName: string, slug: string, summary?: string | null, parties?: string | null, plaintiff?: string | null, defendant?: string | null, judges?: string | null, verdict?: string | null, legalBasis?: string | null, jurisdiction?: Jurisdiction | null, caseType?: CaseType | null, caseDate?: Date | null, resolutionDate?: Date | null, createdAt: Date, updatedAt: Date, court?: { __typename?: 'Court', id: string, name: string, type?: CourtType | null, jurisdiction?: Jurisdiction | null, description?: string | null } | null, articles: Array<{ __typename?: 'Article', id: string, title: string, slug: string, excerpt?: string | null, status: ArticleStatus, publishedAt?: Date | null, createdAt: Date }> } };
 
 export type RecentLegalCasesQueryVariables = Exact<{
   take?: InputMaybe<Scalars['Int']['input']>;
@@ -565,7 +568,7 @@ export type RecentLegalCasesQueryVariables = Exact<{
 }>;
 
 
-export type RecentLegalCasesQuery = { __typename?: 'Query', legalCases: { __typename?: 'LegalCasesConnection', items: Array<{ __typename?: 'LegalCase', id: string, caseNumber: string, caseName: string, summary?: string | null, parties?: string | null, plaintiff?: string | null, defendant?: string | null, jurisdiction?: Jurisdiction | null, caseType?: CaseType | null, caseDate?: Date | null, resolutionDate?: Date | null, createdAt: Date, court?: { __typename?: 'Court', id: string, name: string, type?: CourtType | null, jurisdiction?: Jurisdiction | null } | null }>, pageInfo: { __typename?: 'PaginationInfo', totalCount: number, hasNextPage: boolean, hasPreviousPage: boolean } } };
+export type RecentLegalCasesQuery = { __typename?: 'Query', legalCases: { __typename?: 'LegalCasesConnection', items: Array<{ __typename?: 'LegalCase', id: string, caseNumber: string, caseName: string, slug: string, summary?: string | null, parties?: string | null, plaintiff?: string | null, defendant?: string | null, jurisdiction?: Jurisdiction | null, caseType?: CaseType | null, caseDate?: Date | null, resolutionDate?: Date | null, createdAt: Date, court?: { __typename?: 'Court', id: string, name: string, type?: CourtType | null, jurisdiction?: Jurisdiction | null } | null }>, pageInfo: { __typename?: 'PaginationInfo', totalCount: number, hasNextPage: boolean, hasPreviousPage: boolean } } };
 
 export type MediasQueryVariables = Exact<{
   take?: InputMaybe<Scalars['Int']['input']>;
@@ -762,6 +765,7 @@ export const ArticleDocument = gql`
     }
     legalCases {
       id
+      slug
       caseNumber
       caseName
       jurisdiction
@@ -819,11 +823,12 @@ export function useRecentArticlesQuery(options?: Omit<Urql.UseQueryArgs<RecentAr
   return Urql.useQuery<RecentArticlesQuery, RecentArticlesQueryVariables>({ query: RecentArticlesDocument, ...options });
 };
 export const LegalCaseDocument = gql`
-    query LegalCase($id: String, $caseNumber: String) {
-  legalCase(id: $id, caseNumber: $caseNumber) {
+    query LegalCase($id: String, $slug: String, $caseNumber: String) {
+  legalCase(id: $id, slug: $slug, caseNumber: $caseNumber) {
     id
     caseNumber
     caseName
+    slug
     summary
     parties
     plaintiff
@@ -874,6 +879,7 @@ export const RecentLegalCasesDocument = gql`
       id
       caseNumber
       caseName
+      slug
       summary
       parties
       plaintiff

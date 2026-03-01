@@ -135,6 +135,7 @@ model LegalCase {
   id              String    @id @default(cuid())
   caseNumber      String    @unique
   caseName        String
+  slug            String    @unique
   summary         String?
   parties         String?
   plaintiff       String?
@@ -153,6 +154,7 @@ model LegalCase {
   caseType        CaseType?
 
   @@index([caseNumber])
+  @@index([slug])
   @@index([courtId])
   @@index([jurisdiction])
   @@index([caseType])

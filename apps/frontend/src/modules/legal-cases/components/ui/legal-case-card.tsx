@@ -18,6 +18,7 @@ import { formatLongDate } from "@/shared/lib/format-date";
 
 interface LegalCaseCardProps {
   id: string;
+  slug: string;
   caseNumber: string;
   caseName: string;
   summary?: string | null;
@@ -33,6 +34,7 @@ interface LegalCaseCardProps {
 
 export function LegalCaseCard({
   id,
+  slug,
   caseNumber,
   caseName,
   summary,
@@ -44,7 +46,7 @@ export function LegalCaseCard({
   court,
 }: LegalCaseCardProps) {
   return (
-    <Link href={`/casos/${id}`} className="group">
+    <Link href={`/casos/${slug}`} className="group">
       <Card className="h-full transition-all hover:border-primary hover:shadow-md">
         <CardHeader>
           <div className="mb-2 flex flex-wrap items-center gap-2">

@@ -20,6 +20,7 @@ export const LegalCase = builder.prismaObject("LegalCase", {
     id: t.exposeID("id"),
     caseNumber: t.exposeString("caseNumber"),
     caseName: t.exposeString("caseName"),
+    slug: t.exposeString("slug"),
     summary: t.exposeString("summary", { nullable: true }),
     parties: t.exposeString("parties", { nullable: true }),
     plaintiff: t.exposeString("plaintiff", { nullable: true }),

@@ -148,6 +148,26 @@ async function downloadAndUploadImage(seed: string, width = 1200, height = 800):
 	}
 }
 
+/**
+ * Genera un slug único a partir del nombre del caso y número de expediente
+ */
+function generateCaseSlug(caseName: string, caseNumber: string): string {
+	const baseSlug = caseName
+		.toLowerCase()
+		.normalize("NFD")
+		.replace(/[\u0300-\u036f]/g, "")
+		.replace(/[^\w\s-]/g, "")
+		.replace(/\s+/g, "-")
+		.replace(/-+/g, "-")
+		.substring(0, 60);
+	
+	const caseNumberSlug = caseNumber
+		.toLowerCase()
+		.replace(/[^\w\s-]/g, "-");
+	
+	return `${baseSlug}-${caseNumberSlug}`.replace(/-+/g, "-");
+}
+
 const adapter = new PrismaPg({
 	connectionString: DATABASE_URL,
 });
@@ -403,10 +423,13 @@ async function main() {
 		const caseTitle = caseTitles[Math.floor(Math.random() * caseTitles.length)];
 		const plaintiff = faker.person.fullName();
 		const defendant = faker.person.fullName();
+		const caseNumber = `${String(faker.number.int({ min: 100, max: 999 })).padStart(3, "0")}-${faker.number.int({ min: 2020, max: 2026 })}-${faker.number.int({ min: 0, max: 99 })}`;
+		const caseName = `${plaintiff} vs ${defendant}`;
 
 		legalCases.push({
-			caseNumber: `${String(faker.number.int({ min: 100, max: 999 })).padStart(3, "0")}-${faker.number.int({ min: 2020, max: 2026 })}-${faker.number.int({ min: 0, max: 99 })}`,
-			caseName: `${plaintiff} vs ${defendant}`,
+			caseNumber,
+			caseName,
+			slug: generateCaseSlug(caseName, caseNumber),
 			summary: `Caso sobre ${caseTitle?.toLowerCase()}. ${faker.lorem.sentence({ min: 10, max: 20 })}`,
 			parties: `DEMANDANTE: ${plaintiff}\nDEMANDADO: ${defendant}\nTERCERO INTERVINIENTE: ${faker.datatype.boolean() ? faker.person.fullName() : null}`,
 			plaintiff,

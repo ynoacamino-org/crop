@@ -3,6 +3,7 @@ import { handlePrismaError } from "@prisma/lib/error-handler";
 import { builder } from "@/builder";
 import { db } from "@/lib/db";
 import { NotFoundError, UnauthorizedError } from "@/lib/errors/gql";
+import { generateCaseSlug } from "@/lib/utils/generate-slug";
 import { sanitize } from "@/lib/utils/sanitize";
 import { CreateLegalCaseInput, UpdateLegalCaseInput } from "./inputs";
 
@@ -28,6 +29,7 @@ builder.mutationField("createLegalCase", (t) =>
           data: {
             caseNumber: input.caseNumber,
             caseName: input.caseName,
+            slug: generateCaseSlug(input.caseName, input.caseNumber),
             summary: input.summary,
             parties: input.parties,
             plaintiff: input.plaintiff,
@@ -39,9 +41,11 @@ builder.mutationField("createLegalCase", (t) =>
             resolutionDate: input.resolutionDate,
             jurisdiction: input.jurisdiction as Jurisdiction | undefined,
             caseType: input.caseType as CaseType | undefined,
-            ...(input.courtId && {
-              courtId: input.courtId,
-            }),
+            court: input.courtId
+              ? {
+                  connect: { id: input.courtId },
+                }
+              : undefined,
           },
         });
       } catch (error) {
@@ -82,12 +86,20 @@ builder.mutationField("updateLegalCase", (t) =>
           throw new NotFoundError("Caso legal no encontrado");
         }
 
+        // Regenerate slug if caseName or caseNumber changes
+        const newCaseName = input.caseName ?? legalCase.caseName;
+        const newCaseNumber = input.caseNumber ?? legalCase.caseNumber;
+        const shouldUpdateSlug = input.caseName || input.caseNumber;
+
         return await db.legalCase.update({
           ...query,
           where: { id },
           data: {
             ...(input.caseNumber && { caseNumber: input.caseNumber }),
             ...(input.caseName && { caseName: input.caseName }),
+            ...(shouldUpdateSlug && {
+              slug: generateCaseSlug(newCaseName, newCaseNumber),
+            }),
             ...(input.summary !== undefined && { summary: input.summary }),
             ...(input.parties !== undefined && { parties: input.parties }),
             ...(input.plaintiff !== undefined && {

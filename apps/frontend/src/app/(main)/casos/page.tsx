@@ -71,6 +71,7 @@ export default async function LegalCasesPage({
             <LegalCaseCard
               key={legalCase.id}
               id={legalCase.id}
+              slug={legalCase.slug}
               caseNumber={legalCase.caseNumber}
               caseName={legalCase.caseName}
               summary={legalCase.summary}

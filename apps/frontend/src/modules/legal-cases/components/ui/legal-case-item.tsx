@@ -11,6 +11,7 @@ import { formatMediumDate } from "@/shared/lib/format-date";
 
 interface LegalCaseItemProps {
   id: string;
+  slug: string;
   caseNumber: string;
   caseName: string;
   summary?: string | null;
@@ -24,7 +25,7 @@ interface LegalCaseItemProps {
 }
 
 export function LegalCaseItem({
-  id,
+  slug,
   caseNumber,
   caseName,
   summary,
@@ -41,7 +42,7 @@ export function LegalCaseItem({
         {/* Header */}
         <div className="flex items-start justify-between gap-4">
           <Link
-            href={`/casos/${id}`}
+            href={`/casos/${slug}`}
             className="flex-1 space-y-1.5 transition-colors"
           >
             <h3 className="font-semibold text-lg leading-tight tracking-tight group-hover:text-primary">

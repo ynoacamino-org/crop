@@ -179,6 +179,7 @@ export const LegalCaseScalarFieldEnum = {
   id: 'id',
   caseNumber: 'caseNumber',
   caseName: 'caseName',
+  slug: 'slug',
   summary: 'summary',
   parties: 'parties',
   plaintiff: 'plaintiff',

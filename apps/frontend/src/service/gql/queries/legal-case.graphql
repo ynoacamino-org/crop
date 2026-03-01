@@ -1,8 +1,9 @@
-query LegalCase($id: String, $caseNumber: String) {
-  legalCase(id: $id, caseNumber: $caseNumber) {
+query LegalCase($id: String, $slug: String, $caseNumber: String) {
+  legalCase(id: $id, slug: $slug, caseNumber: $caseNumber) {
     id
     caseNumber
     caseName
+    slug
     summary
     parties
     plaintiff

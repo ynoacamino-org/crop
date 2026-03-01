@@ -26,16 +26,16 @@ import {
 import { formatLongDate } from "@/shared/lib/format-date";
 
 interface LegalCasePageProps {
-  params: Promise<{ id: string }>;
+  params: Promise<{ slug: string }>;
 }
 
 export default async function LegalCasePage({ params }: LegalCasePageProps) {
-  const { id } = await params;
+  const { slug } = await params;
   const { gql } = await getService();
 
   const result = await gql.query<LegalCaseQuery, LegalCaseQueryVariables>(
     LegalCaseDocument,
-    { id },
+    { slug },
   );
 
   if (result.error || !result.data?.legalCase) {
@@ -79,7 +79,7 @@ export default async function LegalCasePage({ params }: LegalCasePageProps) {
         </div>
 
         <div className="space-y-2">
-          <h1 className="font-semibold text-3xl tracking-tight">
+          <h1 className="font-bold text-4xl tracking-tight md:text-5xl">
             {legalCase.caseName}
           </h1>
           <p className="font-mono text-muted-foreground text-sm">

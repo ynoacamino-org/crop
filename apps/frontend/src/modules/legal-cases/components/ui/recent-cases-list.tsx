@@ -66,6 +66,7 @@ export function RecentCasesList({ take = 8 }: RecentCasesListProps) {
         <LegalCaseItem
           key={legalCase.id}
           id={legalCase.id}
+          slug={legalCase.slug}
           caseNumber={legalCase.caseNumber}
           caseName={legalCase.caseName}
           summary={legalCase.summary}

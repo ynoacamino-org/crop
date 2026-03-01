@@ -7,8 +7,8 @@ import {
   Tag,
   User,
 } from "lucide-react";
-import Link from "next/link";
 import { notFound } from "next/navigation";
+import { RelatedLegalCaseCard } from "@/modules/legal-cases/components/ui/related-legal-case-card";
 import {
   ArticleDocument,
   type ArticleQuery,
@@ -21,12 +21,6 @@ import {
   AlertTitle,
 } from "@/shared/components/ui/alert";
 import { Badge } from "@/shared/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/shared/components/ui/card";
 import { Separator } from "@/shared/components/ui/separator";
 import { formatLongDate } from "@/shared/lib/format-date";
 import { lexicalToHtml } from "@/shared/lib/lexical-to-html";
@@ -171,36 +165,14 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
             <div className="grid gap-4 md:grid-cols-2">
               {article.legalCases.map((legalCase) => (
-                <Link
+                <RelatedLegalCaseCard
                   key={legalCase.id}
-                  href={`/casos/${legalCase.id}`}
-                  className="group"
-                >
-                  <Card className="transition-all hover:border-primary/50">
-                    <CardHeader>
-                      <div className="mb-2 flex flex-wrap items-center gap-2">
-                        {legalCase.caseType && (
-                          <Badge variant="secondary" className="text-xs">
-                            {legalCase.caseType}
-                          </Badge>
-                        )}
-                        {legalCase.jurisdiction && (
-                          <Badge variant="outline" className="text-xs">
-                            {legalCase.jurisdiction}
-                          </Badge>
-                        )}
-                      </div>
-                      <CardTitle className="line-clamp-2 transition-colors group-hover:text-primary">
-                        {legalCase.caseName}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="font-mono text-muted-foreground text-sm">
-                        {legalCase.caseNumber}
-                      </p>
-                    </CardContent>
-                  </Card>
-                </Link>
+                  slug={legalCase.slug}
+                  caseName={legalCase.caseName}
+                  caseNumber={legalCase.caseNumber}
+                  jurisdiction={legalCase.jurisdiction}
+                  caseType={legalCase.caseType}
+                />
               ))}
             </div>
           </section>

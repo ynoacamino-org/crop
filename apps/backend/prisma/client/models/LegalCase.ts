@@ -28,6 +28,7 @@ export type LegalCaseMinAggregateOutputType = {
   id: string | null
   caseNumber: string | null
   caseName: string | null
+  slug: string | null
   summary: string | null
   parties: string | null
   plaintiff: string | null
@@ -48,6 +49,7 @@ export type LegalCaseMaxAggregateOutputType = {
   id: string | null
   caseNumber: string | null
   caseName: string | null
+  slug: string | null
   summary: string | null
   parties: string | null
   plaintiff: string | null
@@ -68,6 +70,7 @@ export type LegalCaseCountAggregateOutputType = {
   id: number
   caseNumber: number
   caseName: number
+  slug: number
   summary: number
   parties: number
   plaintiff: number
@@ -90,6 +93,7 @@ export type LegalCaseMinAggregateInputType = {
   id?: true
   caseNumber?: true
   caseName?: true
+  slug?: true
   summary?: true
   parties?: true
   plaintiff?: true
@@ -110,6 +114,7 @@ export type LegalCaseMaxAggregateInputType = {
   id?: true
   caseNumber?: true
   caseName?: true
+  slug?: true
   summary?: true
   parties?: true
   plaintiff?: true
@@ -130,6 +135,7 @@ export type LegalCaseCountAggregateInputType = {
   id?: true
   caseNumber?: true
   caseName?: true
+  slug?: true
   summary?: true
   parties?: true
   plaintiff?: true
@@ -223,6 +229,7 @@ export type LegalCaseGroupByOutputType = {
   id: string
   caseNumber: string
   caseName: string
+  slug: string
   summary: string | null
   parties: string | null
   plaintiff: string | null
@@ -264,6 +271,7 @@ export type LegalCaseWhereInput = {
   id?: Prisma.StringFilter<"LegalCase"> | string
   caseNumber?: Prisma.StringFilter<"LegalCase"> | string
   caseName?: Prisma.StringFilter<"LegalCase"> | string
+  slug?: Prisma.StringFilter<"LegalCase"> | string
   summary?: Prisma.StringNullableFilter<"LegalCase"> | string | null
   parties?: Prisma.StringNullableFilter<"LegalCase"> | string | null
   plaintiff?: Prisma.StringNullableFilter<"LegalCase"> | string | null
@@ -286,6 +294,7 @@ export type LegalCaseOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   caseNumber?: Prisma.SortOrder
   caseName?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
   summary?: Prisma.SortOrderInput | Prisma.SortOrder
   parties?: Prisma.SortOrderInput | Prisma.SortOrder
   plaintiff?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -307,6 +316,7 @@ export type LegalCaseOrderByWithRelationInput = {
 export type LegalCaseWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   caseNumber?: string
+  slug?: string
   AND?: Prisma.LegalCaseWhereInput | Prisma.LegalCaseWhereInput[]
   OR?: Prisma.LegalCaseWhereInput[]
   NOT?: Prisma.LegalCaseWhereInput | Prisma.LegalCaseWhereInput[]
@@ -327,12 +337,13 @@ export type LegalCaseWhereUniqueInput = Prisma.AtLeast<{
   caseType?: Prisma.EnumCaseTypeNullableFilter<"LegalCase"> | $Enums.CaseType | null
   court?: Prisma.XOR<Prisma.CourtNullableScalarRelationFilter, Prisma.CourtWhereInput> | null
   articles?: Prisma.ArticleListRelationFilter
-}, "id" | "caseNumber">
+}, "id" | "caseNumber" | "slug">
 
 export type LegalCaseOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   caseNumber?: Prisma.SortOrder
   caseName?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
   summary?: Prisma.SortOrderInput | Prisma.SortOrder
   parties?: Prisma.SortOrderInput | Prisma.SortOrder
   plaintiff?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -359,6 +370,7 @@ export type LegalCaseScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"LegalCase"> | string
   caseNumber?: Prisma.StringWithAggregatesFilter<"LegalCase"> | string
   caseName?: Prisma.StringWithAggregatesFilter<"LegalCase"> | string
+  slug?: Prisma.StringWithAggregatesFilter<"LegalCase"> | string
   summary?: Prisma.StringNullableWithAggregatesFilter<"LegalCase"> | string | null
   parties?: Prisma.StringNullableWithAggregatesFilter<"LegalCase"> | string | null
   plaintiff?: Prisma.StringNullableWithAggregatesFilter<"LegalCase"> | string | null
@@ -379,6 +391,7 @@ export type LegalCaseCreateInput = {
   id?: string
   caseNumber: string
   caseName: string
+  slug: string
   summary?: string | null
   parties?: string | null
   plaintiff?: string | null
@@ -400,6 +413,7 @@ export type LegalCaseUncheckedCreateInput = {
   id?: string
   caseNumber: string
   caseName: string
+  slug: string
   summary?: string | null
   parties?: string | null
   plaintiff?: string | null
@@ -421,6 +435,7 @@ export type LegalCaseUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   caseNumber?: Prisma.StringFieldUpdateOperationsInput | string
   caseName?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   parties?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plaintiff?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -442,6 +457,7 @@ export type LegalCaseUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   caseNumber?: Prisma.StringFieldUpdateOperationsInput | string
   caseName?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   parties?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plaintiff?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -463,6 +479,7 @@ export type LegalCaseCreateManyInput = {
   id?: string
   caseNumber: string
   caseName: string
+  slug: string
   summary?: string | null
   parties?: string | null
   plaintiff?: string | null
@@ -483,6 +500,7 @@ export type LegalCaseUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   caseNumber?: Prisma.StringFieldUpdateOperationsInput | string
   caseName?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   parties?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plaintiff?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -502,6 +520,7 @@ export type LegalCaseUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   caseNumber?: Prisma.StringFieldUpdateOperationsInput | string
   caseName?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   parties?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plaintiff?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -532,6 +551,7 @@ export type LegalCaseCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   caseNumber?: Prisma.SortOrder
   caseName?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
   summary?: Prisma.SortOrder
   parties?: Prisma.SortOrder
   plaintiff?: Prisma.SortOrder
@@ -552,6 +572,7 @@ export type LegalCaseMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   caseNumber?: Prisma.SortOrder
   caseName?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
   summary?: Prisma.SortOrder
   parties?: Prisma.SortOrder
   plaintiff?: Prisma.SortOrder
@@ -572,6 +593,7 @@ export type LegalCaseMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   caseNumber?: Prisma.SortOrder
   caseName?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
   summary?: Prisma.SortOrder
   parties?: Prisma.SortOrder
   plaintiff?: Prisma.SortOrder
@@ -680,6 +702,7 @@ export type LegalCaseCreateWithoutArticlesInput = {
   id?: string
   caseNumber: string
   caseName: string
+  slug: string
   summary?: string | null
   parties?: string | null
   plaintiff?: string | null
@@ -700,6 +723,7 @@ export type LegalCaseUncheckedCreateWithoutArticlesInput = {
   id?: string
   caseNumber: string
   caseName: string
+  slug: string
   summary?: string | null
   parties?: string | null
   plaintiff?: string | null
@@ -744,6 +768,7 @@ export type LegalCaseScalarWhereInput = {
   id?: Prisma.StringFilter<"LegalCase"> | string
   caseNumber?: Prisma.StringFilter<"LegalCase"> | string
   caseName?: Prisma.StringFilter<"LegalCase"> | string
+  slug?: Prisma.StringFilter<"LegalCase"> | string
   summary?: Prisma.StringNullableFilter<"LegalCase"> | string | null
   parties?: Prisma.StringNullableFilter<"LegalCase"> | string | null
   plaintiff?: Prisma.StringNullableFilter<"LegalCase"> | string | null
@@ -764,6 +789,7 @@ export type LegalCaseCreateWithoutCourtInput = {
   id?: string
   caseNumber: string
   caseName: string
+  slug: string
   summary?: string | null
   parties?: string | null
   plaintiff?: string | null
@@ -784,6 +810,7 @@ export type LegalCaseUncheckedCreateWithoutCourtInput = {
   id?: string
   caseNumber: string
   caseName: string
+  slug: string
   summary?: string | null
   parties?: string | null
   plaintiff?: string | null
@@ -830,6 +857,7 @@ export type LegalCaseUpdateWithoutArticlesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   caseNumber?: Prisma.StringFieldUpdateOperationsInput | string
   caseName?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   parties?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plaintiff?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -850,6 +878,7 @@ export type LegalCaseUncheckedUpdateWithoutArticlesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   caseNumber?: Prisma.StringFieldUpdateOperationsInput | string
   caseName?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   parties?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plaintiff?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -870,6 +899,7 @@ export type LegalCaseUncheckedUpdateManyWithoutArticlesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   caseNumber?: Prisma.StringFieldUpdateOperationsInput | string
   caseName?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   parties?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plaintiff?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -890,6 +920,7 @@ export type LegalCaseCreateManyCourtInput = {
   id?: string
   caseNumber: string
   caseName: string
+  slug: string
   summary?: string | null
   parties?: string | null
   plaintiff?: string | null
@@ -909,6 +940,7 @@ export type LegalCaseUpdateWithoutCourtInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   caseNumber?: Prisma.StringFieldUpdateOperationsInput | string
   caseName?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   parties?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plaintiff?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -929,6 +961,7 @@ export type LegalCaseUncheckedUpdateWithoutCourtInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   caseNumber?: Prisma.StringFieldUpdateOperationsInput | string
   caseName?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   parties?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plaintiff?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -949,6 +982,7 @@ export type LegalCaseUncheckedUpdateManyWithoutCourtInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   caseNumber?: Prisma.StringFieldUpdateOperationsInput | string
   caseName?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   parties?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plaintiff?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -999,6 +1033,7 @@ export type LegalCaseSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   id?: boolean
   caseNumber?: boolean
   caseName?: boolean
+  slug?: boolean
   summary?: boolean
   parties?: boolean
   plaintiff?: boolean
@@ -1022,6 +1057,7 @@ export type LegalCaseSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   id?: boolean
   caseNumber?: boolean
   caseName?: boolean
+  slug?: boolean
   summary?: boolean
   parties?: boolean
   plaintiff?: boolean
@@ -1043,6 +1079,7 @@ export type LegalCaseSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   id?: boolean
   caseNumber?: boolean
   caseName?: boolean
+  slug?: boolean
   summary?: boolean
   parties?: boolean
   plaintiff?: boolean
@@ -1064,6 +1101,7 @@ export type LegalCaseSelectScalar = {
   id?: boolean
   caseNumber?: boolean
   caseName?: boolean
+  slug?: boolean
   summary?: boolean
   parties?: boolean
   plaintiff?: boolean
@@ -1080,7 +1118,7 @@ export type LegalCaseSelectScalar = {
   caseType?: boolean
 }
 
-export type LegalCaseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "caseNumber" | "caseName" | "summary" | "parties" | "plaintiff" | "defendant" | "judges" | "verdict" | "legalBasis" | "caseDate" | "resolutionDate" | "createdAt" | "updatedAt" | "courtId" | "jurisdiction" | "caseType", ExtArgs["result"]["legalCase"]>
+export type LegalCaseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "caseNumber" | "caseName" | "slug" | "summary" | "parties" | "plaintiff" | "defendant" | "judges" | "verdict" | "legalBasis" | "caseDate" | "resolutionDate" | "createdAt" | "updatedAt" | "courtId" | "jurisdiction" | "caseType", ExtArgs["result"]["legalCase"]>
 export type LegalCaseInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   court?: boolean | Prisma.LegalCase$courtArgs<ExtArgs>
   articles?: boolean | Prisma.LegalCase$articlesArgs<ExtArgs>
@@ -1103,6 +1141,7 @@ export type $LegalCasePayload<ExtArgs extends runtime.Types.Extensions.InternalA
     id: string
     caseNumber: string
     caseName: string
+    slug: string
     summary: string | null
     parties: string | null
     plaintiff: string | null
@@ -1545,6 +1584,7 @@ export interface LegalCaseFieldRefs {
   readonly id: Prisma.FieldRef<"LegalCase", 'String'>
   readonly caseNumber: Prisma.FieldRef<"LegalCase", 'String'>
   readonly caseName: Prisma.FieldRef<"LegalCase", 'String'>
+  readonly slug: Prisma.FieldRef<"LegalCase", 'String'>
   readonly summary: Prisma.FieldRef<"LegalCase", 'String'>
   readonly parties: Prisma.FieldRef<"LegalCase", 'String'>
   readonly plaintiff: Prisma.FieldRef<"LegalCase", 'String'>

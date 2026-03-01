@@ -30,6 +30,7 @@ query Article($slug: String!) {
     }
     legalCases {
       id
+      slug
       caseNumber
       caseName
       jurisdiction
