@@ -6,9 +6,17 @@ import type {
 } from "react-hook-form";
 import type { FieldType } from "@/shared/types/form/field";
 import { SUPPORTED_FIELDS } from "@/shared/types/form/supported-fields";
+import { RichTextEditor } from "../lexical/rich-text-editor";
 import { Field, FieldDescription, FieldError, FieldLabel } from "../ui/field";
 import { Input } from "../ui/input";
 import { PasswordInput } from "../ui/password";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 import { Textarea } from "../ui/textarea";
 
 function InferItem<
@@ -93,6 +101,36 @@ function InferItem<
                 disabled={disabled}
                 {...rest}
               />
+            );
+
+          case SUPPORTED_FIELDS.RICH_TEXT:
+            return (
+              <RichTextEditor
+                value={rest.value}
+                onChange={rest.onChange}
+                disabled={disabled}
+              />
+            );
+
+          case SUPPORTED_FIELDS.SELECT:
+            return (
+              <Select
+                value={rest.value}
+                onValueChange={rest.onChange}
+                disabled={disabled}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={placeholder} />
+                </SelectTrigger>
+                <SelectContent>
+                  {"options" in props &&
+                    props.options.map((option) => (
+                      <SelectItem key={option.key} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
             );
 
           default:

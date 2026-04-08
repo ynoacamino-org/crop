@@ -5,54 +5,53 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import {
-  type UsersQuery,
-  useDeleteUserMutation,
+  type AdminArticlesQuery,
+  useDeleteArticleMutation,
 } from "@/service/gql/generated/gql.client";
 import {
   AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/shared/components/ui/alert-dialog";
+import { Button } from "@/shared/components/ui/button";
 
-type User = UsersQuery["users"]["items"][number];
+type Article = AdminArticlesQuery["articles"]["items"][number];
 
-interface DeleteUserDialogProps {
-  user: User;
+interface DeleteArticleDialogProps {
+  article: Article;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-export function DeleteUserDialog({
-  user,
+export function DeleteArticleDialog({
+  article,
   open,
   onOpenChange,
-}: DeleteUserDialogProps) {
+}: DeleteArticleDialogProps) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const [, deleteUser] = useDeleteUserMutation();
+  const [, deleteArticle] = useDeleteArticleMutation();
 
   const handleDelete = async () => {
     setIsLoading(true);
     try {
-      const result = await deleteUser({ id: user.id });
+      const result = await deleteArticle({ id: article.id });
 
       if (result.error) {
-        toast.error("Error al eliminar usuario", {
+        toast.error("Error al eliminar artículo", {
           description: result.error.message,
         });
         return;
       }
 
-      toast.success("Usuario eliminado correctamente");
+      toast.success("Artículo eliminado correctamente");
       onOpenChange(false);
       router.refresh();
-    } catch {
-      toast.error("Error al eliminar usuario");
+    } catch (_error) {
+      toast.error("Error al eliminar artículo");
     } finally {
       setIsLoading(false);
     }
@@ -64,20 +63,26 @@ export function DeleteUserDialog({
         <AlertDialogHeader>
           <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
           <AlertDialogDescription>
-            Esta acción no se puede deshacer. Esto eliminará permanentemente al
-            usuario <strong>{user.name || user.email}</strong> del sistema.
+            Esta acción no se puede deshacer. El artículo "{article.title}" será
+            eliminado permanentemente.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isLoading}>Cancelar</AlertDialogCancel>
-          <AlertDialogAction
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={isLoading}
+          >
+            Cancelar
+          </Button>
+          <Button
+            variant="destructive"
             onClick={handleDelete}
             disabled={isLoading}
-            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Eliminar
-          </AlertDialogAction>
+          </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

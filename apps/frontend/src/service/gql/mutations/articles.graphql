@@ -1,0 +1,35 @@
+# Mutation to create a new article
+mutation CreateArticle($input: CreateArticleInput!) {
+  createArticle(input: $input) {
+    id
+    title
+    slug
+    status
+  }
+}
+
+# Mutation to update an article
+mutation UpdateArticle($id: String!, $input: UpdateArticleInput!) {
+  updateArticle(id: $id, input: $input) {
+    id
+    title
+    slug
+    status
+  }
+}
+
+# Mutation to update article status
+mutation UpdateArticleStatus($id: String!, $status: String!) {
+  updateArticle(id: $id, input: { status: $status }) {
+    id
+    status
+  }
+}
+
+# Mutation to delete an article
+mutation DeleteArticle($id: String!) {
+  deleteArticle(id: $id) {
+    id
+    title
+  }
+}

@@ -1,10 +1,13 @@
 "use client";
 
+import { Shield } from "lucide-react";
+import Link from "next/link";
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
 } from "@/shared/components/ui/avatar";
+import { Button } from "@/shared/components/ui/button";
 import {
   Popover,
   PopoverContent,
@@ -53,7 +56,15 @@ export function AccountPopover() {
               <p className="text-muted-foreground text-sm">{user.email}</p>
             </div>
           </div>
-          <div className="border-t pt-4">
+          <div className="flex flex-col gap-2 border-t pt-4">
+            {user.role === "ADMIN" && (
+              <Button asChild variant="outline" className="w-full">
+                <Link href="/admin">
+                  <Shield className="mr-2 h-4 w-4" />
+                  Panel de Admin
+                </Link>
+              </Button>
+            )}
             <LogoutButton />
           </div>
         </div>

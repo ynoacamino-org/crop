@@ -44,3 +44,28 @@ query Article($slug: String!) {
     }
   }
 }
+
+query ArticleById($id: String!) {
+  article(id: $id) {
+    id
+    title
+    slug
+    content
+    excerpt
+    status
+    publishedAt
+    readingTimeMin
+    featuredImage {
+      id
+      url
+    }
+    categories {
+      id
+      name
+    }
+    tags {
+      id
+      name
+    }
+  }
+}

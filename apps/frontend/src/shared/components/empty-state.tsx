@@ -1,5 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import { Search } from "lucide-react";
+import { cn } from "../lib/utils";
 
 interface EmptyStateProps {
   icon?: LucideIcon;
@@ -16,7 +17,10 @@ export function EmptyState({
 }: EmptyStateProps) {
   return (
     <div
-      className={`flex min-h-100 flex-col items-center justify-center gap-2 py-12 ${className || ""}`}
+      className={cn(
+        "flex min-h-100 flex-col items-center justify-center gap-2 py-12",
+        className,
+      )}
     >
       <Icon className="size-12 text-muted-foreground" />
       <p className="text-muted-foreground">{title}</p>

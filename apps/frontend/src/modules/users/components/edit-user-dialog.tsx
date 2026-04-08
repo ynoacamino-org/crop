@@ -93,9 +93,8 @@ export function EditUserDialog({
       toast.success("Usuario actualizado correctamente");
       onOpenChange(false);
       router.refresh();
-    } catch (error) {
+    } catch (_error) {
       toast.error("Error al actualizar usuario");
-      console.error(error);
     } finally {
       setIsLoading(false);
     }

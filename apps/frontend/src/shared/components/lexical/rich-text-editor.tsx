@@ -12,9 +12,10 @@ import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
 import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import { MarkdownShortcutPlugin } from "@lexical/react/LexicalMarkdownShortcutPlugin";
+import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
-import type { EditorThemeClasses } from "lexical";
+import type { EditorState, EditorThemeClasses } from "lexical";
 
 import { MediaNode } from "./nodes/media-node.client";
 import DragDropPastePlugin from "./plugins/drag-drop-paste-plugin";
@@ -55,7 +56,17 @@ function onError(error: Error) {
   throw error;
 }
 
-export function RichTextEditor() {
+interface RichTextEditorProps {
+  value?: string;
+  onChange?: (value: string) => void;
+  disabled?: boolean;
+}
+
+export function RichTextEditor({
+  value,
+  onChange,
+  disabled = false,
+}: RichTextEditorProps) {
   const editorConfig = {
     namespace: "RichTextEditor",
     nodes: [
@@ -71,6 +82,15 @@ export function RichTextEditor() {
     ],
     onError,
     theme,
+    editable: !disabled,
+    editorState: value || undefined,
+  };
+
+  const handleChange = (editorState: EditorState) => {
+    if (onChange && !disabled) {
+      const json = JSON.stringify(editorState.toJSON());
+      onChange(json);
+    }
   };
 
   return (
@@ -93,6 +113,7 @@ export function RichTextEditor() {
             }
             ErrorBoundary={LexicalErrorBoundary}
           />
+          <OnChangePlugin onChange={handleChange} />
           <HistoryPlugin />
           <AutoFocusPlugin />
           <ListPlugin />

@@ -572,6 +572,36 @@ export type UsersConnection = {
   pageInfo: PaginationInfo;
 };
 
+export type CreateArticleMutationVariables = Exact<{
+  input: CreateArticleInput;
+}>;
+
+
+export type CreateArticleMutation = { __typename?: 'Mutation', createArticle: { __typename?: 'Article', id: string, title: string, slug: string, status: ArticleStatus } };
+
+export type UpdateArticleMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+  input: UpdateArticleInput;
+}>;
+
+
+export type UpdateArticleMutation = { __typename?: 'Mutation', updateArticle: { __typename?: 'Article', id: string, title: string, slug: string, status: ArticleStatus } };
+
+export type UpdateArticleStatusMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+  status: Scalars['String']['input'];
+}>;
+
+
+export type UpdateArticleStatusMutation = { __typename?: 'Mutation', updateArticle: { __typename?: 'Article', id: string, status: ArticleStatus } };
+
+export type DeleteArticleMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type DeleteArticleMutation = { __typename?: 'Mutation', deleteArticle: { __typename?: 'Article', id: string, title: string } };
+
 export type CreateCaseTypeMutationVariables = Exact<{
   input: CreateCaseTypeInput;
 }>;
@@ -643,6 +673,16 @@ export type DeleteUserMutationVariables = Exact<{
 
 export type DeleteUserMutation = { __typename?: 'Mutation', deleteUser: { __typename?: 'User', id: string, email: string } };
 
+export type AdminArticlesQueryVariables = Exact<{
+  take?: InputMaybe<Scalars['Int']['input']>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  search?: InputMaybe<Scalars['String']['input']>;
+  status?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type AdminArticlesQuery = { __typename?: 'Query', articles: { __typename?: 'ArticlesConnection', items: Array<{ __typename?: 'Article', id: string, title: string, slug: string, excerpt?: string | null, status: ArticleStatus, publishedAt?: Date | null, createdAt: Date, updatedAt: Date, views: number, author: { __typename?: 'User', id: string, name?: string | null, email: string }, categories: Array<{ __typename?: 'Category', id: string, name: string }> }>, pageInfo: { __typename?: 'PaginationInfo', totalCount: number, hasNextPage: boolean, hasPreviousPage: boolean } } };
+
 export type AdminStatsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -654,6 +694,13 @@ export type ArticleQueryVariables = Exact<{
 
 
 export type ArticleQuery = { __typename?: 'Query', article: { __typename?: 'Article', id: string, title: string, slug: string, content: string, excerpt?: string | null, publishedAt?: Date | null, readingTimeMin?: number | null, views: number, author: { __typename?: 'User', id: string, name?: string | null, image?: string | null }, featuredImage?: { __typename?: 'Media', id: string, url: string, alt?: string | null } | null, categories: Array<{ __typename?: 'Category', id: string, name: string, slug: string }>, tags: Array<{ __typename?: 'Tag', id: string, name: string, slug: string }>, legalCases: Array<{ __typename?: 'LegalCase', id: string, slug: string, caseNumber: string, caseName: string, jurisdiction?: Jurisdiction | null, caseType?: { __typename?: 'CaseType', id: string, name: string, slug: string, color?: string | null, icon?: string | null } | null }> } };
+
+export type ArticleByIdQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type ArticleByIdQuery = { __typename?: 'Query', article: { __typename?: 'Article', id: string, title: string, slug: string, content: string, excerpt?: string | null, status: ArticleStatus, publishedAt?: Date | null, readingTimeMin?: number | null, featuredImage?: { __typename?: 'Media', id: string, url: string } | null, categories: Array<{ __typename?: 'Category', id: string, name: string }>, tags: Array<{ __typename?: 'Tag', id: string, name: string }> } };
 
 export type RecentArticlesQueryVariables = Exact<{
   take?: InputMaybe<Scalars['Int']['input']>;
@@ -672,6 +719,16 @@ export type CaseTypesQueryVariables = Exact<{
 
 
 export type CaseTypesQuery = { __typename?: 'Query', caseTypes: { __typename?: 'CaseTypesConnection', items: Array<{ __typename?: 'CaseType', id: string, name: string, slug: string, description?: string | null, color?: string | null, icon?: string | null, order?: number | null, active: boolean }>, pageInfo: { __typename?: 'PaginationInfo', totalCount: number, hasNextPage: boolean, hasPreviousPage: boolean } } };
+
+export type CategoriesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type CategoriesQuery = { __typename?: 'Query', categories: Array<{ __typename?: 'Category', id: string, name: string, slug: string }> };
+
+export type TagsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type TagsQuery = { __typename?: 'Query', tags: Array<{ __typename?: 'Tag', id: string, name: string, slug: string }> };
 
 export type LegalCaseQueryVariables = Exact<{
   id?: InputMaybe<Scalars['String']['input']>;
@@ -726,6 +783,58 @@ export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 export type MeQuery = { __typename?: 'Query', me?: { __typename?: 'User', id: string, name?: string | null, email: string, emailVerified: boolean, role: Role, image?: string | null, createdAt: Date, updatedAt: Date } | null };
 
 
+export const CreateArticleDocument = gql`
+    mutation CreateArticle($input: CreateArticleInput!) {
+  createArticle(input: $input) {
+    id
+    title
+    slug
+    status
+  }
+}
+    `;
+
+export function useCreateArticleMutation() {
+  return Urql.useMutation<CreateArticleMutation, CreateArticleMutationVariables>(CreateArticleDocument);
+};
+export const UpdateArticleDocument = gql`
+    mutation UpdateArticle($id: String!, $input: UpdateArticleInput!) {
+  updateArticle(id: $id, input: $input) {
+    id
+    title
+    slug
+    status
+  }
+}
+    `;
+
+export function useUpdateArticleMutation() {
+  return Urql.useMutation<UpdateArticleMutation, UpdateArticleMutationVariables>(UpdateArticleDocument);
+};
+export const UpdateArticleStatusDocument = gql`
+    mutation UpdateArticleStatus($id: String!, $status: String!) {
+  updateArticle(id: $id, input: {status: $status}) {
+    id
+    status
+  }
+}
+    `;
+
+export function useUpdateArticleStatusMutation() {
+  return Urql.useMutation<UpdateArticleStatusMutation, UpdateArticleStatusMutationVariables>(UpdateArticleStatusDocument);
+};
+export const DeleteArticleDocument = gql`
+    mutation DeleteArticle($id: String!) {
+  deleteArticle(id: $id) {
+    id
+    title
+  }
+}
+    `;
+
+export function useDeleteArticleMutation() {
+  return Urql.useMutation<DeleteArticleMutation, DeleteArticleMutationVariables>(DeleteArticleDocument);
+};
 export const CreateCaseTypeDocument = gql`
     mutation CreateCaseType($input: CreateCaseTypeInput!) {
   createCaseType(input: $input) {
@@ -908,6 +1017,41 @@ export const DeleteUserDocument = gql`
 export function useDeleteUserMutation() {
   return Urql.useMutation<DeleteUserMutation, DeleteUserMutationVariables>(DeleteUserDocument);
 };
+export const AdminArticlesDocument = gql`
+    query AdminArticles($take: Int, $skip: Int, $search: String, $status: String) {
+  articles(take: $take, skip: $skip, search: $search, status: $status) {
+    items {
+      id
+      title
+      slug
+      excerpt
+      status
+      publishedAt
+      createdAt
+      updatedAt
+      views
+      author {
+        id
+        name
+        email
+      }
+      categories {
+        id
+        name
+      }
+    }
+    pageInfo {
+      totalCount
+      hasNextPage
+      hasPreviousPage
+    }
+  }
+}
+    `;
+
+export function useAdminArticlesQuery(options?: Omit<Urql.UseQueryArgs<AdminArticlesQueryVariables>, 'query'>) {
+  return Urql.useQuery<AdminArticlesQuery, AdminArticlesQueryVariables>({ query: AdminArticlesDocument, ...options });
+};
 export const AdminStatsDocument = gql`
     query AdminStats {
   articles(take: 1) {
@@ -988,6 +1132,36 @@ export const ArticleDocument = gql`
 export function useArticleQuery(options: Omit<Urql.UseQueryArgs<ArticleQueryVariables>, 'query'>) {
   return Urql.useQuery<ArticleQuery, ArticleQueryVariables>({ query: ArticleDocument, ...options });
 };
+export const ArticleByIdDocument = gql`
+    query ArticleById($id: String!) {
+  article(id: $id) {
+    id
+    title
+    slug
+    content
+    excerpt
+    status
+    publishedAt
+    readingTimeMin
+    featuredImage {
+      id
+      url
+    }
+    categories {
+      id
+      name
+    }
+    tags {
+      id
+      name
+    }
+  }
+}
+    `;
+
+export function useArticleByIdQuery(options: Omit<Urql.UseQueryArgs<ArticleByIdQueryVariables>, 'query'>) {
+  return Urql.useQuery<ArticleByIdQuery, ArticleByIdQueryVariables>({ query: ArticleByIdDocument, ...options });
+};
 export const RecentArticlesDocument = gql`
     query RecentArticles($take: Int, $skip: Int, $search: String) {
   articles(take: $take, skip: $skip, status: "PUBLISHED", search: $search) {
@@ -1056,6 +1230,32 @@ export const CaseTypesDocument = gql`
 
 export function useCaseTypesQuery(options?: Omit<Urql.UseQueryArgs<CaseTypesQueryVariables>, 'query'>) {
   return Urql.useQuery<CaseTypesQuery, CaseTypesQueryVariables>({ query: CaseTypesDocument, ...options });
+};
+export const CategoriesDocument = gql`
+    query Categories {
+  categories {
+    id
+    name
+    slug
+  }
+}
+    `;
+
+export function useCategoriesQuery(options?: Omit<Urql.UseQueryArgs<CategoriesQueryVariables>, 'query'>) {
+  return Urql.useQuery<CategoriesQuery, CategoriesQueryVariables>({ query: CategoriesDocument, ...options });
+};
+export const TagsDocument = gql`
+    query Tags {
+  tags {
+    id
+    name
+    slug
+  }
+}
+    `;
+
+export function useTagsQuery(options?: Omit<Urql.UseQueryArgs<TagsQueryVariables>, 'query'>) {
+  return Urql.useQuery<TagsQuery, TagsQueryVariables>({ query: TagsDocument, ...options });
 };
 export const LegalCaseDocument = gql`
     query LegalCase($id: String, $slug: String, $caseNumber: String) {
