@@ -1,0 +1,8 @@
+{
+  "project_name": "crop",
+  "languages": {
+    "TypeScript": {
+      "language_servers": ["tsgo", "vtsls"],
+    },
+  },
+}
