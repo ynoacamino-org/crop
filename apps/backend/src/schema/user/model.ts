@@ -1,9 +1,12 @@
-import { Role } from "@prisma/client/enums";
 import { builder } from "@/builder";
+import { ROLE_VALUES } from "@/db/schema";
 
-builder.enumType(Role, { name: "Role" });
+export const Role = builder.enumType("Role", {
+  values: ROLE_VALUES,
+});
 
-export const User = builder.prismaObject("User", {
+export const User = builder.drizzleObject("users", {
+  name: "User",
   fields: (t) => ({
     id: t.exposeID("id"),
     name: t.exposeString("name", { nullable: true }),

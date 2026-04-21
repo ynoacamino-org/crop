@@ -1,12 +1,13 @@
-import type { CourtType, Jurisdiction } from "@prisma/client/client";
-import { handlePrismaError } from "@prisma/lib/error-handler";
+import { and, asc, eq, ilike } from "drizzle-orm";
 import { builder } from "@/builder";
+import { courts } from "@/db/schema";
 import { db } from "@/lib/db";
+import { handleDbError } from "@/lib/errors/db";
 import { NotFoundError } from "@/lib/errors/gql";
 import { sanitize } from "@/lib/utils/sanitize";
 
 builder.queryField("courts", (t) =>
-  t.prismaField({
+  t.field({
     type: ["Court"],
     args: {
       take: t.arg.int({
@@ -32,38 +33,47 @@ builder.queryField("courts", (t) =>
         description: "Search term for court name",
       }),
     },
-    resolve: async (query, _root, rawArgs) => {
+    resolve: async (_root, rawArgs) => {
       const args = sanitize(rawArgs);
 
       try {
-        return await db.court.findMany({
-          ...query,
-          take: args.take,
-          skip: args.skip,
-          where: {
-            ...(args.type && {
-              type: args.type as CourtType,
-            }),
-            ...(args.jurisdiction && {
-              jurisdiction: args.jurisdiction as Jurisdiction,
-            }),
-            ...(args.search && {
-              name: { contains: args.search, mode: "insensitive" },
-            }),
-          },
-          orderBy: {
-            name: "asc",
-          },
-        });
+        const filters = [
+          args.type
+            ? eq(
+                courts.type,
+                args.type as Exclude<typeof courts.$inferSelect.type, null>,
+              )
+            : undefined,
+          args.jurisdiction
+            ? eq(
+                courts.jurisdiction,
+                args.jurisdiction as Exclude<
+                  typeof courts.$inferSelect.jurisdiction,
+                  null
+                >,
+              )
+            : undefined,
+          args.search ? ilike(courts.name, `%${args.search}%`) : undefined,
+        ].filter((condition): condition is NonNullable<typeof condition> =>
+          Boolean(condition),
+        );
+
+        return await db
+          .select()
+          .from(courts)
+          .where(filters.length ? and(...filters) : undefined)
+          .orderBy(asc(courts.name))
+          .limit(args.take ?? 10)
+          .offset(args.skip ?? 0);
       } catch (error) {
-        handlePrismaError(error);
+        handleDbError(error);
       }
     },
   }),
 );
 
 builder.queryField("court", (t) =>
-  t.prismaField({
+  t.field({
     type: "Court",
     args: {
       id: t.arg.string({
@@ -71,14 +81,15 @@ builder.queryField("court", (t) =>
         description: "Court ID",
       }),
     },
-    resolve: async (query, _root, rawArgs) => {
+    resolve: async (_root, rawArgs) => {
       const args = sanitize(rawArgs);
 
       try {
-        const court = await db.court.findUnique({
-          ...query,
-          where: { id: args.id },
-        });
+        const [court] = await db
+          .select()
+          .from(courts)
+          .where(eq(courts.id, args.id))
+          .limit(1);
 
         if (!court) {
           throw new NotFoundError("Corte no encontrada");
@@ -86,7 +97,7 @@ builder.queryField("court", (t) =>
 
         return court;
       } catch (error) {
-        handlePrismaError(error);
+        handleDbError(error);
       }
     },
   }),

@@ -1,8 +1,9 @@
-import type { Prisma } from "@prisma/client/client";
-import { handlePrismaError } from "@prisma/lib/error-handler";
 import { UsersPayloadSchema } from "@repo/schemas";
+import { desc, eq, ilike, or, sql } from "drizzle-orm";
 import { builder } from "@/builder";
+import { users } from "@/db/schema";
 import { db } from "@/lib/db";
+import { handleDbError } from "@/lib/errors/db";
 import { sanitize } from "@/lib/utils/sanitize";
 import {
   calculatePaginationInfo,
@@ -13,21 +14,25 @@ import {
 const UsersConnection = createPaginatedResponse("Users", "User");
 
 builder.queryField("me", (t) =>
-  t.prismaField({
+  t.field({
     type: "User",
     nullable: true,
     authScopes: {
       authenticated: true,
     },
-    resolve: async (_query, _root, _args, ctx) => {
+    resolve: async (_root, _args, ctx) => {
       if (!ctx.user) return null;
 
       try {
-        return await db.user.findUnique({
-          where: { id: ctx.user.id },
-        });
+        const [user] = await db
+          .select()
+          .from(users)
+          .where(eq(users.id, ctx.user.id))
+          .limit(1);
+
+        return user ?? null;
       } catch (error) {
-        handlePrismaError(error, {
+        handleDbError(error, {
           notFound: "Usuario no encontrado",
         });
       }
@@ -64,36 +69,30 @@ builder.queryField("users", (t) =>
       const args = sanitize(rawArgs);
 
       const whereClause = args.search
-        ? {
-            OR: [
-              {
-                name: {
-                  contains: args.search,
-                  mode: "insensitive" as Prisma.QueryMode,
-                },
-              },
-              {
-                email: {
-                  contains: args.search,
-                  mode: "insensitive" as Prisma.QueryMode,
-                },
-              },
-            ],
-          }
+        ? or(
+            ilike(users.name, `%${args.search}%`),
+            ilike(users.email, `%${args.search}%`),
+          )
         : undefined;
 
       try {
-        const [items, totalCount] = await Promise.all([
-          db.user.findMany({
-            take: args.take,
-            skip: args.skip,
-            where: whereClause,
-            orderBy: {
-              createdAt: "desc",
-            },
-          }),
-          db.user.count({ where: whereClause }),
+        const itemsQuery = db
+          .select()
+          .from(users)
+          .orderBy(desc(users.createdAt))
+          .limit(args.take ?? 10)
+          .offset(args.skip ?? 0);
+
+        const countQuery = db
+          .select({ totalCount: sql<number>`count(*)::int` })
+          .from(users);
+
+        const [items, totalCountRows] = await Promise.all([
+          whereClause ? itemsQuery.where(whereClause) : itemsQuery,
+          whereClause ? countQuery.where(whereClause) : countQuery,
         ]);
+
+        const totalCount = totalCountRows[0]?.totalCount ?? 0;
 
         const pageInfo = calculatePaginationInfo({
           totalCount,
@@ -106,7 +105,7 @@ builder.queryField("users", (t) =>
           pageInfo,
         };
       } catch (error) {
-        handlePrismaError(error);
+        handleDbError(error);
       }
     },
   }),

@@ -1,25 +1,53 @@
 import SchemaBuilder from "@pothos/core";
-import PrismaPlugin from "@pothos/plugin-prisma";
+import DrizzlePlugin from "@pothos/plugin-drizzle";
 import ScopeAuthPlugin from "@pothos/plugin-scope-auth";
 import ValidationPlugin from "@pothos/plugin-validation";
-import type { User } from "@prisma/client/client";
-import type PrismaTypes from "@prisma/generated";
-import { getDatamodel } from "@prisma/generated";
+import { getTableConfig } from "drizzle-orm/pg-core";
 import { DateTimeResolver } from "graphql-scalars";
+import type {
+  ArticleModel,
+  CaseTypeModel,
+  CategoryModel,
+  CourtModel,
+  LegalCaseModel,
+  MediaModel,
+  RoleValue,
+  TagModel,
+  UserModel,
+} from "@/db/schema";
+import { relations } from "@/db/schema";
 import { db } from "@/lib/db";
+
+type DrizzleRelations = typeof relations;
+
+export interface CurrentUser {
+  id: string;
+  email: string;
+  role: RoleValue;
+}
 
 export const builder = new SchemaBuilder<{
   Defaults: "v3";
+  Objects: {
+    User: UserModel;
+    Media: MediaModel;
+    Article: ArticleModel;
+    Category: CategoryModel;
+    Tag: TagModel;
+    LegalCase: LegalCaseModel;
+    Court: CourtModel;
+    CaseType: CaseTypeModel;
+  };
   AuthScopes: {
     public: boolean;
     authenticated: boolean;
     collaborator: boolean;
     admin: boolean;
   };
-  PrismaTypes: PrismaTypes;
+  DrizzleRelations: DrizzleRelations;
   Scalars: {
     ID: {
-      Output: number | string;
+      Output: string;
       Input: string;
     };
     DateTime: {
@@ -28,14 +56,15 @@ export const builder = new SchemaBuilder<{
     };
   };
   Context: {
-    user?: User;
+    user?: CurrentUser;
   };
 }>({
   defaults: "v3",
-  plugins: [ValidationPlugin, PrismaPlugin, ScopeAuthPlugin],
-  prisma: {
+  plugins: [DrizzlePlugin, ValidationPlugin, ScopeAuthPlugin],
+  drizzle: {
     client: db,
-    dmmf: getDatamodel(),
+    getTableConfig,
+    relations,
   },
   authScopes: (context) => ({
     public: true,

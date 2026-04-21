@@ -1,16 +1,18 @@
 import { betterAuth } from "better-auth";
-import { prismaAdapter } from "better-auth/adapters/prisma";
+import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import {
   BACKEND_URL,
   BETTER_AUTH_SECRET,
   GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET,
 } from "@/config/env";
+import { authSchema } from "@/db/schema";
 import { db } from "@/lib/db";
 
 export const auth = betterAuth({
-  database: prismaAdapter(db, {
-    provider: "postgresql",
+  database: drizzleAdapter(db, {
+    provider: "pg",
+    schema: authSchema,
   }),
   secret: BETTER_AUTH_SECRET,
   baseURL: BACKEND_URL,

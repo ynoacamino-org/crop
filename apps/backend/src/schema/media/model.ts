@@ -5,7 +5,8 @@ export const MediaType = builder.enumType("MediaType", {
   values: ["IMAGE", "VIDEO", "AUDIO", "FILE"] as const,
 });
 
-export const Media = builder.prismaObject("Media", {
+export const Media = builder.drizzleObject("media", {
+  name: "Media",
   fields: (t) => ({
     id: t.exposeID("id"),
     objectKey: t.exposeString("objectKey"),
@@ -25,8 +26,6 @@ export const Media = builder.prismaObject("Media", {
     filename: t.exposeString("filename"),
     createdAt: t.expose("createdAt", { type: "DateTime" }),
     updatedAt: t.expose("updatedAt", { type: "DateTime" }),
-    uploader: t.relation("uploader", {
-      nullable: true,
-    }),
+    uploader: t.relation("uploader"),
   }),
 });

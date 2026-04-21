@@ -7,8 +7,6 @@ COPY package.json bun.lock tsconfig.json ./
 RUN bun install --frozen-lockfile
 
 COPY src ./src
-COPY prisma ./prisma
-RUN bun prisma generate
 RUN bun run build
 
 FROM docker.io/oven/bun:slim AS runner

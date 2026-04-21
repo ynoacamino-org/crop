@@ -1,7 +1,8 @@
 import { builder } from "@/builder";
 import { Jurisdiction } from "../court/model";
 
-export const LegalCase = builder.prismaObject("LegalCase", {
+export const LegalCase = builder.drizzleObject("legalCases", {
+  name: "LegalCase",
   fields: (t) => ({
     id: t.exposeID("id"),
     caseNumber: t.exposeString("caseNumber"),
@@ -23,15 +24,9 @@ export const LegalCase = builder.prismaObject("LegalCase", {
       type: Jurisdiction,
       nullable: true,
     }),
-    caseType: t.relation("caseType", {
-      nullable: true,
-    }),
-    court: t.relation("court", {
-      nullable: true,
-    }),
-    articles: t.relation("articles", {
-      nullable: false,
-    }),
+    caseType: t.relation("caseType"),
+    court: t.relation("court"),
+    articles: t.relation("articles"),
     createdAt: t.expose("createdAt", { type: "DateTime" }),
     updatedAt: t.expose("updatedAt", { type: "DateTime" }),
   }),

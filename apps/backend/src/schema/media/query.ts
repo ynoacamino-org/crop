@@ -1,11 +1,13 @@
-import { handlePrismaError } from "@prisma/lib/error-handler";
 import { MediaPayloadSchema, MediasPayloadSchema } from "@repo/schemas/media";
+import { and, desc, eq, ilike, or } from "drizzle-orm";
 import { builder } from "@/builder";
+import { media } from "@/db/schema";
 import { db } from "@/lib/db";
+import { handleDbError } from "@/lib/errors/db";
 import { sanitize } from "@/lib/utils/sanitize";
 
 builder.queryField("medias", (t) =>
-  t.prismaField({
+  t.field({
     type: ["Media"],
     args: {
       take: t.arg.int({
@@ -31,36 +33,42 @@ builder.queryField("medias", (t) =>
         validate: MediasPayloadSchema.shape.search,
       }),
     },
-    resolve: async (query, _root, rawArgs) => {
+    resolve: async (_root, rawArgs) => {
       const args = sanitize(rawArgs);
 
       try {
-        return await db.media.findMany({
-          ...query,
-          take: args.take,
-          skip: args.skip,
-          where: {
-            ...(args.type && {
-              type: args.type as "IMAGE" | "VIDEO" | "AUDIO",
-            }),
-            ...(args.search && {
-              OR: [
-                { filename: { contains: args.search, mode: "insensitive" } },
-                { alt: { contains: args.search, mode: "insensitive" } },
-              ],
-            }),
-          },
-          orderBy: { createdAt: "desc" },
-        });
+        const conditions = [
+          args.type
+            ? eq(media.type, args.type as typeof media.$inferSelect.type)
+            : undefined,
+          args.search
+            ? or(
+                ilike(media.filename, `%${args.search}%`),
+                ilike(media.alt, `%${args.search}%`),
+              )
+            : undefined,
+        ].filter((condition): condition is NonNullable<typeof condition> =>
+          Boolean(condition),
+        );
+
+        const filters = conditions.length ? and(...conditions) : undefined;
+
+        return await db
+          .select()
+          .from(media)
+          .where(filters)
+          .orderBy(desc(media.createdAt))
+          .limit(args.take ?? 10)
+          .offset(args.skip ?? 0);
       } catch (error) {
-        handlePrismaError(error);
+        handleDbError(error);
       }
     },
   }),
 );
 
 builder.queryField("media", (t) =>
-  t.prismaField({
+  t.field({
     type: "Media",
     nullable: true,
     args: {
@@ -70,16 +78,19 @@ builder.queryField("media", (t) =>
         validate: MediaPayloadSchema.shape.id,
       }),
     },
-    resolve: async (query, _root, rawArgs) => {
+    resolve: async (_root, rawArgs) => {
       const args = sanitize(rawArgs);
 
       try {
-        return await db.media.findUnique({
-          ...query,
-          where: { id: args.id },
-        });
+        const [mediaItem] = await db
+          .select()
+          .from(media)
+          .where(eq(media.id, args.id))
+          .limit(1);
+
+        return mediaItem ?? null;
       } catch (error) {
-        handlePrismaError(error);
+        handleDbError(error);
       }
     },
   }),

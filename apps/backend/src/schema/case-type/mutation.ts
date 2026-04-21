@@ -1,6 +1,8 @@
-import { handlePrismaError } from "@prisma/lib/error-handler";
+import { eq, sql } from "drizzle-orm";
 import { builder } from "@/builder";
+import { caseTypes, legalCases } from "@/db/schema";
 import { db } from "@/lib/db";
+import { handleDbError } from "@/lib/errors/db";
 import { NotFoundError, UnauthorizedError } from "@/lib/errors/gql";
 import { sanitize } from "@/lib/utils/sanitize";
 import {
@@ -11,7 +13,7 @@ import {
 } from "./inputs";
 
 builder.mutationField("createCaseType", (t) =>
-  t.prismaField({
+  t.field({
     type: "CaseType",
     authScopes: { admin: true },
     args: {
@@ -21,7 +23,7 @@ builder.mutationField("createCaseType", (t) =>
         description: "Data for creating a new case type",
       }),
     },
-    resolve: async (query, _root, rawArgs, ctx) => {
+    resolve: async (_root, rawArgs, ctx) => {
       if (!ctx.user) throw new UnauthorizedError();
 
       const { input } = sanitize(rawArgs);
@@ -30,9 +32,9 @@ builder.mutationField("createCaseType", (t) =>
       const validatedInput = createCaseTypeSchema.parse(input);
 
       try {
-        return await db.caseType.create({
-          ...query,
-          data: {
+        const [createdCaseType] = await db
+          .insert(caseTypes)
+          .values({
             name: validatedInput.name,
             slug: validatedInput.slug,
             description: validatedInput.description,
@@ -40,10 +42,16 @@ builder.mutationField("createCaseType", (t) =>
             icon: validatedInput.icon,
             order: validatedInput.order ?? 0,
             active: validatedInput.active ?? true,
-          },
-        });
+          })
+          .returning();
+
+        if (!createdCaseType) {
+          throw new Error("No se pudo crear el tipo de caso");
+        }
+
+        return createdCaseType;
       } catch (error) {
-        handlePrismaError(error, {
+        handleDbError(error, {
           duplicate: "Ya existe un tipo de caso con ese nombre o slug",
         });
       }
@@ -52,7 +60,7 @@ builder.mutationField("createCaseType", (t) =>
 );
 
 builder.mutationField("updateCaseType", (t) =>
-  t.prismaField({
+  t.field({
     type: "CaseType",
     authScopes: { admin: true },
     args: {
@@ -66,7 +74,7 @@ builder.mutationField("updateCaseType", (t) =>
         description: "Data for updating the case type",
       }),
     },
-    resolve: async (query, _root, rawArgs, ctx) => {
+    resolve: async (_root, rawArgs, ctx) => {
       if (!ctx.user) throw new UnauthorizedError();
 
       const { id, input } = sanitize(rawArgs);
@@ -75,18 +83,19 @@ builder.mutationField("updateCaseType", (t) =>
       const validatedInput = updateCaseTypeSchema.parse(input);
 
       try {
-        const caseType = await db.caseType.findUnique({
-          where: { id },
-        });
+        const [caseType] = await db
+          .select()
+          .from(caseTypes)
+          .where(eq(caseTypes.id, id))
+          .limit(1);
 
         if (!caseType) {
           throw new NotFoundError("Tipo de caso no encontrado");
         }
 
-        return await db.caseType.update({
-          ...query,
-          where: { id },
-          data: {
+        const [updatedCaseType] = await db
+          .update(caseTypes)
+          .set({
             ...(validatedInput.name !== undefined && {
               name: validatedInput.name,
             }),
@@ -108,10 +117,18 @@ builder.mutationField("updateCaseType", (t) =>
             ...(validatedInput.active !== undefined && {
               active: validatedInput.active,
             }),
-          },
-        });
+            updatedAt: new Date(),
+          })
+          .where(eq(caseTypes.id, id))
+          .returning();
+
+        if (!updatedCaseType) {
+          throw new NotFoundError("Tipo de caso no encontrado");
+        }
+
+        return updatedCaseType;
       } catch (error) {
-        handlePrismaError(error, {
+        handleDbError(error, {
           duplicate: "Ya existe un tipo de caso con ese nombre o slug",
         });
       }
@@ -120,7 +137,7 @@ builder.mutationField("updateCaseType", (t) =>
 );
 
 builder.mutationField("deleteCaseType", (t) =>
-  t.prismaField({
+  t.field({
     type: "CaseType",
     authScopes: { admin: true },
     args: {
@@ -129,38 +146,48 @@ builder.mutationField("deleteCaseType", (t) =>
         description: "Case type ID to delete",
       }),
     },
-    resolve: async (query, _root, rawArgs, ctx) => {
+    resolve: async (_root, rawArgs, ctx) => {
       if (!ctx.user) throw new UnauthorizedError();
 
       const { id } = sanitize(rawArgs);
 
       try {
-        const caseType = await db.caseType.findUnique({
-          where: { id },
-          include: {
-            _count: {
-              select: { legalCases: true },
-            },
-          },
-        });
+        const [caseType] = await db
+          .select()
+          .from(caseTypes)
+          .where(eq(caseTypes.id, id))
+          .limit(1);
 
         if (!caseType) {
           throw new NotFoundError("Tipo de caso no encontrado");
         }
 
+        const [legalCasesCountRow] = await db
+          .select({ legalCasesCount: sql<number>`count(*)::int` })
+          .from(legalCases)
+          .where(eq(legalCases.caseTypeId, id));
+
+        const legalCasesCount = legalCasesCountRow?.legalCasesCount ?? 0;
+
         // Check if case type is being used
-        if (caseType._count.legalCases > 0) {
+        if (legalCasesCount > 0) {
           throw new Error(
-            `No se puede eliminar este tipo de caso porque está siendo usado por ${caseType._count.legalCases} caso(s) legal(es)`,
+            `No se puede eliminar este tipo de caso porque está siendo usado por ${legalCasesCount} caso(s) legal(es)`,
           );
         }
 
-        return await db.caseType.delete({
-          ...query,
-          where: { id },
-        });
+        const [deletedCaseType] = await db
+          .delete(caseTypes)
+          .where(eq(caseTypes.id, id))
+          .returning();
+
+        if (!deletedCaseType) {
+          throw new NotFoundError("Tipo de caso no encontrado");
+        }
+
+        return deletedCaseType;
       } catch (error) {
-        handlePrismaError(error);
+        handleDbError(error);
       }
     },
   }),

@@ -38,7 +38,7 @@ export type Article = {
   content: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
   excerpt?: Maybe<Scalars['String']['output']>;
-  featuredImage?: Maybe<Media>;
+  featuredImage: Media;
   id: Scalars['ID']['output'];
   legalCases: Array<LegalCase>;
   publishedAt?: Maybe<Scalars['DateTime']['output']>;
@@ -206,8 +206,8 @@ export type LegalCase = {
   caseDate?: Maybe<Scalars['DateTime']['output']>;
   caseName: Scalars['String']['output'];
   caseNumber: Scalars['String']['output'];
-  caseType?: Maybe<CaseType>;
-  court?: Maybe<Court>;
+  caseType: CaseType;
+  court: Court;
   createdAt: Scalars['DateTime']['output'];
   defendant?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
@@ -241,7 +241,7 @@ export type Media = {
   size: Scalars['Int']['output'];
   type: MediaType;
   updatedAt: Scalars['DateTime']['output'];
-  uploader?: Maybe<User>;
+  uploader: User;
   url: Scalars['String']['output'];
 };
 
@@ -629,7 +629,7 @@ export type CreateMediaMutationVariables = Exact<{
 }>;
 
 
-export type CreateMediaMutation = { __typename?: 'Mutation', createMedia: { __typename?: 'Media', id: string, objectKey: string, url: string, alt?: string | null, type: MediaType, size: number, mimeType: string, filename: string, createdAt: Date, updatedAt: Date, uploader?: { __typename?: 'User', id: string, name?: string | null, email: string, image?: string | null } | null } };
+export type CreateMediaMutation = { __typename?: 'Mutation', createMedia: { __typename?: 'Media', id: string, objectKey: string, url: string, alt?: string | null, type: MediaType, size: number, mimeType: string, filename: string, createdAt: Date, updatedAt: Date, uploader: { __typename?: 'User', id: string, name?: string | null, email: string, image?: string | null } } };
 
 export type UpdateMediaMutationVariables = Exact<{
   id: Scalars['String']['input'];
@@ -637,7 +637,7 @@ export type UpdateMediaMutationVariables = Exact<{
 }>;
 
 
-export type UpdateMediaMutation = { __typename?: 'Mutation', updateMedia: { __typename?: 'Media', id: string, objectKey: string, url: string, alt?: string | null, type: MediaType, size: number, mimeType: string, filename: string, createdAt: Date, updatedAt: Date, uploader?: { __typename?: 'User', id: string, name?: string | null, email: string, image?: string | null } | null } };
+export type UpdateMediaMutation = { __typename?: 'Mutation', updateMedia: { __typename?: 'Media', id: string, objectKey: string, url: string, alt?: string | null, type: MediaType, size: number, mimeType: string, filename: string, createdAt: Date, updatedAt: Date, uploader: { __typename?: 'User', id: string, name?: string | null, email: string, image?: string | null } } };
 
 export type DeleteMediaMutationVariables = Exact<{
   id: Scalars['String']['input'];
@@ -693,14 +693,14 @@ export type ArticleQueryVariables = Exact<{
 }>;
 
 
-export type ArticleQuery = { __typename?: 'Query', article: { __typename?: 'Article', id: string, title: string, slug: string, content: string, excerpt?: string | null, publishedAt?: Date | null, readingTimeMin?: number | null, views: number, author: { __typename?: 'User', id: string, name?: string | null, image?: string | null }, featuredImage?: { __typename?: 'Media', id: string, url: string, alt?: string | null } | null, categories: Array<{ __typename?: 'Category', id: string, name: string, slug: string }>, tags: Array<{ __typename?: 'Tag', id: string, name: string, slug: string }>, legalCases: Array<{ __typename?: 'LegalCase', id: string, slug: string, caseNumber: string, caseName: string, jurisdiction?: Jurisdiction | null, caseType?: { __typename?: 'CaseType', id: string, name: string, slug: string, color?: string | null, icon?: string | null } | null }> } };
+export type ArticleQuery = { __typename?: 'Query', article: { __typename?: 'Article', id: string, title: string, slug: string, content: string, excerpt?: string | null, publishedAt?: Date | null, readingTimeMin?: number | null, views: number, author: { __typename?: 'User', id: string, name?: string | null, image?: string | null }, featuredImage: { __typename?: 'Media', id: string, url: string, alt?: string | null }, categories: Array<{ __typename?: 'Category', id: string, name: string, slug: string }>, tags: Array<{ __typename?: 'Tag', id: string, name: string, slug: string }>, legalCases: Array<{ __typename?: 'LegalCase', id: string, slug: string, caseNumber: string, caseName: string, jurisdiction?: Jurisdiction | null, caseType: { __typename?: 'CaseType', id: string, name: string, slug: string, color?: string | null, icon?: string | null } }> } };
 
 export type ArticleByIdQueryVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
 
 
-export type ArticleByIdQuery = { __typename?: 'Query', article: { __typename?: 'Article', id: string, title: string, slug: string, content: string, excerpt?: string | null, status: ArticleStatus, publishedAt?: Date | null, readingTimeMin?: number | null, featuredImage?: { __typename?: 'Media', id: string, url: string } | null, categories: Array<{ __typename?: 'Category', id: string, name: string }>, tags: Array<{ __typename?: 'Tag', id: string, name: string }> } };
+export type ArticleByIdQuery = { __typename?: 'Query', article: { __typename?: 'Article', id: string, title: string, slug: string, content: string, excerpt?: string | null, status: ArticleStatus, publishedAt?: Date | null, readingTimeMin?: number | null, featuredImage: { __typename?: 'Media', id: string, url: string }, categories: Array<{ __typename?: 'Category', id: string, name: string }>, tags: Array<{ __typename?: 'Tag', id: string, name: string }> } };
 
 export type RecentArticlesQueryVariables = Exact<{
   take?: InputMaybe<Scalars['Int']['input']>;
@@ -709,7 +709,7 @@ export type RecentArticlesQueryVariables = Exact<{
 }>;
 
 
-export type RecentArticlesQuery = { __typename?: 'Query', articles: { __typename?: 'ArticlesConnection', items: Array<{ __typename?: 'Article', id: string, title: string, slug: string, excerpt?: string | null, publishedAt?: Date | null, readingTimeMin?: number | null, views: number, author: { __typename?: 'User', id: string, name?: string | null, image?: string | null }, featuredImage?: { __typename?: 'Media', id: string, url: string, alt?: string | null } | null, categories: Array<{ __typename?: 'Category', id: string, name: string, slug: string }>, tags: Array<{ __typename?: 'Tag', id: string, name: string, slug: string }> }>, pageInfo: { __typename?: 'PaginationInfo', totalCount: number, hasNextPage: boolean, hasPreviousPage: boolean } } };
+export type RecentArticlesQuery = { __typename?: 'Query', articles: { __typename?: 'ArticlesConnection', items: Array<{ __typename?: 'Article', id: string, title: string, slug: string, excerpt?: string | null, publishedAt?: Date | null, readingTimeMin?: number | null, views: number, author: { __typename?: 'User', id: string, name?: string | null, image?: string | null }, featuredImage: { __typename?: 'Media', id: string, url: string, alt?: string | null }, categories: Array<{ __typename?: 'Category', id: string, name: string, slug: string }>, tags: Array<{ __typename?: 'Tag', id: string, name: string, slug: string }> }>, pageInfo: { __typename?: 'PaginationInfo', totalCount: number, hasNextPage: boolean, hasPreviousPage: boolean } } };
 
 export type CaseTypesQueryVariables = Exact<{
   take?: InputMaybe<Scalars['Int']['input']>;
@@ -737,7 +737,7 @@ export type LegalCaseQueryVariables = Exact<{
 }>;
 
 
-export type LegalCaseQuery = { __typename?: 'Query', legalCase: { __typename?: 'LegalCase', id: string, caseNumber: string, caseName: string, slug: string, summary?: string | null, parties?: string | null, plaintiff?: string | null, defendant?: string | null, judges?: string | null, verdict?: string | null, legalBasis?: string | null, jurisdiction?: Jurisdiction | null, caseDate?: Date | null, resolutionDate?: Date | null, createdAt: Date, updatedAt: Date, caseType?: { __typename?: 'CaseType', id: string, name: string, slug: string, color?: string | null, icon?: string | null } | null, court?: { __typename?: 'Court', id: string, name: string, type?: CourtType | null, jurisdiction?: Jurisdiction | null, description?: string | null } | null, articles: Array<{ __typename?: 'Article', id: string, title: string, slug: string, excerpt?: string | null, status: ArticleStatus, publishedAt?: Date | null, createdAt: Date }> } };
+export type LegalCaseQuery = { __typename?: 'Query', legalCase: { __typename?: 'LegalCase', id: string, caseNumber: string, caseName: string, slug: string, summary?: string | null, parties?: string | null, plaintiff?: string | null, defendant?: string | null, judges?: string | null, verdict?: string | null, legalBasis?: string | null, jurisdiction?: Jurisdiction | null, caseDate?: Date | null, resolutionDate?: Date | null, createdAt: Date, updatedAt: Date, caseType: { __typename?: 'CaseType', id: string, name: string, slug: string, color?: string | null, icon?: string | null }, court: { __typename?: 'Court', id: string, name: string, type?: CourtType | null, jurisdiction?: Jurisdiction | null, description?: string | null }, articles: Array<{ __typename?: 'Article', id: string, title: string, slug: string, excerpt?: string | null, status: ArticleStatus, publishedAt?: Date | null, createdAt: Date }> } };
 
 export type RecentLegalCasesQueryVariables = Exact<{
   take?: InputMaybe<Scalars['Int']['input']>;
@@ -749,7 +749,7 @@ export type RecentLegalCasesQueryVariables = Exact<{
 }>;
 
 
-export type RecentLegalCasesQuery = { __typename?: 'Query', legalCases: { __typename?: 'LegalCasesConnection', items: Array<{ __typename?: 'LegalCase', id: string, caseNumber: string, caseName: string, slug: string, summary?: string | null, parties?: string | null, plaintiff?: string | null, defendant?: string | null, jurisdiction?: Jurisdiction | null, caseDate?: Date | null, resolutionDate?: Date | null, createdAt: Date, caseType?: { __typename?: 'CaseType', id: string, name: string, slug: string, color?: string | null, icon?: string | null } | null, court?: { __typename?: 'Court', id: string, name: string, type?: CourtType | null, jurisdiction?: Jurisdiction | null } | null }>, pageInfo: { __typename?: 'PaginationInfo', totalCount: number, hasNextPage: boolean, hasPreviousPage: boolean } } };
+export type RecentLegalCasesQuery = { __typename?: 'Query', legalCases: { __typename?: 'LegalCasesConnection', items: Array<{ __typename?: 'LegalCase', id: string, caseNumber: string, caseName: string, slug: string, summary?: string | null, parties?: string | null, plaintiff?: string | null, defendant?: string | null, jurisdiction?: Jurisdiction | null, caseDate?: Date | null, resolutionDate?: Date | null, createdAt: Date, caseType: { __typename?: 'CaseType', id: string, name: string, slug: string, color?: string | null, icon?: string | null }, court: { __typename?: 'Court', id: string, name: string, type?: CourtType | null, jurisdiction?: Jurisdiction | null } }>, pageInfo: { __typename?: 'PaginationInfo', totalCount: number, hasNextPage: boolean, hasPreviousPage: boolean } } };
 
 export type MediasQueryVariables = Exact<{
   take?: InputMaybe<Scalars['Int']['input']>;
@@ -759,14 +759,14 @@ export type MediasQueryVariables = Exact<{
 }>;
 
 
-export type MediasQuery = { __typename?: 'Query', medias: Array<{ __typename?: 'Media', id: string, objectKey: string, url: string, alt?: string | null, type: MediaType, size: number, mimeType: string, filename: string, createdAt: Date, updatedAt: Date, uploader?: { __typename?: 'User', id: string, name?: string | null, email: string, image?: string | null } | null }> };
+export type MediasQuery = { __typename?: 'Query', medias: Array<{ __typename?: 'Media', id: string, objectKey: string, url: string, alt?: string | null, type: MediaType, size: number, mimeType: string, filename: string, createdAt: Date, updatedAt: Date, uploader: { __typename?: 'User', id: string, name?: string | null, email: string, image?: string | null } }> };
 
 export type MediaQueryVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
 
 
-export type MediaQuery = { __typename?: 'Query', media?: { __typename?: 'Media', id: string, objectKey: string, url: string, alt?: string | null, type: MediaType, size: number, mimeType: string, filename: string, createdAt: Date, updatedAt: Date, uploader?: { __typename?: 'User', id: string, name?: string | null, email: string, image?: string | null } | null } | null };
+export type MediaQuery = { __typename?: 'Query', media?: { __typename?: 'Media', id: string, objectKey: string, url: string, alt?: string | null, type: MediaType, size: number, mimeType: string, filename: string, createdAt: Date, updatedAt: Date, uploader: { __typename?: 'User', id: string, name?: string | null, email: string, image?: string | null } } | null };
 
 export type UsersQueryVariables = Exact<{
   take?: InputMaybe<Scalars['Int']['input']>;

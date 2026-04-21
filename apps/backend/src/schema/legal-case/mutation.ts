@@ -1,14 +1,15 @@
-import type { Jurisdiction } from "@prisma/client/client";
-import { handlePrismaError } from "@prisma/lib/error-handler";
+import { eq } from "drizzle-orm";
 import { builder } from "@/builder";
+import { caseTypes, courts, legalCases } from "@/db/schema";
 import { db } from "@/lib/db";
+import { handleDbError } from "@/lib/errors/db";
 import { NotFoundError, UnauthorizedError } from "@/lib/errors/gql";
 import { generateCaseSlug } from "@/lib/utils/generate-slug";
 import { sanitize } from "@/lib/utils/sanitize";
 import { CreateLegalCaseInput, UpdateLegalCaseInput } from "./inputs";
 
 builder.mutationField("createLegalCase", (t) =>
-  t.prismaField({
+  t.field({
     type: "LegalCase",
     authScopes: { collaborator: true },
     args: {
@@ -18,15 +19,39 @@ builder.mutationField("createLegalCase", (t) =>
         description: "Data for creating a new legal case",
       }),
     },
-    resolve: async (query, _root, rawArgs, ctx) => {
+    resolve: async (_root, rawArgs, ctx) => {
       if (!ctx.user) throw new UnauthorizedError();
 
       const { input } = sanitize(rawArgs);
 
       try {
-        return await db.legalCase.create({
-          ...query,
-          data: {
+        if (input.caseTypeId) {
+          const [existingCaseType] = await db
+            .select({ id: caseTypes.id })
+            .from(caseTypes)
+            .where(eq(caseTypes.id, input.caseTypeId))
+            .limit(1);
+
+          if (!existingCaseType) {
+            throw new NotFoundError("Tipo de caso no encontrado");
+          }
+        }
+
+        if (input.courtId) {
+          const [existingCourt] = await db
+            .select({ id: courts.id })
+            .from(courts)
+            .where(eq(courts.id, input.courtId))
+            .limit(1);
+
+          if (!existingCourt) {
+            throw new NotFoundError("Corte no encontrada");
+          }
+        }
+
+        const [createdCase] = await db
+          .insert(legalCases)
+          .values({
             caseNumber: input.caseNumber,
             caseName: input.caseName,
             slug: generateCaseSlug(input.caseName, input.caseNumber),
@@ -39,21 +64,20 @@ builder.mutationField("createLegalCase", (t) =>
             legalBasis: input.legalBasis,
             caseDate: input.caseDate,
             resolutionDate: input.resolutionDate,
-            jurisdiction: input.jurisdiction as Jurisdiction | undefined,
-            caseType: input.caseTypeId
-              ? {
-                  connect: { id: input.caseTypeId },
-                }
-              : undefined,
-            court: input.courtId
-              ? {
-                  connect: { id: input.courtId },
-                }
-              : undefined,
-          },
-        });
+            jurisdiction:
+              input.jurisdiction as typeof legalCases.$inferInsert.jurisdiction,
+            caseTypeId: input.caseTypeId,
+            courtId: input.courtId,
+          })
+          .returning();
+
+        if (!createdCase) {
+          throw new Error("No se pudo crear el caso legal");
+        }
+
+        return createdCase;
       } catch (error) {
-        handlePrismaError(error, {
+        handleDbError(error, {
           duplicate: "Ya existe un caso con el mismo número de expediente",
         });
       }
@@ -62,7 +86,7 @@ builder.mutationField("createLegalCase", (t) =>
 );
 
 builder.mutationField("updateLegalCase", (t) =>
-  t.prismaField({
+  t.field({
     type: "LegalCase",
     authScopes: { collaborator: true },
     args: {
@@ -76,18 +100,44 @@ builder.mutationField("updateLegalCase", (t) =>
         description: "Data for updating the legal case",
       }),
     },
-    resolve: async (query, _root, rawArgs, ctx) => {
+    resolve: async (_root, rawArgs, ctx) => {
       if (!ctx.user) throw new UnauthorizedError();
 
       const { id, input } = sanitize(rawArgs);
 
       try {
-        const legalCase = await db.legalCase.findUnique({
-          where: { id },
-        });
+        const [legalCase] = await db
+          .select()
+          .from(legalCases)
+          .where(eq(legalCases.id, id))
+          .limit(1);
 
         if (!legalCase) {
           throw new NotFoundError("Caso legal no encontrado");
+        }
+
+        if (input.caseTypeId) {
+          const [existingCaseType] = await db
+            .select({ id: caseTypes.id })
+            .from(caseTypes)
+            .where(eq(caseTypes.id, input.caseTypeId))
+            .limit(1);
+
+          if (!existingCaseType) {
+            throw new NotFoundError("Tipo de caso no encontrado");
+          }
+        }
+
+        if (input.courtId) {
+          const [existingCourt] = await db
+            .select({ id: courts.id })
+            .from(courts)
+            .where(eq(courts.id, input.courtId))
+            .limit(1);
+
+          if (!existingCourt) {
+            throw new NotFoundError("Corte no encontrada");
+          }
         }
 
         // Regenerate slug if caseName or caseNumber changes
@@ -95,10 +145,9 @@ builder.mutationField("updateLegalCase", (t) =>
         const newCaseNumber = input.caseNumber ?? legalCase.caseNumber;
         const shouldUpdateSlug = input.caseName || input.caseNumber;
 
-        return await db.legalCase.update({
-          ...query,
-          where: { id },
-          data: {
+        const [updatedCase] = await db
+          .update(legalCases)
+          .set({
             ...(input.caseNumber && { caseNumber: input.caseNumber }),
             ...(input.caseName && { caseName: input.caseName }),
             ...(shouldUpdateSlug && {
@@ -122,30 +171,27 @@ builder.mutationField("updateLegalCase", (t) =>
               resolutionDate: input.resolutionDate,
             }),
             ...(input.jurisdiction !== undefined && {
-              jurisdiction: input.jurisdiction as Jurisdiction,
+              jurisdiction:
+                input.jurisdiction as typeof legalCases.$inferInsert.jurisdiction,
             }),
             ...(input.caseTypeId !== undefined && {
-              caseType: input.caseTypeId
-                ? {
-                    connect: { id: input.caseTypeId },
-                  }
-                : {
-                    disconnect: true,
-                  },
+              caseTypeId: input.caseTypeId ?? null,
             }),
             ...(input.courtId !== undefined && {
-              court: input.courtId
-                ? {
-                    connect: { id: input.courtId },
-                  }
-                : {
-                    disconnect: true,
-                  },
+              courtId: input.courtId ?? null,
             }),
-          },
-        });
+            updatedAt: new Date(),
+          })
+          .where(eq(legalCases.id, id))
+          .returning();
+
+        if (!updatedCase) {
+          throw new NotFoundError("Caso legal no encontrado");
+        }
+
+        return updatedCase;
       } catch (error) {
-        handlePrismaError(error, {
+        handleDbError(error, {
           duplicate: "Ya existe un caso con el mismo número de expediente",
         });
       }
@@ -154,7 +200,7 @@ builder.mutationField("updateLegalCase", (t) =>
 );
 
 builder.mutationField("deleteLegalCase", (t) =>
-  t.prismaField({
+  t.field({
     type: "LegalCase",
     authScopes: { admin: true },
     args: {
@@ -163,26 +209,34 @@ builder.mutationField("deleteLegalCase", (t) =>
         description: "Legal case ID to delete",
       }),
     },
-    resolve: async (query, _root, rawArgs, ctx) => {
+    resolve: async (_root, rawArgs, ctx) => {
       if (!ctx.user) throw new UnauthorizedError();
 
       const { id } = sanitize(rawArgs);
 
       try {
-        const legalCase = await db.legalCase.findUnique({
-          where: { id },
-        });
+        const [legalCase] = await db
+          .select()
+          .from(legalCases)
+          .where(eq(legalCases.id, id))
+          .limit(1);
 
         if (!legalCase) {
           throw new NotFoundError("Caso legal no encontrado");
         }
 
-        return await db.legalCase.delete({
-          ...query,
-          where: { id },
-        });
+        const [deletedCase] = await db
+          .delete(legalCases)
+          .where(eq(legalCases.id, id))
+          .returning();
+
+        if (!deletedCase) {
+          throw new NotFoundError("Caso legal no encontrado");
+        }
+
+        return deletedCase;
       } catch (error) {
-        handlePrismaError(error);
+        handleDbError(error);
       }
     },
   }),

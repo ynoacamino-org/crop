@@ -1,7 +1,8 @@
-import type { Jurisdiction, Prisma } from "@prisma/client/client";
-import { handlePrismaError } from "@prisma/lib/error-handler";
+import { and, desc, eq, ilike, or, sql } from "drizzle-orm";
 import { builder } from "@/builder";
+import { legalCases } from "@/db/schema";
 import { db } from "@/lib/db";
+import { handleDbError } from "@/lib/errors/db";
 import { NotFoundError } from "@/lib/errors/gql";
 import { sanitize } from "@/lib/utils/sanitize";
 import {
@@ -46,57 +47,49 @@ builder.queryField("legalCases", (t) =>
     resolve: async (_root, rawArgs) => {
       const args = sanitize(rawArgs);
 
-      const whereClause = {
-        ...(args.jurisdiction && {
-          jurisdiction: args.jurisdiction as Jurisdiction,
-        }),
-        ...(args.caseTypeId && {
-          caseTypeId: args.caseTypeId,
-        }),
-        ...(args.courtId && {
-          courtId: args.courtId,
-        }),
-        ...(args.search && {
-          OR: [
-            {
-              caseName: {
-                contains: args.search,
-                mode: "insensitive" as Prisma.QueryMode,
-              },
-            },
-            {
-              caseNumber: {
-                contains: args.search,
-                mode: "insensitive" as Prisma.QueryMode,
-              },
-            },
-            {
-              parties: {
-                contains: args.search,
-                mode: "insensitive" as Prisma.QueryMode,
-              },
-            },
-          ],
-        }),
-      };
+      const whereClause = and(
+        ...(args.jurisdiction
+          ? [
+              eq(
+                legalCases.jurisdiction,
+                args.jurisdiction as Exclude<
+                  typeof legalCases.$inferSelect.jurisdiction,
+                  null
+                >,
+              ),
+            ]
+          : []),
+        ...(args.caseTypeId
+          ? [eq(legalCases.caseTypeId, args.caseTypeId)]
+          : []),
+        ...(args.courtId ? [eq(legalCases.courtId, args.courtId)] : []),
+        ...(args.search
+          ? [
+              or(
+                ilike(legalCases.caseName, `%${args.search}%`),
+                ilike(legalCases.caseNumber, `%${args.search}%`),
+                ilike(legalCases.parties, `%${args.search}%`),
+              ),
+            ]
+          : []),
+      );
 
       try {
-        const [items, totalCount] = await Promise.all([
-          db.legalCase.findMany({
-            take: args.take,
-            skip: args.skip,
-            where: whereClause,
-            orderBy: {
-              caseDate: "desc",
-            },
-            include: {
-              court: true,
-            },
-          }),
-          db.legalCase.count({
-            where: whereClause,
-          }),
+        const [items, totalCountRows] = await Promise.all([
+          db
+            .select()
+            .from(legalCases)
+            .where(whereClause)
+            .orderBy(desc(legalCases.caseDate))
+            .limit(args.take ?? 10)
+            .offset(args.skip ?? 0),
+          db
+            .select({ totalCount: sql<number>`count(*)::int` })
+            .from(legalCases)
+            .where(whereClause),
         ]);
+
+        const totalCount = totalCountRows[0]?.totalCount ?? 0;
 
         const pageInfo = calculatePaginationInfo({
           totalCount,
@@ -109,14 +102,14 @@ builder.queryField("legalCases", (t) =>
           pageInfo,
         };
       } catch (error) {
-        handlePrismaError(error);
+        handleDbError(error);
       }
     },
   }),
 );
 
 builder.queryField("legalCase", (t) =>
-  t.prismaField({
+  t.field({
     type: "LegalCase",
     args: {
       id: t.arg.string({
@@ -132,7 +125,7 @@ builder.queryField("legalCase", (t) =>
         description: "Legal case number",
       }),
     },
-    resolve: async (query, _root, rawArgs) => {
+    resolve: async (_root, rawArgs) => {
       const args = sanitize(rawArgs);
 
       if (!args.id && !args.slug && !args.caseNumber) {
@@ -140,14 +133,17 @@ builder.queryField("legalCase", (t) =>
       }
 
       try {
-        const legalCase = await db.legalCase.findFirst({
-          ...query,
-          where: args.id
-            ? { id: args.id }
-            : args.slug
-              ? { slug: args.slug }
-              : { caseNumber: args.caseNumber },
-        });
+        const [legalCase] = await db
+          .select()
+          .from(legalCases)
+          .where(
+            args.id
+              ? eq(legalCases.id, args.id)
+              : args.slug
+                ? eq(legalCases.slug, args.slug)
+                : eq(legalCases.caseNumber, args.caseNumber as string),
+          )
+          .limit(1);
 
         if (!legalCase) {
           throw new NotFoundError("Caso legal no encontrado");
@@ -155,7 +151,7 @@ builder.queryField("legalCase", (t) =>
 
         return legalCase;
       } catch (error) {
-        handlePrismaError(error);
+        handleDbError(error);
       }
     },
   }),

@@ -1,6 +1,7 @@
 import { zValidator } from "@hono/zod-validator";
 import { UploadMediaPayloadSchema } from "@repo/schemas/media";
 import { Hono } from "hono";
+import { media } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import {
@@ -69,8 +70,9 @@ mediaRouter.post(
         },
       });
 
-      const media = await db.media.create({
-        data: {
+      const [createdMedia] = await db
+        .insert(media)
+        .values({
           objectKey: uploadResult.objectKey,
           url: isPublic ? uploadResult.url : null,
           alt: validatedData.alt,
@@ -79,13 +81,19 @@ mediaRouter.post(
           mimeType: uploadResult.mimeType,
           filename: uploadResult.filename,
           uploadedBy: user.id,
-        },
-      });
+        })
+        .returning();
+
+      if (!createdMedia) {
+        throw new InternalServerError(
+          "No se pudo registrar el archivo en base de datos",
+        );
+      }
 
       return c.json(
         {
           success: true,
-          data: media,
+          data: createdMedia,
         },
         201,
       );

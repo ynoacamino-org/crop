@@ -1,5 +1,7 @@
 import { caseTypesQuerySchema } from "@repo/schemas";
+import { asc, eq, sql } from "drizzle-orm";
 import { builder } from "@/builder";
+import { caseTypes } from "@/db/schema";
 import { db } from "@/lib/db";
 import { sanitize } from "@/lib/utils/sanitize";
 import {
@@ -36,19 +38,25 @@ builder.queryField("caseTypes", (t) =>
     resolve: async (_root, rawArgs) => {
       const args = sanitize(rawArgs);
 
-      const whereClause = args.includeInactive ? undefined : { active: true };
+      const whereClause = args.includeInactive
+        ? undefined
+        : eq(caseTypes.active, true);
 
-      const [items, totalCount] = await Promise.all([
-        db.caseType.findMany({
-          take: args.take,
-          skip: args.skip,
-          where: whereClause,
-          orderBy: {
-            order: "asc",
-          },
-        }),
-        db.caseType.count({ where: whereClause }),
+      const [items, totalCountRows] = await Promise.all([
+        db
+          .select()
+          .from(caseTypes)
+          .where(whereClause)
+          .orderBy(asc(caseTypes.order))
+          .limit(args.take ?? 50)
+          .offset(args.skip ?? 0),
+        db
+          .select({ totalCount: sql<number>`count(*)::int` })
+          .from(caseTypes)
+          .where(whereClause),
       ]);
+
+      const totalCount = totalCountRows[0]?.totalCount ?? 0;
 
       const pageInfo = calculatePaginationInfo({
         totalCount,
@@ -65,7 +73,7 @@ builder.queryField("caseTypes", (t) =>
 );
 
 builder.queryField("caseType", (t) =>
-  t.prismaField({
+  t.field({
     type: "CaseType",
     nullable: true,
     description: "Get a single case type by ID or slug",
@@ -73,19 +81,22 @@ builder.queryField("caseType", (t) =>
       id: t.arg.string({ required: false }),
       slug: t.arg.string({ required: false }),
     },
-    resolve: async (query, _root, args) => {
+    resolve: async (_root, args) => {
       if (!args.id && !args.slug) {
         return null;
       }
 
-      return db.caseType.findFirst({
-        ...query,
-        where: args.id
-          ? { id: args.id }
-          : args.slug
-            ? { slug: args.slug }
-            : undefined,
-      });
+      const [caseType] = await db
+        .select()
+        .from(caseTypes)
+        .where(
+          args.id
+            ? eq(caseTypes.id, args.id)
+            : eq(caseTypes.slug, args.slug as string),
+        )
+        .limit(1);
+
+      return caseType ?? null;
     },
   }),
 );

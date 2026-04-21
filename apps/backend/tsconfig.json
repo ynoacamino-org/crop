@@ -27,8 +27,9 @@
 
     // Path aliases
     "paths": {
-      "@/*": ["./src/*"],
-      "@prisma/*": ["./prisma/*"]
+      "@/*": ["./src/*"]
     }
-  }
+  },
+  "include": ["src/**/*.ts", "scripts/**/*.ts", "codegen.ts"],
+  "exclude": ["dist"]
 }

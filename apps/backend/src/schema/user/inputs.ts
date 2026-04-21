@@ -1,6 +1,6 @@
-import { Role } from "@prisma/client/enums";
 import { UpdateMePayloadSchema, UpdateUserPayloadSchema } from "@repo/schemas";
 import { builder } from "@/builder";
+import { Role } from "./model";
 
 export const UpdateUserInput = builder.inputType("UpdateUserInput", {
   fields: (t) => ({

@@ -1,5 +1,7 @@
 import { useCookies } from "@whatwg-node/server-plugin-cookies";
+import { eq } from "drizzle-orm";
 import { createYoga } from "graphql-yoga";
+import { users } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { schema } from "@/schema";
@@ -17,10 +19,10 @@ export const yoga = createYoga({
       user.email === "ynoacamino@gmail.com" &&
       user.role !== "ADMIN"
     ) {
-      await db.user.update({
-        where: { id: user.id },
-        data: { role: "ADMIN" },
-      });
+      await db
+        .update(users)
+        .set({ role: "ADMIN" })
+        .where(eq(users.id, user.id));
       user = { ...user, role: "ADMIN" };
     }
 

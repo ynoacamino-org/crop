@@ -1,16 +1,18 @@
-import { handlePrismaError } from "@prisma/lib/error-handler";
 import {
   DeleteUserPayloadSchema,
   UpdateUserPayloadSchema,
 } from "@repo/schemas";
+import { eq } from "drizzle-orm";
 import { builder } from "@/builder";
+import { users } from "@/db/schema";
 import { db } from "@/lib/db";
+import { handleDbError } from "@/lib/errors/db";
 import { UnauthorizedError } from "@/lib/errors/gql";
 import { sanitize } from "@/lib/utils/sanitize";
 import { AdminUpdateUserInput, UpdateUserInput } from "./inputs";
 
 builder.mutationField("updateMe", (t) =>
-  t.prismaField({
+  t.field({
     type: "User",
     args: {
       input: t.arg({
@@ -22,22 +24,29 @@ builder.mutationField("updateMe", (t) =>
     authScopes: {
       public: true,
     },
-    resolve: async (query, _root, rawArgs, ctx) => {
+    resolve: async (_root, rawArgs, ctx) => {
       if (!ctx.user) throw new UnauthorizedError();
 
       const { input } = sanitize(rawArgs);
 
       try {
-        return await db.user.update({
-          ...query,
-          where: { id: ctx.user.id },
-          data: {
-            name: input.name,
-            image: input.image,
-          },
-        });
+        const [updatedUser] = await db
+          .update(users)
+          .set({
+            ...(input.name !== undefined && { name: input.name }),
+            ...(input.image !== undefined && { image: input.image }),
+            updatedAt: new Date(),
+          })
+          .where(eq(users.id, ctx.user.id))
+          .returning();
+
+        if (!updatedUser) {
+          throw new Error("Usuario no encontrado");
+        }
+
+        return updatedUser;
       } catch (error) {
-        handlePrismaError(error, {
+        handleDbError(error, {
           notFound: "Usuario no encontrado",
           duplicate: "Ya existe un usuario con los mismos valores en",
         });
@@ -47,7 +56,7 @@ builder.mutationField("updateMe", (t) =>
 );
 
 builder.mutationField("updateUser", (t) =>
-  t.prismaField({
+  t.field({
     type: "User",
     args: {
       id: t.arg.id({
@@ -64,21 +73,28 @@ builder.mutationField("updateUser", (t) =>
     authScopes: {
       admin: true,
     },
-    resolve: async (query, _root, rawArgs) => {
+    resolve: async (_root, rawArgs) => {
       const { id, input } = sanitize(rawArgs);
 
       try {
-        return await db.user.update({
-          ...query,
-          where: { id: id },
-          data: {
-            name: input.name,
-            image: input.image,
-            role: input.role,
-          },
-        });
+        const [updatedUser] = await db
+          .update(users)
+          .set({
+            ...(input.name !== undefined && { name: input.name }),
+            ...(input.image !== undefined && { image: input.image }),
+            ...(input.role !== undefined && { role: input.role }),
+            updatedAt: new Date(),
+          })
+          .where(eq(users.id, String(id)))
+          .returning();
+
+        if (!updatedUser) {
+          throw new Error("El usuario que intenta actualizar no existe");
+        }
+
+        return updatedUser;
       } catch (error) {
-        handlePrismaError(error, {
+        handleDbError(error, {
           notFound: "El usuario que intenta actualizar no existe",
           duplicate: "Ya existe un usuario con los mismos valores en",
         });
@@ -88,21 +104,27 @@ builder.mutationField("updateUser", (t) =>
 );
 
 builder.mutationField("deleteMe", (t) =>
-  t.prismaField({
+  t.field({
     type: "User",
     authScopes: {
       public: true,
     },
-    resolve: async (query, _root, _args, ctx) => {
+    resolve: async (_root, _args, ctx) => {
       if (!ctx.user) throw new UnauthorizedError();
 
       try {
-        return await db.user.delete({
-          ...query,
-          where: { id: ctx.user.id },
-        });
+        const [deletedUser] = await db
+          .delete(users)
+          .where(eq(users.id, ctx.user.id))
+          .returning();
+
+        if (!deletedUser) {
+          throw new Error("Usuario no encontrado");
+        }
+
+        return deletedUser;
       } catch (error) {
-        handlePrismaError(error, {
+        handleDbError(error, {
           notFound: "Usuario no encontrado",
           foreignKey:
             "No se puede eliminar el usuario porque tiene datos relacionados",
@@ -113,7 +135,7 @@ builder.mutationField("deleteMe", (t) =>
 );
 
 builder.mutationField("deleteUser", (t) =>
-  t.prismaField({
+  t.field({
     type: "User",
     args: {
       id: t.arg.id({
@@ -125,16 +147,22 @@ builder.mutationField("deleteUser", (t) =>
     authScopes: {
       admin: true,
     },
-    resolve: async (query, _root, rawArgs) => {
+    resolve: async (_root, rawArgs) => {
       const { id } = sanitize(rawArgs);
 
       try {
-        return await db.user.delete({
-          ...query,
-          where: { id },
-        });
+        const [deletedUser] = await db
+          .delete(users)
+          .where(eq(users.id, String(id)))
+          .returning();
+
+        if (!deletedUser) {
+          throw new Error("El usuario que intenta eliminar no existe");
+        }
+
+        return deletedUser;
       } catch (error) {
-        handlePrismaError(error, {
+        handleDbError(error, {
           notFound: "El usuario que intenta eliminar no existe",
           foreignKey:
             "No se puede eliminar el usuario porque tiene datos relacionados",

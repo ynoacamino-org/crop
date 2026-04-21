@@ -1,6 +1,7 @@
 import { builder } from "@/builder";
 
-export const CaseType = builder.prismaObject("CaseType", {
+export const CaseType = builder.drizzleObject("caseTypes", {
+  name: "CaseType",
   fields: (t) => ({
     id: t.exposeID("id"),
     name: t.exposeString("name"),
@@ -10,9 +11,7 @@ export const CaseType = builder.prismaObject("CaseType", {
     icon: t.exposeString("icon", { nullable: true }),
     order: t.exposeInt("order", { nullable: true }),
     active: t.exposeBoolean("active"),
-    legalCases: t.relation("legalCases", {
-      nullable: false,
-    }),
+    legalCases: t.relation("legalCases"),
     createdAt: t.expose("createdAt", { type: "DateTime" }),
     updatedAt: t.expose("updatedAt", { type: "DateTime" }),
   }),

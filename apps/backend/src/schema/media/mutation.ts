@@ -1,17 +1,19 @@
-import { handlePrismaError } from "@prisma/lib/error-handler";
 import {
   CreateMediaPayloadSchema,
   DeleteMediaPayloadSchema,
   UpdateMediaPayloadSchema,
 } from "@repo/schemas/media";
+import { eq } from "drizzle-orm";
 import { builder } from "@/builder";
+import { media } from "@/db/schema";
 import { db } from "@/lib/db";
+import { handleDbError } from "@/lib/errors/db";
 import { NotFoundError, UnauthorizedError } from "@/lib/errors/gql";
 import { sanitize } from "@/lib/utils/sanitize";
 import { CreateMediaInput, UpdateMediaInput } from "./inputs";
 
 builder.mutationField("createMedia", (t) =>
-  t.prismaField({
+  t.field({
     type: "Media",
     authScopes: { authenticated: true },
     args: {
@@ -22,27 +24,33 @@ builder.mutationField("createMedia", (t) =>
         validate: CreateMediaPayloadSchema.shape.input,
       }),
     },
-    resolve: async (query, _root, rawArgs, ctx) => {
+    resolve: async (_root, rawArgs, ctx) => {
       if (!ctx.user) throw new UnauthorizedError();
 
       const { input } = sanitize(rawArgs);
 
       try {
-        return await db.media.create({
-          ...query,
-          data: {
+        const [createdMedia] = await db
+          .insert(media)
+          .values({
             objectKey: input.objectKey,
             url: input.url,
             alt: input.alt,
-            type: input.type as "IMAGE" | "VIDEO" | "AUDIO",
+            type: input.type as typeof media.$inferInsert.type,
             size: input.size,
             mimeType: input.mimeType,
             filename: input.filename,
             uploadedBy: ctx.user.id,
-          },
-        });
+          })
+          .returning();
+
+        if (!createdMedia) {
+          throw new Error("No se pudo crear el medio");
+        }
+
+        return createdMedia;
       } catch (error) {
-        handlePrismaError(error, {
+        handleDbError(error, {
           duplicate: "Ya existe un medio con el mismo bucketId",
         });
       }
@@ -51,7 +59,7 @@ builder.mutationField("createMedia", (t) =>
 );
 
 builder.mutationField("updateMedia", (t) =>
-  t.prismaField({
+  t.field({
     type: "Media",
     authScopes: { authenticated: true },
     args: {
@@ -67,42 +75,50 @@ builder.mutationField("updateMedia", (t) =>
         validate: UpdateMediaPayloadSchema.shape.input,
       }),
     },
-    resolve: async (query, _root, rawArgs, ctx) => {
+    resolve: async (_root, rawArgs, ctx) => {
       if (!ctx.user) throw new UnauthorizedError();
 
       const { id, input } = sanitize(rawArgs);
 
       try {
-        const media = await db.media.findUnique({
-          where: { id },
-          select: { uploadedBy: true },
-        });
+        const [mediaItem] = await db
+          .select({ uploadedBy: media.uploadedBy })
+          .from(media)
+          .where(eq(media.id, id))
+          .limit(1);
 
-        if (!media) {
+        if (!mediaItem) {
           throw new NotFoundError("Medio no encontrado");
         }
 
-        if (media.uploadedBy !== ctx.user.id && ctx.user.role !== "ADMIN") {
+        if (mediaItem.uploadedBy !== ctx.user.id && ctx.user.role !== "ADMIN") {
           throw new UnauthorizedError();
         }
 
-        return await db.media.update({
-          ...query,
-          where: { id },
-          data: {
+        const [updatedMedia] = await db
+          .update(media)
+          .set({
             ...(input.alt !== undefined && { alt: input.alt }),
-            ...(input.url && { url: input.url }),
-          },
-        });
+            ...(input.url !== undefined && { url: input.url }),
+            updatedAt: new Date(),
+          })
+          .where(eq(media.id, id))
+          .returning();
+
+        if (!updatedMedia) {
+          throw new NotFoundError("Medio no encontrado");
+        }
+
+        return updatedMedia;
       } catch (error) {
-        handlePrismaError(error);
+        handleDbError(error);
       }
     },
   }),
 );
 
 builder.mutationField("deleteMedia", (t) =>
-  t.prismaField({
+  t.field({
     type: "Media",
     authScopes: { authenticated: true },
     args: {
@@ -112,31 +128,38 @@ builder.mutationField("deleteMedia", (t) =>
         validate: DeleteMediaPayloadSchema.shape.id,
       }),
     },
-    resolve: async (query, _root, rawArgs, ctx) => {
+    resolve: async (_root, rawArgs, ctx) => {
       if (!ctx.user) throw new UnauthorizedError();
 
       const { id } = sanitize(rawArgs);
 
       try {
-        const media = await db.media.findUnique({
-          where: { id },
-          select: { uploadedBy: true },
-        });
+        const [mediaItem] = await db
+          .select({ uploadedBy: media.uploadedBy })
+          .from(media)
+          .where(eq(media.id, id))
+          .limit(1);
 
-        if (!media) {
+        if (!mediaItem) {
           throw new NotFoundError("Medio no encontrado");
         }
 
-        if (media.uploadedBy !== ctx.user.id && ctx.user.role !== "ADMIN") {
+        if (mediaItem.uploadedBy !== ctx.user.id && ctx.user.role !== "ADMIN") {
           throw new UnauthorizedError();
         }
 
-        return await db.media.delete({
-          ...query,
-          where: { id },
-        });
+        const [deletedMedia] = await db
+          .delete(media)
+          .where(eq(media.id, id))
+          .returning();
+
+        if (!deletedMedia) {
+          throw new NotFoundError("Medio no encontrado");
+        }
+
+        return deletedMedia;
       } catch (error) {
-        handlePrismaError(error);
+        handleDbError(error);
       }
     },
   }),

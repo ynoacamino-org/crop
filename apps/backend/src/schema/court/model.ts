@@ -14,7 +14,8 @@ export const Jurisdiction = builder.enumType("Jurisdiction", {
   values: ["NACIONAL", "REGIONAL", "LOCAL", "INTERNACIONAL"] as const,
 });
 
-export const Court = builder.prismaObject("Court", {
+export const Court = builder.drizzleObject("courts", {
+  name: "Court",
   fields: (t) => ({
     id: t.exposeID("id"),
     name: t.exposeString("name"),
@@ -24,9 +25,7 @@ export const Court = builder.prismaObject("Court", {
       nullable: true,
     }),
     description: t.exposeString("description", { nullable: true }),
-    cases: t.relation("cases", {
-      nullable: false,
-    }),
+    cases: t.relation("cases"),
     createdAt: t.expose("createdAt", { type: "DateTime" }),
     updatedAt: t.expose("updatedAt", { type: "DateTime" }),
   }),

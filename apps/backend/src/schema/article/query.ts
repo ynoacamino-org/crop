@@ -1,7 +1,14 @@
-import type { ArticleStatus, Prisma } from "@prisma/client/client";
-import { handlePrismaError } from "@prisma/lib/error-handler";
+import { and, asc, desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
 import { builder } from "@/builder";
+import {
+  articles,
+  articleToCategories,
+  articleToTags,
+  categories,
+  tags,
+} from "@/db/schema";
 import { db } from "@/lib/db";
+import { handleDbError } from "@/lib/errors/db";
 import { NotFoundError } from "@/lib/errors/gql";
 import { sanitize } from "@/lib/utils/sanitize";
 import {
@@ -50,71 +57,82 @@ builder.queryField("articles", (t) =>
     resolve: async (_root, rawArgs) => {
       const args = sanitize(rawArgs);
 
-      const whereClause = {
-        ...(args.status && {
-          status: args.status as ArticleStatus,
-        }),
-        ...(args.authorId && {
-          authorId: args.authorId,
-        }),
-        ...(args.categoryId && {
-          categories: {
-            some: {
-              id: args.categoryId,
-            },
-          },
-        }),
-        ...(args.tagId && {
-          tags: {
-            some: {
-              id: args.tagId,
-            },
-          },
-        }),
-        ...(args.search && {
-          OR: [
-            {
-              title: {
-                contains: args.search,
-                mode: "insensitive" as Prisma.QueryMode,
-              },
-            },
-            {
-              content: {
-                contains: args.search,
-                mode: "insensitive" as Prisma.QueryMode,
-              },
-            },
-            {
-              excerpt: {
-                contains: args.search,
-                mode: "insensitive" as Prisma.QueryMode,
-              },
-            },
-          ],
-        }),
-      };
-
       try {
-        const [items, totalCount] = await Promise.all([
-          db.article.findMany({
-            take: args.take,
-            skip: args.skip,
-            where: whereClause,
-            orderBy: {
-              publishedAt: "desc",
-            },
-            include: {
-              author: true,
-              featuredImage: true,
-              categories: true,
-              tags: true,
-            },
-          }),
-          db.article.count({
-            where: whereClause,
-          }),
+        let allowedArticleIds: string[] | undefined;
+
+        if (args.categoryId) {
+          const categoryArticleRows = await db
+            .select({ articleId: articleToCategories.articleId })
+            .from(articleToCategories)
+            .where(eq(articleToCategories.categoryId, args.categoryId));
+
+          allowedArticleIds = categoryArticleRows.map((row) => row.articleId);
+        }
+
+        if (args.tagId) {
+          const tagArticleRows = await db
+            .select({ articleId: articleToTags.articleId })
+            .from(articleToTags)
+            .where(eq(articleToTags.tagId, args.tagId));
+          const tagArticleIds = new Set(
+            tagArticleRows.map((row) => row.articleId),
+          );
+
+          allowedArticleIds = (
+            allowedArticleIds ?? tagArticleRows.map((row) => row.articleId)
+          ).filter((id) => tagArticleIds.has(id));
+        }
+
+        if (allowedArticleIds && allowedArticleIds.length === 0) {
+          return {
+            items: [],
+            pageInfo: calculatePaginationInfo({
+              totalCount: 0,
+              take: args.take ?? 10,
+              skip: args.skip ?? 0,
+            }),
+          };
+        }
+
+        const conditions = [
+          args.status
+            ? eq(
+                articles.status,
+                args.status as typeof articles.$inferSelect.status,
+              )
+            : undefined,
+          args.authorId ? eq(articles.authorId, args.authorId) : undefined,
+          allowedArticleIds
+            ? inArray(articles.id, allowedArticleIds)
+            : undefined,
+          args.search
+            ? or(
+                ilike(articles.title, `%${args.search}%`),
+                ilike(articles.content, `%${args.search}%`),
+                ilike(articles.excerpt, `%${args.search}%`),
+              )
+            : undefined,
+        ].filter((condition): condition is NonNullable<typeof condition> =>
+          Boolean(condition),
+        );
+
+        const whereClause = conditions.length ? and(...conditions) : undefined;
+
+        const [items, totalCountRows] = await Promise.all([
+          db
+            .select()
+            .from(articles)
+            .where(whereClause)
+            .orderBy(desc(articles.publishedAt))
+            .limit(args.take ?? 10)
+            .offset(args.skip ?? 0),
+          db
+            .select({ totalCount: sql<number>`count(*)::int` })
+            .from(articles)
+            .where(whereClause),
         ]);
+
+        const totalCount = totalCountRows[0]?.totalCount ?? 0;
 
         const pageInfo = calculatePaginationInfo({
           totalCount,
@@ -127,14 +145,14 @@ builder.queryField("articles", (t) =>
           pageInfo,
         };
       } catch (error) {
-        handlePrismaError(error);
+        handleDbError(error);
       }
     },
   }),
 );
 
 builder.queryField("article", (t) =>
-  t.prismaField({
+  t.field({
     type: "Article",
     args: {
       id: t.arg.string({
@@ -146,7 +164,7 @@ builder.queryField("article", (t) =>
         description: "Article slug",
       }),
     },
-    resolve: async (query, _root, rawArgs) => {
+    resolve: async (_root, rawArgs) => {
       const args = sanitize(rawArgs);
 
       if (!args.id && !args.slug) {
@@ -154,10 +172,15 @@ builder.queryField("article", (t) =>
       }
 
       try {
-        const article = await db.article.findFirst({
-          ...query,
-          where: args.id ? { id: args.id } : { slug: args.slug },
-        });
+        const [article] = await db
+          .select()
+          .from(articles)
+          .where(
+            args.id
+              ? eq(articles.id, args.id)
+              : eq(articles.slug, args.slug as string),
+          )
+          .limit(1);
 
         if (!article) {
           throw new NotFoundError("Artículo no encontrado");
@@ -165,36 +188,26 @@ builder.queryField("article", (t) =>
 
         return article;
       } catch (error) {
-        handlePrismaError(error);
+        handleDbError(error);
       }
     },
   }),
 );
 
 builder.queryField("categories", (t) =>
-  t.prismaField({
+  t.field({
     type: ["Category"],
-    resolve: async (query) => {
-      return await db.category.findMany({
-        ...query,
-        orderBy: {
-          name: "asc",
-        },
-      });
+    resolve: async () => {
+      return await db.select().from(categories).orderBy(asc(categories.name));
     },
   }),
 );
 
 builder.queryField("tags", (t) =>
-  t.prismaField({
+  t.field({
     type: ["Tag"],
-    resolve: async (query) => {
-      return await db.tag.findMany({
-        ...query,
-        orderBy: {
-          name: "asc",
-        },
-      });
+    resolve: async () => {
+      return await db.select().from(tags).orderBy(asc(tags.name));
     },
   }),
 );

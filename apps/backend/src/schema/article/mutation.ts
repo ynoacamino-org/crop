@@ -1,13 +1,19 @@
-import type { ArticleStatus } from "@prisma/client/client";
-import { handlePrismaError } from "@prisma/lib/error-handler";
+import { eq } from "drizzle-orm";
 import { builder } from "@/builder";
+import {
+  articles,
+  articleToCategories,
+  articleToLegalCases,
+  articleToTags,
+} from "@/db/schema";
 import { db } from "@/lib/db";
+import { handleDbError } from "@/lib/errors/db";
 import { NotFoundError, UnauthorizedError } from "@/lib/errors/gql";
 import { sanitize } from "@/lib/utils/sanitize";
 import { CreateArticleInput, UpdateArticleInput } from "./inputs";
 
 builder.mutationField("createArticle", (t) =>
-  t.prismaField({
+  t.field({
     type: "Article",
     authScopes: { authenticated: true },
     args: {
@@ -17,45 +23,71 @@ builder.mutationField("createArticle", (t) =>
         description: "Data for creating a new article",
       }),
     },
-    resolve: async (query, _root, rawArgs, ctx) => {
-      if (!ctx.user) throw new UnauthorizedError();
+    resolve: async (_root, rawArgs, ctx) => {
+      const currentUser = ctx.user;
+
+      if (!currentUser) throw new UnauthorizedError();
 
       const { input } = sanitize(rawArgs);
 
       try {
-        return await db.article.create({
-          ...query,
-          data: {
-            title: input.title,
-            slug: input.slug,
-            excerpt: input.excerpt,
-            content: input.content,
-            status: (input.status as ArticleStatus) || "DRAFT",
-            publishedAt: input.publishedAt,
-            readingTimeMin: input.readingTimeMin,
-            authorId: ctx.user.id,
-            ...(input.featuredImageId && {
-              featuredImageId: input.featuredImageId,
-            }),
-            ...(input.categoryIds && {
-              categories: {
-                connect: input.categoryIds.map((id) => ({ id })),
-              },
-            }),
-            ...(input.tagIds && {
-              tags: {
-                connect: input.tagIds.map((id) => ({ id })),
-              },
-            }),
-            ...(input.legalCaseIds && {
-              legalCases: {
-                connect: input.legalCaseIds.map((id) => ({ id })),
-              },
-            }),
-          },
+        return await db.transaction(async (tx) => {
+          const [createdArticle] = await tx
+            .insert(articles)
+            .values({
+              title: input.title,
+              slug: input.slug,
+              excerpt: input.excerpt,
+              content: input.content,
+              status:
+                (input.status as typeof articles.$inferInsert.status) ||
+                "DRAFT",
+              publishedAt: input.publishedAt
+                ? new Date(input.publishedAt)
+                : null,
+              readingTimeMin: input.readingTimeMin,
+              authorId: currentUser.id,
+              ...(input.featuredImageId && {
+                featuredImageId: input.featuredImageId,
+              }),
+            })
+            .returning();
+
+          if (!createdArticle) {
+            throw new Error("No se pudo crear el artículo");
+          }
+
+          if (input.categoryIds?.length) {
+            await tx.insert(articleToCategories).values(
+              input.categoryIds.map((categoryId) => ({
+                articleId: createdArticle.id,
+                categoryId,
+              })),
+            );
+          }
+
+          if (input.tagIds?.length) {
+            await tx.insert(articleToTags).values(
+              input.tagIds.map((tagId) => ({
+                articleId: createdArticle.id,
+                tagId,
+              })),
+            );
+          }
+
+          if (input.legalCaseIds?.length) {
+            await tx.insert(articleToLegalCases).values(
+              input.legalCaseIds.map((legalCaseId) => ({
+                articleId: createdArticle.id,
+                legalCaseId,
+              })),
+            );
+          }
+
+          return createdArticle;
         });
       } catch (error) {
-        handlePrismaError(error, {
+        handleDbError(error, {
           duplicate: "Ya existe un artículo con el mismo slug",
         });
       }
@@ -64,7 +96,7 @@ builder.mutationField("createArticle", (t) =>
 );
 
 builder.mutationField("updateArticle", (t) =>
-  t.prismaField({
+  t.field({
     type: "Article",
     authScopes: { authenticated: true },
     args: {
@@ -78,16 +110,17 @@ builder.mutationField("updateArticle", (t) =>
         description: "Data for updating the article",
       }),
     },
-    resolve: async (query, _root, rawArgs, ctx) => {
+    resolve: async (_root, rawArgs, ctx) => {
       if (!ctx.user) throw new UnauthorizedError();
 
       const { id, input } = sanitize(rawArgs);
 
       try {
-        const article = await db.article.findUnique({
-          where: { id },
-          select: { authorId: true },
-        });
+        const [article] = await db
+          .select({ authorId: articles.authorId })
+          .from(articles)
+          .where(eq(articles.id, id))
+          .limit(1);
 
         if (!article) {
           throw new NotFoundError("Artículo no encontrado");
@@ -97,43 +130,86 @@ builder.mutationField("updateArticle", (t) =>
           throw new UnauthorizedError();
         }
 
-        return await db.article.update({
-          ...query,
-          where: { id },
-          data: {
-            ...(input.title && { title: input.title }),
-            ...(input.slug && { slug: input.slug }),
-            ...(input.excerpt !== undefined && { excerpt: input.excerpt }),
-            ...(input.content && { content: input.content }),
-            ...(input.status && { status: input.status as ArticleStatus }),
-            ...(input.publishedAt !== undefined && {
-              publishedAt: input.publishedAt,
-            }),
-            ...(input.readingTimeMin !== undefined && {
-              readingTimeMin: input.readingTimeMin,
-            }),
-            ...(input.featuredImageId !== undefined && {
-              featuredImageId: input.featuredImageId,
-            }),
-            ...(input.categoryIds && {
-              categories: {
-                set: input.categoryIds.map((id) => ({ id })),
-              },
-            }),
-            ...(input.tagIds && {
-              tags: {
-                set: input.tagIds.map((id) => ({ id })),
-              },
-            }),
-            ...(input.legalCaseIds && {
-              legalCases: {
-                set: input.legalCaseIds.map((id) => ({ id })),
-              },
-            }),
-          },
+        return await db.transaction(async (tx) => {
+          const [updatedArticle] = await tx
+            .update(articles)
+            .set({
+              ...(input.title && { title: input.title }),
+              ...(input.slug && { slug: input.slug }),
+              ...(input.excerpt !== undefined && { excerpt: input.excerpt }),
+              ...(input.content && { content: input.content }),
+              ...(input.status && {
+                status: input.status as typeof articles.$inferInsert.status,
+              }),
+              ...(input.publishedAt !== undefined && {
+                publishedAt: input.publishedAt
+                  ? new Date(input.publishedAt)
+                  : null,
+              }),
+              ...(input.readingTimeMin !== undefined && {
+                readingTimeMin: input.readingTimeMin,
+              }),
+              ...(input.featuredImageId !== undefined && {
+                featuredImageId: input.featuredImageId,
+              }),
+              updatedAt: new Date(),
+            })
+            .where(eq(articles.id, id))
+            .returning();
+
+          if (!updatedArticle) {
+            throw new NotFoundError("Artículo no encontrado");
+          }
+
+          if (input.categoryIds !== undefined) {
+            await tx
+              .delete(articleToCategories)
+              .where(eq(articleToCategories.articleId, id));
+
+            if (input.categoryIds.length) {
+              await tx.insert(articleToCategories).values(
+                input.categoryIds.map((categoryId) => ({
+                  articleId: id,
+                  categoryId,
+                })),
+              );
+            }
+          }
+
+          if (input.tagIds !== undefined) {
+            await tx
+              .delete(articleToTags)
+              .where(eq(articleToTags.articleId, id));
+
+            if (input.tagIds.length) {
+              await tx.insert(articleToTags).values(
+                input.tagIds.map((tagId) => ({
+                  articleId: id,
+                  tagId,
+                })),
+              );
+            }
+          }
+
+          if (input.legalCaseIds !== undefined) {
+            await tx
+              .delete(articleToLegalCases)
+              .where(eq(articleToLegalCases.articleId, id));
+
+            if (input.legalCaseIds.length) {
+              await tx.insert(articleToLegalCases).values(
+                input.legalCaseIds.map((legalCaseId) => ({
+                  articleId: id,
+                  legalCaseId,
+                })),
+              );
+            }
+          }
+
+          return updatedArticle;
         });
       } catch (error) {
-        handlePrismaError(error, {
+        handleDbError(error, {
           duplicate: "Ya existe un artículo con el mismo slug",
         });
       }
@@ -142,7 +218,7 @@ builder.mutationField("updateArticle", (t) =>
 );
 
 builder.mutationField("deleteArticle", (t) =>
-  t.prismaField({
+  t.field({
     type: "Article",
     authScopes: { authenticated: true },
     args: {
@@ -151,16 +227,17 @@ builder.mutationField("deleteArticle", (t) =>
         description: "Article ID to delete",
       }),
     },
-    resolve: async (query, _root, rawArgs, ctx) => {
+    resolve: async (_root, rawArgs, ctx) => {
       if (!ctx.user) throw new UnauthorizedError();
 
       const { id } = sanitize(rawArgs);
 
       try {
-        const article = await db.article.findUnique({
-          where: { id },
-          select: { authorId: true },
-        });
+        const [article] = await db
+          .select({ authorId: articles.authorId })
+          .from(articles)
+          .where(eq(articles.id, id))
+          .limit(1);
 
         if (!article) {
           throw new NotFoundError("Artículo no encontrado");
@@ -170,12 +247,18 @@ builder.mutationField("deleteArticle", (t) =>
           throw new UnauthorizedError();
         }
 
-        return await db.article.delete({
-          ...query,
-          where: { id },
-        });
+        const [deletedArticle] = await db
+          .delete(articles)
+          .where(eq(articles.id, id))
+          .returning();
+
+        if (!deletedArticle) {
+          throw new NotFoundError("Artículo no encontrado");
+        }
+
+        return deletedArticle;
       } catch (error) {
-        handlePrismaError(error);
+        handleDbError(error);
       }
     },
   }),
