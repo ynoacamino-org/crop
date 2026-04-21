@@ -1,6 +1,6 @@
-# Query for admin to get all articles (including drafts and archived)
-query AdminArticles($take: Int, $skip: Int, $search: String, $status: String) {
-  articles(take: $take, skip: $skip, search: $search, status: $status) {
+# Query for admin to get all articles
+query AdminArticles($take: Int, $skip: Int, $search: String) {
+  articles(take: $take, skip: $skip, search: $search) {
     items {
       id
       title

@@ -1,4 +1,4 @@
-import { and, desc, eq, ilike, or, sql } from "drizzle-orm";
+import { ilike, or } from "drizzle-orm";
 import { builder } from "@/builder";
 import { legalCases } from "@/db/schema";
 import { db } from "@/lib/db";
@@ -6,12 +6,72 @@ import { handleDbError } from "@/lib/errors/db";
 import { NotFoundError } from "@/lib/errors/gql";
 import { sanitize } from "@/lib/utils/sanitize";
 import {
-  calculatePaginationInfo,
-  createPaginatedResponse,
+  createDbCountPageInfoResolver,
+  PaginationInfo,
 } from "@/schema/pagination/model";
 
-// Create paginated type for legal cases
-const LegalCasesConnection = createPaginatedResponse("LegalCases", "LegalCase");
+interface LegalCasesConnectionShape {
+  take: number;
+  skip: number;
+  search?: string;
+}
+
+const LegalCasesConnection = builder.objectRef<LegalCasesConnectionShape>(
+  "LegalCasesConnection",
+);
+
+LegalCasesConnection.implement({
+  description: "Paginated list of legal cases",
+  fields: (t) => ({
+    items: t.drizzleField({
+      type: ["legalCases"],
+      resolve: async (query, parent) => {
+        const searchTerm = parent.search ? `%${parent.search}%` : undefined;
+
+        try {
+          return await db.query.legalCases.findMany(
+            query({
+              where: searchTerm
+                ? {
+                    OR: [
+                      { caseName: { ilike: searchTerm } },
+                      { caseNumber: { ilike: searchTerm } },
+                      { parties: { ilike: searchTerm } },
+                    ],
+                  }
+                : undefined,
+              orderBy: {
+                caseDate: "desc",
+              },
+              limit: parent.take,
+              offset: parent.skip,
+            }),
+          );
+        } catch (error) {
+          handleDbError(error);
+        }
+      },
+    }),
+    pageInfo: t.field({
+      type: PaginationInfo,
+      resolve: createDbCountPageInfoResolver<LegalCasesConnectionShape>({
+        source: legalCases,
+        where: (parent) => {
+          const searchTerm = parent.search ? `%${parent.search}%` : undefined;
+
+          return searchTerm
+            ? or(
+                ilike(legalCases.caseName, searchTerm),
+                ilike(legalCases.caseNumber, searchTerm),
+                ilike(legalCases.parties, searchTerm),
+              )
+            : undefined;
+        },
+        onError: handleDbError,
+      }),
+    }),
+  }),
+});
 
 builder.queryField("legalCases", (t) =>
   t.field({
@@ -27,90 +87,26 @@ builder.queryField("legalCases", (t) =>
         description: "Number of cases to skip",
         defaultValue: 0,
       }),
-      jurisdiction: t.arg.string({
-        required: false,
-        description: "Filter by jurisdiction",
-      }),
-      caseTypeId: t.arg.string({
-        required: false,
-        description: "Filter by case type ID",
-      }),
-      courtId: t.arg.string({
-        required: false,
-        description: "Filter by court ID",
-      }),
       search: t.arg.string({
         required: false,
         description: "Search term for case name, case number, or parties",
       }),
     },
-    resolve: async (_root, rawArgs) => {
+    resolve: (_root, rawArgs) => {
       const args = sanitize(rawArgs);
 
-      const whereClause = and(
-        ...(args.jurisdiction
-          ? [
-              eq(
-                legalCases.jurisdiction,
-                args.jurisdiction as Exclude<
-                  typeof legalCases.$inferSelect.jurisdiction,
-                  null
-                >,
-              ),
-            ]
-          : []),
-        ...(args.caseTypeId
-          ? [eq(legalCases.caseTypeId, args.caseTypeId)]
-          : []),
-        ...(args.courtId ? [eq(legalCases.courtId, args.courtId)] : []),
-        ...(args.search
-          ? [
-              or(
-                ilike(legalCases.caseName, `%${args.search}%`),
-                ilike(legalCases.caseNumber, `%${args.search}%`),
-                ilike(legalCases.parties, `%${args.search}%`),
-              ),
-            ]
-          : []),
-      );
-
-      try {
-        const [items, totalCountRows] = await Promise.all([
-          db
-            .select()
-            .from(legalCases)
-            .where(whereClause)
-            .orderBy(desc(legalCases.caseDate))
-            .limit(args.take ?? 10)
-            .offset(args.skip ?? 0),
-          db
-            .select({ totalCount: sql<number>`count(*)::int` })
-            .from(legalCases)
-            .where(whereClause),
-        ]);
-
-        const totalCount = totalCountRows[0]?.totalCount ?? 0;
-
-        const pageInfo = calculatePaginationInfo({
-          totalCount,
-          take: args.take ?? 10,
-          skip: args.skip ?? 0,
-        });
-
-        return {
-          items,
-          pageInfo,
-        };
-      } catch (error) {
-        handleDbError(error);
-      }
+      return {
+        take: args.take ?? 10,
+        skip: args.skip ?? 0,
+        search: args.search?.trim() || undefined,
+      };
     },
   }),
 );
 
 builder.queryField("legalCase", (t) =>
-  t.field({
-    type: "LegalCase",
+  t.drizzleField({
+    type: "legalCases",
     args: {
       id: t.arg.string({
         required: false,
@@ -125,7 +121,7 @@ builder.queryField("legalCase", (t) =>
         description: "Legal case number",
       }),
     },
-    resolve: async (_root, rawArgs) => {
+    resolve: async (query, _root, rawArgs) => {
       const args = sanitize(rawArgs);
 
       if (!args.id && !args.slug && !args.caseNumber) {
@@ -133,17 +129,15 @@ builder.queryField("legalCase", (t) =>
       }
 
       try {
-        const [legalCase] = await db
-          .select()
-          .from(legalCases)
-          .where(
-            args.id
-              ? eq(legalCases.id, args.id)
+        const legalCase = await db.query.legalCases.findFirst(
+          query({
+            where: args.id
+              ? { id: args.id }
               : args.slug
-                ? eq(legalCases.slug, args.slug)
-                : eq(legalCases.caseNumber, args.caseNumber as string),
-          )
-          .limit(1);
+                ? { slug: args.slug }
+                : { caseNumber: args.caseNumber as string },
+          }),
+        );
 
         if (!legalCase) {
           throw new NotFoundError("Caso legal no encontrado");

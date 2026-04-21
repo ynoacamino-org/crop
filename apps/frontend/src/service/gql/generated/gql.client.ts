@@ -57,7 +57,7 @@ export enum ArticleStatus {
   Published = 'PUBLISHED'
 }
 
-/** Paginated list of Article */
+/** Paginated list of articles */
 export type ArticlesConnection = {
   __typename?: 'ArticlesConnection';
   items: Array<Article>;
@@ -79,7 +79,7 @@ export type CaseType = {
   updatedAt: Scalars['DateTime']['output'];
 };
 
-/** Paginated list of CaseType */
+/** Paginated list of case types */
 export type CaseTypesConnection = {
   __typename?: 'CaseTypesConnection';
   items: Array<CaseType>;
@@ -223,7 +223,7 @@ export type LegalCase = {
   verdict?: Maybe<Scalars['String']['output']>;
 };
 
-/** Paginated list of LegalCase */
+/** Paginated list of legal cases */
 export type LegalCasesConnection = {
   __typename?: 'LegalCasesConnection';
   items: Array<LegalCase>;
@@ -391,12 +391,8 @@ export type QueryArticleArgs = {
 
 
 export type QueryArticlesArgs = {
-  authorId?: InputMaybe<Scalars['String']['input']>;
-  categoryId?: InputMaybe<Scalars['String']['input']>;
   search?: InputMaybe<Scalars['String']['input']>;
   skip?: InputMaybe<Scalars['Int']['input']>;
-  status?: InputMaybe<Scalars['String']['input']>;
-  tagId?: InputMaybe<Scalars['String']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
 };
 
@@ -408,7 +404,6 @@ export type QueryCaseTypeArgs = {
 
 
 export type QueryCaseTypesArgs = {
-  includeInactive?: InputMaybe<Scalars['Boolean']['input']>;
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
 };
@@ -420,11 +415,9 @@ export type QueryCourtArgs = {
 
 
 export type QueryCourtsArgs = {
-  jurisdiction?: InputMaybe<Scalars['String']['input']>;
   search?: InputMaybe<Scalars['String']['input']>;
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
-  type?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -436,9 +429,6 @@ export type QueryLegalCaseArgs = {
 
 
 export type QueryLegalCasesArgs = {
-  caseTypeId?: InputMaybe<Scalars['String']['input']>;
-  courtId?: InputMaybe<Scalars['String']['input']>;
-  jurisdiction?: InputMaybe<Scalars['String']['input']>;
   search?: InputMaybe<Scalars['String']['input']>;
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
@@ -454,7 +444,6 @@ export type QueryMediasArgs = {
   search?: InputMaybe<Scalars['String']['input']>;
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
-  type?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -565,7 +554,7 @@ export type User = {
   updatedAt: Scalars['DateTime']['output'];
 };
 
-/** Paginated list of User */
+/** Paginated list of users */
 export type UsersConnection = {
   __typename?: 'UsersConnection';
   items: Array<User>;
@@ -677,7 +666,6 @@ export type AdminArticlesQueryVariables = Exact<{
   take?: InputMaybe<Scalars['Int']['input']>;
   skip?: InputMaybe<Scalars['Int']['input']>;
   search?: InputMaybe<Scalars['String']['input']>;
-  status?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
@@ -714,7 +702,6 @@ export type RecentArticlesQuery = { __typename?: 'Query', articles: { __typename
 export type CaseTypesQueryVariables = Exact<{
   take?: InputMaybe<Scalars['Int']['input']>;
   skip?: InputMaybe<Scalars['Int']['input']>;
-  includeInactive?: InputMaybe<Scalars['Boolean']['input']>;
 }>;
 
 
@@ -743,9 +730,6 @@ export type RecentLegalCasesQueryVariables = Exact<{
   take?: InputMaybe<Scalars['Int']['input']>;
   skip?: InputMaybe<Scalars['Int']['input']>;
   search?: InputMaybe<Scalars['String']['input']>;
-  jurisdiction?: InputMaybe<Scalars['String']['input']>;
-  caseTypeId?: InputMaybe<Scalars['String']['input']>;
-  courtId?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
@@ -754,7 +738,6 @@ export type RecentLegalCasesQuery = { __typename?: 'Query', legalCases: { __type
 export type MediasQueryVariables = Exact<{
   take?: InputMaybe<Scalars['Int']['input']>;
   skip?: InputMaybe<Scalars['Int']['input']>;
-  type?: InputMaybe<Scalars['String']['input']>;
   search?: InputMaybe<Scalars['String']['input']>;
 }>;
 
@@ -1018,8 +1001,8 @@ export function useDeleteUserMutation() {
   return Urql.useMutation<DeleteUserMutation, DeleteUserMutationVariables>(DeleteUserDocument);
 };
 export const AdminArticlesDocument = gql`
-    query AdminArticles($take: Int, $skip: Int, $search: String, $status: String) {
-  articles(take: $take, skip: $skip, search: $search, status: $status) {
+    query AdminArticles($take: Int, $skip: Int, $search: String) {
+  articles(take: $take, skip: $skip, search: $search) {
     items {
       id
       title
@@ -1164,7 +1147,7 @@ export function useArticleByIdQuery(options: Omit<Urql.UseQueryArgs<ArticleByIdQ
 };
 export const RecentArticlesDocument = gql`
     query RecentArticles($take: Int, $skip: Int, $search: String) {
-  articles(take: $take, skip: $skip, status: "PUBLISHED", search: $search) {
+  articles(take: $take, skip: $skip, search: $search) {
     items {
       id
       title
@@ -1207,8 +1190,8 @@ export function useRecentArticlesQuery(options?: Omit<Urql.UseQueryArgs<RecentAr
   return Urql.useQuery<RecentArticlesQuery, RecentArticlesQueryVariables>({ query: RecentArticlesDocument, ...options });
 };
 export const CaseTypesDocument = gql`
-    query CaseTypes($take: Int, $skip: Int, $includeInactive: Boolean) {
-  caseTypes(take: $take, skip: $skip, includeInactive: $includeInactive) {
+    query CaseTypes($take: Int, $skip: Int) {
+  caseTypes(take: $take, skip: $skip) {
     items {
       id
       name
@@ -1307,15 +1290,8 @@ export function useLegalCaseQuery(options?: Omit<Urql.UseQueryArgs<LegalCaseQuer
   return Urql.useQuery<LegalCaseQuery, LegalCaseQueryVariables>({ query: LegalCaseDocument, ...options });
 };
 export const RecentLegalCasesDocument = gql`
-    query RecentLegalCases($take: Int, $skip: Int, $search: String, $jurisdiction: String, $caseTypeId: String, $courtId: String) {
-  legalCases(
-    take: $take
-    skip: $skip
-    search: $search
-    jurisdiction: $jurisdiction
-    caseTypeId: $caseTypeId
-    courtId: $courtId
-  ) {
+    query RecentLegalCases($take: Int, $skip: Int, $search: String) {
+  legalCases(take: $take, skip: $skip, search: $search) {
     items {
       id
       caseNumber
@@ -1356,8 +1332,8 @@ export function useRecentLegalCasesQuery(options?: Omit<Urql.UseQueryArgs<Recent
   return Urql.useQuery<RecentLegalCasesQuery, RecentLegalCasesQueryVariables>({ query: RecentLegalCasesDocument, ...options });
 };
 export const MediasDocument = gql`
-    query Medias($take: Int, $skip: Int, $type: String, $search: String) {
-  medias(take: $take, skip: $skip, type: $type, search: $search) {
+    query Medias($take: Int, $skip: Int, $search: String) {
+  medias(take: $take, skip: $skip, search: $search) {
     id
     objectKey
     url

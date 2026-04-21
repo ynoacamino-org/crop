@@ -1,5 +1,5 @@
-query CaseTypes($take: Int, $skip: Int, $includeInactive: Boolean) {
-  caseTypes(take: $take, skip: $skip, includeInactive: $includeInactive) {
+query CaseTypes($take: Int, $skip: Int) {
+  caseTypes(take: $take, skip: $skip) {
     items {
       id
       name

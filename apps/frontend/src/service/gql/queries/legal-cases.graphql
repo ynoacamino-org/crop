@@ -2,18 +2,8 @@ query RecentLegalCases(
   $take: Int
   $skip: Int
   $search: String
-  $jurisdiction: String
-  $caseTypeId: String
-  $courtId: String
 ) {
-  legalCases(
-    take: $take
-    skip: $skip
-    search: $search
-    jurisdiction: $jurisdiction
-    caseTypeId: $caseTypeId
-    courtId: $courtId
-  ) {
+  legalCases(take: $take skip: $skip search: $search) {
     items {
       id
       caseNumber

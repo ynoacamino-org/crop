@@ -1,36 +1,92 @@
 import { UsersPayloadSchema } from "@repo/schemas";
-import { desc, eq, ilike, or, sql } from "drizzle-orm";
+import { ilike, or } from "drizzle-orm";
 import { builder } from "@/builder";
 import { users } from "@/db/schema";
 import { db } from "@/lib/db";
 import { handleDbError } from "@/lib/errors/db";
 import { sanitize } from "@/lib/utils/sanitize";
 import {
-  calculatePaginationInfo,
-  createPaginatedResponse,
+  createDbCountPageInfoResolver,
+  PaginationInfo,
 } from "@/schema/pagination/model";
 
-// Create paginated type for users
-const UsersConnection = createPaginatedResponse("Users", "User");
+interface UsersConnectionShape {
+  take: number;
+  skip: number;
+  search?: string;
+}
+
+const UsersConnection =
+  builder.objectRef<UsersConnectionShape>("UsersConnection");
+
+UsersConnection.implement({
+  description: "Paginated list of users",
+  fields: (t) => ({
+    items: t.drizzleField({
+      type: ["users"],
+      resolve: async (query, parent) => {
+        const search = parent.search?.trim();
+        const searchTerm = search ? `%${search}%` : undefined;
+
+        try {
+          return await db.query.users.findMany(
+            query({
+              where: searchTerm
+                ? {
+                    OR: [
+                      { name: { ilike: searchTerm } },
+                      { email: { ilike: searchTerm } },
+                    ],
+                  }
+                : undefined,
+              orderBy: {
+                createdAt: "desc",
+              },
+              limit: parent.take,
+              offset: parent.skip,
+            }),
+          );
+        } catch (error) {
+          handleDbError(error);
+        }
+      },
+    }),
+    pageInfo: t.field({
+      type: PaginationInfo,
+      resolve: createDbCountPageInfoResolver<UsersConnectionShape>({
+        source: users,
+        where: (parent) => {
+          const search = parent.search?.trim();
+          const searchTerm = search ? `%${search}%` : undefined;
+
+          return searchTerm
+            ? or(ilike(users.name, searchTerm), ilike(users.email, searchTerm))
+            : undefined;
+        },
+        onError: handleDbError,
+      }),
+    }),
+  }),
+});
 
 builder.queryField("me", (t) =>
-  t.field({
-    type: "User",
+  t.drizzleField({
+    type: "users",
     nullable: true,
     authScopes: {
       authenticated: true,
     },
-    resolve: async (_root, _args, ctx) => {
+    resolve: async (query, _root, _args, ctx) => {
       if (!ctx.user) return null;
 
       try {
-        const [user] = await db
-          .select()
-          .from(users)
-          .where(eq(users.id, ctx.user.id))
-          .limit(1);
-
-        return user ?? null;
+        return await db.query.users.findFirst(
+          query({
+            where: {
+              id: ctx.user.id,
+            },
+          }),
+        );
       } catch (error) {
         handleDbError(error, {
           notFound: "Usuario no encontrado",
@@ -65,48 +121,14 @@ builder.queryField("users", (t) =>
     authScopes: {
       admin: true,
     },
-    resolve: async (_root, rawArgs) => {
+    resolve: (_root, rawArgs) => {
       const args = sanitize(rawArgs);
 
-      const whereClause = args.search
-        ? or(
-            ilike(users.name, `%${args.search}%`),
-            ilike(users.email, `%${args.search}%`),
-          )
-        : undefined;
-
-      try {
-        const itemsQuery = db
-          .select()
-          .from(users)
-          .orderBy(desc(users.createdAt))
-          .limit(args.take ?? 10)
-          .offset(args.skip ?? 0);
-
-        const countQuery = db
-          .select({ totalCount: sql<number>`count(*)::int` })
-          .from(users);
-
-        const [items, totalCountRows] = await Promise.all([
-          whereClause ? itemsQuery.where(whereClause) : itemsQuery,
-          whereClause ? countQuery.where(whereClause) : countQuery,
-        ]);
-
-        const totalCount = totalCountRows[0]?.totalCount ?? 0;
-
-        const pageInfo = calculatePaginationInfo({
-          totalCount,
-          take: args.take ?? 10,
-          skip: args.skip ?? 0,
-        });
-
-        return {
-          items,
-          pageInfo,
-        };
-      } catch (error) {
-        handleDbError(error);
-      }
+      return {
+        take: args.take ?? 10,
+        skip: args.skip ?? 0,
+        search: args.search?.trim() || undefined,
+      };
     },
   }),
 );

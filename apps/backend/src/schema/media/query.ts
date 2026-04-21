@@ -1,14 +1,12 @@
 import { MediaPayloadSchema, MediasPayloadSchema } from "@repo/schemas/media";
-import { and, desc, eq, ilike, or } from "drizzle-orm";
 import { builder } from "@/builder";
-import { media } from "@/db/schema";
 import { db } from "@/lib/db";
 import { handleDbError } from "@/lib/errors/db";
 import { sanitize } from "@/lib/utils/sanitize";
 
 builder.queryField("medias", (t) =>
-  t.field({
-    type: ["Media"],
+  t.drizzleField({
+    type: ["media"],
     args: {
       take: t.arg.int({
         required: false,
@@ -22,44 +20,35 @@ builder.queryField("medias", (t) =>
         defaultValue: 0,
         validate: MediasPayloadSchema.shape.skip,
       }),
-      type: t.arg.string({
-        required: false,
-        description: "Filter by media type (IMAGE, VIDEO, AUDIO)",
-        validate: MediasPayloadSchema.shape.type,
-      }),
       search: t.arg.string({
         required: false,
         description: "Search term for filename or alt text",
         validate: MediasPayloadSchema.shape.search,
       }),
     },
-    resolve: async (_root, rawArgs) => {
+    resolve: async (query, _root, rawArgs) => {
       const args = sanitize(rawArgs);
+      const search = args.search?.trim();
+      const searchTerm = search ? `%${search}%` : undefined;
 
       try {
-        const conditions = [
-          args.type
-            ? eq(media.type, args.type as typeof media.$inferSelect.type)
-            : undefined,
-          args.search
-            ? or(
-                ilike(media.filename, `%${args.search}%`),
-                ilike(media.alt, `%${args.search}%`),
-              )
-            : undefined,
-        ].filter((condition): condition is NonNullable<typeof condition> =>
-          Boolean(condition),
+        return await db.query.media.findMany(
+          query({
+            where: searchTerm
+              ? {
+                  OR: [
+                    { filename: { ilike: searchTerm } },
+                    { alt: { ilike: searchTerm } },
+                  ],
+                }
+              : undefined,
+            orderBy: {
+              createdAt: "desc",
+            },
+            limit: args.take ?? 10,
+            offset: args.skip ?? 0,
+          }),
         );
-
-        const filters = conditions.length ? and(...conditions) : undefined;
-
-        return await db
-          .select()
-          .from(media)
-          .where(filters)
-          .orderBy(desc(media.createdAt))
-          .limit(args.take ?? 10)
-          .offset(args.skip ?? 0);
       } catch (error) {
         handleDbError(error);
       }
@@ -68,8 +57,8 @@ builder.queryField("medias", (t) =>
 );
 
 builder.queryField("media", (t) =>
-  t.field({
-    type: "Media",
+  t.drizzleField({
+    type: "media",
     nullable: true,
     args: {
       id: t.arg.string({
@@ -78,17 +67,17 @@ builder.queryField("media", (t) =>
         validate: MediaPayloadSchema.shape.id,
       }),
     },
-    resolve: async (_root, rawArgs) => {
+    resolve: async (query, _root, rawArgs) => {
       const args = sanitize(rawArgs);
 
       try {
-        const [mediaItem] = await db
-          .select()
-          .from(media)
-          .where(eq(media.id, args.id))
-          .limit(1);
-
-        return mediaItem ?? null;
+        return await db.query.media.findFirst(
+          query({
+            where: {
+              id: args.id,
+            },
+          }),
+        );
       } catch (error) {
         handleDbError(error);
       }

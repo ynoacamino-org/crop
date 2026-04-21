@@ -17,7 +17,6 @@ export default async function ArticlesAdminPage({
   const { limit, offset } = await parsePaginationParams(searchParams);
   const params = await searchParams;
   const search = typeof params.search === "string" ? params.search : undefined;
-  const status = typeof params.status === "string" ? params.status : undefined;
 
   const { gql } = await getService();
 
@@ -28,7 +27,6 @@ export default async function ArticlesAdminPage({
     take: limit,
     skip: offset,
     search,
-    status,
   });
 
   const articlesData = result.data?.articles;

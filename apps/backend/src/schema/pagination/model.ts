@@ -1,11 +1,23 @@
 import { builder } from "@/builder";
+import { db } from "@/lib/db";
 
-// PaginationInfo type
-export const PaginationInfo = builder.objectRef<{
+interface PaginationInfoShape {
   totalCount: number;
   hasNextPage: boolean;
   hasPreviousPage: boolean;
-}>("PaginationInfo");
+}
+
+interface PaginationParentShape {
+  take: number;
+  skip: number;
+}
+
+type CountSource = Parameters<typeof db.$count>[0];
+type CountFilter = Parameters<typeof db.$count>[1];
+
+// PaginationInfo type
+export const PaginationInfo =
+  builder.objectRef<PaginationInfoShape>("PaginationInfo");
 
 PaginationInfo.implement({
   description: "Information about pagination",
@@ -22,47 +34,12 @@ PaginationInfo.implement({
   }),
 });
 
-// Helper to create paginated response types
-export function createPaginatedResponse<T extends string>(
-  name: T,
-  itemType: string,
-) {
-  const paginatedRef = builder.objectRef<{
-    items: unknown[];
-    pageInfo: {
-      totalCount: number;
-      hasNextPage: boolean;
-      hasPreviousPage: boolean;
-    };
-  }>(`${name}Connection`);
-
-  paginatedRef.implement({
-    description: `Paginated list of ${itemType}`,
-    fields: (t) => ({
-      items: t.field({
-        type: [itemType as never],
-        resolve: (parent) => parent.items as never[],
-      }),
-      pageInfo: t.field({
-        type: PaginationInfo,
-        resolve: (parent) => parent.pageInfo,
-      }),
-    }),
-  });
-
-  return paginatedRef;
-}
-
 // Helper to calculate pagination info
 export function calculatePaginationInfo(params: {
   totalCount: number;
   take: number;
   skip: number;
-}): {
-  totalCount: number;
-  hasNextPage: boolean;
-  hasPreviousPage: boolean;
-} {
+}): PaginationInfoShape {
   const { totalCount, take, skip } = params;
 
   return {
@@ -70,4 +47,48 @@ export function calculatePaginationInfo(params: {
     hasNextPage: skip + take < totalCount,
     hasPreviousPage: skip > 0,
   };
+}
+
+export function createPageInfoResolver<
+  TParent extends PaginationParentShape,
+>(options: {
+  getTotalCount: (parent: TParent) => Promise<number>;
+  onError?: (error: unknown) => never;
+}): (parent: TParent) => Promise<PaginationInfoShape> {
+  return async (parent) => {
+    try {
+      const totalCount = await options.getTotalCount(parent);
+
+      return calculatePaginationInfo({
+        totalCount,
+        take: parent.take,
+        skip: parent.skip,
+      });
+    } catch (error) {
+      if (options.onError) {
+        return options.onError(error);
+      }
+
+      throw error;
+    }
+  };
+}
+
+export function createDbCountPageInfoResolver<
+  TParent extends PaginationParentShape,
+>(options: {
+  source: CountSource;
+  where?: (parent: TParent) => CountFilter | Promise<CountFilter>;
+  onError?: (error: unknown) => never;
+}): (parent: TParent) => Promise<PaginationInfoShape> {
+  return createPageInfoResolver<TParent>({
+    getTotalCount: async (parent) => {
+      const whereClause = options.where
+        ? await options.where(parent)
+        : undefined;
+
+      return await db.$count(options.source, whereClause);
+    },
+    onError: options.onError,
+  });
 }

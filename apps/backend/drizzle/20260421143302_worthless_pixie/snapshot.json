@@ -2,16 +2,10 @@
   "version": "8",
   "dialect": "postgres",
   "id": "7f305d85-078a-4f64-88b5-f4616fef51b5",
-  "prevIds": [
-    "00000000-0000-0000-0000-000000000000"
-  ],
+  "prevIds": ["00000000-0000-0000-0000-000000000000"],
   "ddl": [
     {
-      "values": [
-        "DRAFT",
-        "PUBLISHED",
-        "ARCHIVED"
-      ],
+      "values": ["DRAFT", "PUBLISHED", "ARCHIVED"],
       "name": "ArticleStatus",
       "entityType": "enums",
       "schema": "public"
@@ -29,33 +23,19 @@
       "schema": "public"
     },
     {
-      "values": [
-        "NACIONAL",
-        "REGIONAL",
-        "LOCAL",
-        "INTERNACIONAL"
-      ],
+      "values": ["NACIONAL", "REGIONAL", "LOCAL", "INTERNACIONAL"],
       "name": "Jurisdiction",
       "entityType": "enums",
       "schema": "public"
     },
     {
-      "values": [
-        "IMAGE",
-        "VIDEO",
-        "AUDIO",
-        "FILE"
-      ],
+      "values": ["IMAGE", "VIDEO", "AUDIO", "FILE"],
       "name": "MediaType",
       "entityType": "enums",
       "schema": "public"
     },
     {
-      "values": [
-        "PUBLIC",
-        "COLLABORATOR",
-        "ADMIN"
-      ],
+      "values": ["PUBLIC", "COLLABORATOR", "ADMIN"],
       "name": "Role",
       "entityType": "enums",
       "schema": "public"
@@ -2411,14 +2391,10 @@
     },
     {
       "nameExplicit": false,
-      "columns": [
-        "userId"
-      ],
+      "columns": ["userId"],
       "schemaTo": "public",
       "tableTo": "User",
-      "columnsTo": [
-        "id"
-      ],
+      "columnsTo": ["id"],
       "onUpdate": "CASCADE",
       "onDelete": "CASCADE",
       "name": "account_userId_User_id_fkey",
@@ -2428,14 +2404,10 @@
     },
     {
       "nameExplicit": false,
-      "columns": [
-        "A"
-      ],
+      "columns": ["A"],
       "schemaTo": "public",
       "tableTo": "Article",
-      "columnsTo": [
-        "id"
-      ],
+      "columnsTo": ["id"],
       "onUpdate": "CASCADE",
       "onDelete": "CASCADE",
       "name": "_ArticleAttachments_A_Article_id_fkey",
@@ -2445,14 +2417,10 @@
     },
     {
       "nameExplicit": false,
-      "columns": [
-        "B"
-      ],
+      "columns": ["B"],
       "schemaTo": "public",
       "tableTo": "Media",
-      "columnsTo": [
-        "id"
-      ],
+      "columnsTo": ["id"],
       "onUpdate": "CASCADE",
       "onDelete": "CASCADE",
       "name": "_ArticleAttachments_B_Media_id_fkey",
@@ -2462,14 +2430,10 @@
     },
     {
       "nameExplicit": false,
-      "columns": [
-        "A"
-      ],
+      "columns": ["A"],
       "schemaTo": "public",
       "tableTo": "Article",
-      "columnsTo": [
-        "id"
-      ],
+      "columnsTo": ["id"],
       "onUpdate": "CASCADE",
       "onDelete": "CASCADE",
       "name": "_ArticleToCategory_A_Article_id_fkey",
@@ -2479,14 +2443,10 @@
     },
     {
       "nameExplicit": false,
-      "columns": [
-        "B"
-      ],
+      "columns": ["B"],
       "schemaTo": "public",
       "tableTo": "Category",
-      "columnsTo": [
-        "id"
-      ],
+      "columnsTo": ["id"],
       "onUpdate": "CASCADE",
       "onDelete": "CASCADE",
       "name": "_ArticleToCategory_B_Category_id_fkey",
@@ -2496,14 +2456,10 @@
     },
     {
       "nameExplicit": false,
-      "columns": [
-        "A"
-      ],
+      "columns": ["A"],
       "schemaTo": "public",
       "tableTo": "Article",
-      "columnsTo": [
-        "id"
-      ],
+      "columnsTo": ["id"],
       "onUpdate": "CASCADE",
       "onDelete": "CASCADE",
       "name": "_ArticleToLegalCase_A_Article_id_fkey",
@@ -2513,14 +2469,10 @@
     },
     {
       "nameExplicit": false,
-      "columns": [
-        "B"
-      ],
+      "columns": ["B"],
       "schemaTo": "public",
       "tableTo": "LegalCase",
-      "columnsTo": [
-        "id"
-      ],
+      "columnsTo": ["id"],
       "onUpdate": "CASCADE",
       "onDelete": "CASCADE",
       "name": "_ArticleToLegalCase_B_LegalCase_id_fkey",
@@ -2530,14 +2482,10 @@
     },
     {
       "nameExplicit": false,
-      "columns": [
-        "A"
-      ],
+      "columns": ["A"],
       "schemaTo": "public",
       "tableTo": "Article",
-      "columnsTo": [
-        "id"
-      ],
+      "columnsTo": ["id"],
       "onUpdate": "CASCADE",
       "onDelete": "CASCADE",
       "name": "_ArticleToTag_A_Article_id_fkey",
@@ -2547,14 +2495,10 @@
     },
     {
       "nameExplicit": false,
-      "columns": [
-        "B"
-      ],
+      "columns": ["B"],
       "schemaTo": "public",
       "tableTo": "Tag",
-      "columnsTo": [
-        "id"
-      ],
+      "columnsTo": ["id"],
       "onUpdate": "CASCADE",
       "onDelete": "CASCADE",
       "name": "_ArticleToTag_B_Tag_id_fkey",
@@ -2564,14 +2508,10 @@
     },
     {
       "nameExplicit": false,
-      "columns": [
-        "authorId"
-      ],
+      "columns": ["authorId"],
       "schemaTo": "public",
       "tableTo": "User",
-      "columnsTo": [
-        "id"
-      ],
+      "columnsTo": ["id"],
       "onUpdate": "CASCADE",
       "onDelete": "CASCADE",
       "name": "Article_authorId_User_id_fkey",
@@ -2581,14 +2521,10 @@
     },
     {
       "nameExplicit": false,
-      "columns": [
-        "featuredImageId"
-      ],
+      "columns": ["featuredImageId"],
       "schemaTo": "public",
       "tableTo": "Media",
-      "columnsTo": [
-        "id"
-      ],
+      "columnsTo": ["id"],
       "onUpdate": "CASCADE",
       "onDelete": "SET NULL",
       "name": "Article_featuredImageId_Media_id_fkey",
@@ -2598,14 +2534,10 @@
     },
     {
       "nameExplicit": false,
-      "columns": [
-        "courtId"
-      ],
+      "columns": ["courtId"],
       "schemaTo": "public",
       "tableTo": "Court",
-      "columnsTo": [
-        "id"
-      ],
+      "columnsTo": ["id"],
       "onUpdate": "CASCADE",
       "onDelete": "SET NULL",
       "name": "LegalCase_courtId_Court_id_fkey",
@@ -2615,14 +2547,10 @@
     },
     {
       "nameExplicit": false,
-      "columns": [
-        "caseTypeId"
-      ],
+      "columns": ["caseTypeId"],
       "schemaTo": "public",
       "tableTo": "CaseType",
-      "columnsTo": [
-        "id"
-      ],
+      "columnsTo": ["id"],
       "onUpdate": "CASCADE",
       "onDelete": "SET NULL",
       "name": "LegalCase_caseTypeId_CaseType_id_fkey",
@@ -2632,14 +2560,10 @@
     },
     {
       "nameExplicit": false,
-      "columns": [
-        "uploadedBy"
-      ],
+      "columns": ["uploadedBy"],
       "schemaTo": "public",
       "tableTo": "User",
-      "columnsTo": [
-        "id"
-      ],
+      "columnsTo": ["id"],
       "onUpdate": "CASCADE",
       "onDelete": "SET NULL",
       "name": "Media_uploadedBy_User_id_fkey",
@@ -2649,14 +2573,10 @@
     },
     {
       "nameExplicit": false,
-      "columns": [
-        "userId"
-      ],
+      "columns": ["userId"],
       "schemaTo": "public",
       "tableTo": "User",
-      "columnsTo": [
-        "id"
-      ],
+      "columnsTo": ["id"],
       "onUpdate": "CASCADE",
       "onDelete": "CASCADE",
       "name": "session_userId_User_id_fkey",
@@ -2665,10 +2585,7 @@
       "table": "session"
     },
     {
-      "columns": [
-        "A",
-        "B"
-      ],
+      "columns": ["A", "B"],
       "nameExplicit": true,
       "name": "_ArticleAttachments_AB_pkey",
       "entityType": "pks",
@@ -2676,10 +2593,7 @@
       "table": "_ArticleAttachments"
     },
     {
-      "columns": [
-        "A",
-        "B"
-      ],
+      "columns": ["A", "B"],
       "nameExplicit": true,
       "name": "_ArticleToCategory_AB_pkey",
       "entityType": "pks",
@@ -2687,10 +2601,7 @@
       "table": "_ArticleToCategory"
     },
     {
-      "columns": [
-        "A",
-        "B"
-      ],
+      "columns": ["A", "B"],
       "nameExplicit": true,
       "name": "_ArticleToLegalCase_AB_pkey",
       "entityType": "pks",
@@ -2698,10 +2609,7 @@
       "table": "_ArticleToLegalCase"
     },
     {
-      "columns": [
-        "A",
-        "B"
-      ],
+      "columns": ["A", "B"],
       "nameExplicit": true,
       "name": "_ArticleToTag_AB_pkey",
       "entityType": "pks",
@@ -2709,9 +2617,7 @@
       "table": "_ArticleToTag"
     },
     {
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "nameExplicit": false,
       "name": "account_pkey",
       "schema": "public",
@@ -2719,9 +2625,7 @@
       "entityType": "pks"
     },
     {
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "nameExplicit": false,
       "name": "Article_pkey",
       "schema": "public",
@@ -2729,9 +2633,7 @@
       "entityType": "pks"
     },
     {
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "nameExplicit": false,
       "name": "CaseType_pkey",
       "schema": "public",
@@ -2739,9 +2641,7 @@
       "entityType": "pks"
     },
     {
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "nameExplicit": false,
       "name": "Category_pkey",
       "schema": "public",
@@ -2749,9 +2649,7 @@
       "entityType": "pks"
     },
     {
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "nameExplicit": false,
       "name": "Court_pkey",
       "schema": "public",
@@ -2759,9 +2657,7 @@
       "entityType": "pks"
     },
     {
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "nameExplicit": false,
       "name": "LegalCase_pkey",
       "schema": "public",
@@ -2769,9 +2665,7 @@
       "entityType": "pks"
     },
     {
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "nameExplicit": false,
       "name": "Media_pkey",
       "schema": "public",
@@ -2779,9 +2673,7 @@
       "entityType": "pks"
     },
     {
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "nameExplicit": false,
       "name": "session_pkey",
       "schema": "public",
@@ -2789,9 +2681,7 @@
       "entityType": "pks"
     },
     {
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "nameExplicit": false,
       "name": "Tag_pkey",
       "schema": "public",
@@ -2799,9 +2689,7 @@
       "entityType": "pks"
     },
     {
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "nameExplicit": false,
       "name": "User_pkey",
       "schema": "public",
@@ -2809,9 +2697,7 @@
       "entityType": "pks"
     },
     {
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "nameExplicit": false,
       "name": "verification_pkey",
       "schema": "public",
