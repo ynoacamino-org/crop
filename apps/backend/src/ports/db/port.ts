@@ -3,13 +3,19 @@ import type { drizzle as drizzleLibsql } from "drizzle-orm/libsql";
 import type * as schema from "@/db/schema";
 import type { relations } from "@/db/schema";
 
-export type Db = ReturnType<typeof drizzleD1<typeof schema, typeof relations>>;
+export type D1Db = ReturnType<
+  typeof drizzleD1<typeof schema, typeof relations>
+>;
 
-export type DbAny =
-  | ReturnType<typeof drizzleD1<typeof schema, typeof relations>>
-  | ReturnType<typeof drizzleLibsql<typeof schema, typeof relations>>;
+export type LibsqlDb = ReturnType<
+  typeof drizzleLibsql<typeof schema, typeof relations>
+>;
 
-export interface RelationalStore {
-  readonly client: DbAny;
-  close?(): Promise<void>;
+export type DatabaseClient = D1Db | LibsqlDb;
+
+export interface RelationalStore<
+  TClient extends DatabaseClient = DatabaseClient,
+> {
+  readonly client: TClient;
+  close(): Promise<void>;
 }

@@ -55,5 +55,5 @@ export function createBetterAuth(rt: RuntimeEnv): AuthInstance {
     },
   });
 
-  return auth as unknown as AuthInstance;
+  return auth as AuthInstance;
 }

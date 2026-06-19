@@ -46,9 +46,6 @@ function build(cf: Cloudflare.Env | undefined, mode: RuntimeMode): RuntimeEnv {
   if (mode === "node") {
     runtime.close = async () => {
       await db.close?.();
-      if ("close" in kv && typeof kv.close === "function") {
-        await (kv as unknown as { close: () => Promise<void> }).close();
-      }
     };
   }
 
@@ -62,7 +59,7 @@ const cache: { value: RuntimeEnv | null; key: string | null } = {
 
 export const runtime = {
   create(options: RuntimeOptions = {}): RuntimeEnv {
-    const isEdge = options.cf ? isCloudflareBindings(options.cf) : false;
+    const isEdge = isCloudflareBindings(options.cf);
     const realCf = isEdge ? options.cf : undefined;
     const mode: RuntimeMode = isEdge ? "edge" : "node";
 

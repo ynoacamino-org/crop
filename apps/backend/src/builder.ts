@@ -16,7 +16,7 @@ import type {
   UserModel,
 } from "@/db/schema";
 import { relations } from "@/db/schema";
-import type { Db } from "@/ports/db/port";
+import type { D1Db } from "@/ports/db/port";
 import type { RuntimeEnv } from "@/ports/runtime/port";
 
 export interface CurrentUser {
@@ -27,7 +27,7 @@ export interface CurrentUser {
 
 export interface AppContextShape {
   user?: CurrentUser;
-  db: Db;
+  db: D1Db;
   runtime: RuntimeEnv;
 }
 

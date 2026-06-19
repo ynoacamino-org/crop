@@ -8,7 +8,7 @@ export interface EnvFactoryInput {
 }
 
 export function createEnvStore(input: EnvFactoryInput = {}): EnvStore {
-  if (input.cf && isCloudflareBindings(input.cf)) {
+  if (isCloudflareBindings(input.cf)) {
     return new CloudflareEnv(input.cf);
   }
   return new NodeEnv();

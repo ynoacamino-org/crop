@@ -12,7 +12,7 @@ export interface RelationalStoreFactoryOptions {
 export function createRelationalStore(
   opts: RelationalStoreFactoryOptions,
 ): RelationalStore {
-  if (opts.cf && isCloudflareBindings(opts.cf) && "DB" in opts.cf) {
+  if (isCloudflareBindings(opts.cf) && "DB" in opts.cf) {
     return new D1RelationalStore(opts.cf.DB as D1Database);
   }
 

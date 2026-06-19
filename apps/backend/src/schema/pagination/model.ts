@@ -1,5 +1,5 @@
 import { builder } from "@/builder";
-import type { Db } from "@/ports/db/port";
+import type { DatabaseClient } from "@/ports/db/port";
 
 interface PaginationInfoShape {
   totalCount: number;
@@ -12,8 +12,8 @@ interface PaginationParentShape {
   skip: number;
 }
 
-type CountSource = Parameters<Db["$count"]>[0];
-type CountFilter = Parameters<Db["$count"]>[1];
+type CountSource = Parameters<DatabaseClient["$count"]>[0];
+type CountFilter = Parameters<DatabaseClient["$count"]>[1];
 
 export const PaginationInfo =
   builder.objectRef<PaginationInfoShape>("PaginationInfo");
@@ -50,12 +50,15 @@ export function calculatePaginationInfo(params: {
 export function createPageInfoResolver<
   TParent extends PaginationParentShape,
 >(options: {
-  getTotalCount: (parent: TParent, ctx: { db: Db }) => Promise<number>;
+  getTotalCount: (
+    parent: TParent,
+    ctx: { db: DatabaseClient },
+  ) => Promise<number>;
   onError?: (error: unknown) => never;
 }): (
   parent: TParent,
   args: unknown,
-  ctx: { db: Db },
+  ctx: { db: DatabaseClient },
 ) => Promise<PaginationInfoShape> {
   return async (parent, _args, ctx) => {
     try {
@@ -85,7 +88,7 @@ export function createDbCountPageInfoResolver<
 }): (
   parent: TParent,
   args: unknown,
-  ctx: { db: Db },
+  ctx: { db: DatabaseClient },
 ) => Promise<PaginationInfoShape> {
   return createPageInfoResolver<TParent>({
     getTotalCount: async (parent, ctx) => {

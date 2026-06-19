@@ -11,7 +11,7 @@ export interface KVFactoryOptions {
 }
 
 export function createKVStore(opts: KVFactoryOptions): KVStore {
-  if (opts.cf && isCloudflareBindings(opts.cf) && "KV" in opts.cf) {
+  if (isCloudflareBindings(opts.cf) && "KV" in opts.cf) {
     return new CloudflareKV(opts.cf.KV as KVNamespace);
   }
 
