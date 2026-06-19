@@ -1,22 +1,13 @@
-import "dotenv/config";
-import { config as loadDotenv } from "dotenv";
 import { defineConfig } from "drizzle-kit";
 
-if (process.env.NODE_ENV !== "production") {
-  loadDotenv({ path: ".env.dev", override: false });
-}
-
-if (!process.env.DATABASE_URL) {
-  throw new Error("DATABASE_URL is required to run Drizzle Kit commands");
-}
-
 export default defineConfig({
-  dialect: "postgresql",
-  schema: "./src/db/schema.ts",
   out: "./drizzle",
+  schema: "./src/db/schema.ts",
+  dialect: "sqlite",
+  driver: "d1-http",
   dbCredentials: {
-    url: process.env.DATABASE_URL,
+    accountId: process.env.CLOUDFLARE_ACCOUNT_ID ?? "",
+    databaseId: process.env.CLOUDFLARE_DATABASE_ID ?? "",
+    token: process.env.CLOUDFLARE_D1_TOKEN ?? "",
   },
-  strict: true,
-  verbose: true,
 });

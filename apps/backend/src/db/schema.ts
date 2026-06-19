@@ -1,16 +1,13 @@
 import { createId } from "@paralleldrive/cuid2";
 import { defineRelations } from "drizzle-orm";
 import {
-  boolean,
   index,
   integer,
-  pgEnum,
-  pgTable,
   primaryKey,
+  sqliteTable,
   text,
-  timestamp,
   uniqueIndex,
-} from "drizzle-orm/pg-core";
+} from "drizzle-orm/sqlite-core";
 
 export const ROLE_VALUES = ["PUBLIC", "COLLABORATOR", "ADMIN"] as const;
 export const MEDIA_TYPE_VALUES = ["IMAGE", "VIDEO", "AUDIO", "FILE"] as const;
@@ -39,51 +36,47 @@ export type ArticleStatusValue = (typeof ARTICLE_STATUS_VALUES)[number];
 export type JurisdictionValue = (typeof JURISDICTION_VALUES)[number];
 export type CourtTypeValue = (typeof COURT_TYPE_VALUES)[number];
 
-export const roleEnum = pgEnum("Role", ROLE_VALUES);
-export const mediaTypeEnum = pgEnum("MediaType", MEDIA_TYPE_VALUES);
-export const articleStatusEnum = pgEnum("ArticleStatus", ARTICLE_STATUS_VALUES);
-export const jurisdictionEnum = pgEnum("Jurisdiction", JURISDICTION_VALUES);
-export const courtTypeEnum = pgEnum("CourtType", COURT_TYPE_VALUES);
-
-export const users = pgTable(
+export const users = sqliteTable(
   "User",
   {
     id: text("id").primaryKey(),
     name: text("name").notNull(),
     email: text("email").notNull(),
-    emailVerified: boolean("emailVerified").notNull().default(false),
+    emailVerified: integer("emailVerified", { mode: "boolean" })
+      .notNull()
+      .default(false),
     image: text("image"),
     bio: text("bio"),
-    createdAt: timestamp("createdAt", { mode: "date", precision: 3 })
-      .notNull()
-      .defaultNow(),
-    updatedAt: timestamp("updatedAt", { mode: "date", precision: 3 })
+    createdAt: integer("createdAt", { mode: "timestamp_ms" })
       .notNull()
       .$defaultFn(() => new Date()),
-    role: roleEnum("role").notNull().default("PUBLIC"),
+    updatedAt: integer("updatedAt", { mode: "timestamp_ms" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    role: text("role", { enum: ROLE_VALUES }).notNull().default("PUBLIC"),
   },
   (table) => ({
     emailUnique: uniqueIndex("User_email_key").on(table.email),
   }),
 );
 
-export const sessions = pgTable(
+export const sessions = sqliteTable(
   "session",
   {
     id: text("id").primaryKey(),
-    expiresAt: timestamp("expiresAt", { mode: "date", precision: 3 }).notNull(),
+    expiresAt: integer("expiresAt", { mode: "timestamp_ms" }).notNull(),
     token: text("token").notNull(),
-    createdAt: timestamp("createdAt", { mode: "date", precision: 3 })
+    createdAt: integer("createdAt", { mode: "timestamp_ms" })
       .notNull()
-      .defaultNow(),
-    updatedAt: timestamp("updatedAt", { mode: "date", precision: 3 })
+      .$defaultFn(() => new Date()),
+    updatedAt: integer("updatedAt", { mode: "timestamp_ms" })
       .notNull()
       .$defaultFn(() => new Date()),
     ipAddress: text("ipAddress"),
     userAgent: text("userAgent"),
     userId: text("userId")
       .notNull()
-      .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" }),
+      .references(() => users.id, { onDelete: "cascade" }),
   },
   (table) => ({
     userIdIdx: index("session_userId_idx").on(table.userId),
@@ -91,7 +84,7 @@ export const sessions = pgTable(
   }),
 );
 
-export const accounts = pgTable(
+export const accounts = sqliteTable(
   "account",
   {
     id: text("id").primaryKey(),
@@ -99,24 +92,22 @@ export const accounts = pgTable(
     providerId: text("providerId").notNull(),
     userId: text("userId")
       .notNull()
-      .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" }),
+      .references(() => users.id, { onDelete: "cascade" }),
     accessToken: text("accessToken"),
     refreshToken: text("refreshToken"),
     idToken: text("idToken"),
-    accessTokenExpiresAt: timestamp("accessTokenExpiresAt", {
-      mode: "date",
-      precision: 3,
+    accessTokenExpiresAt: integer("accessTokenExpiresAt", {
+      mode: "timestamp_ms",
     }),
-    refreshTokenExpiresAt: timestamp("refreshTokenExpiresAt", {
-      mode: "date",
-      precision: 3,
+    refreshTokenExpiresAt: integer("refreshTokenExpiresAt", {
+      mode: "timestamp_ms",
     }),
     scope: text("scope"),
     password: text("password"),
-    createdAt: timestamp("createdAt", { mode: "date", precision: 3 })
+    createdAt: integer("createdAt", { mode: "timestamp_ms" })
       .notNull()
-      .defaultNow(),
-    updatedAt: timestamp("updatedAt", { mode: "date", precision: 3 })
+      .$defaultFn(() => new Date()),
+    updatedAt: integer("updatedAt", { mode: "timestamp_ms" })
       .notNull()
       .$defaultFn(() => new Date()),
   },
@@ -125,17 +116,17 @@ export const accounts = pgTable(
   }),
 );
 
-export const verifications = pgTable(
+export const verifications = sqliteTable(
   "verification",
   {
     id: text("id").primaryKey(),
     identifier: text("identifier").notNull(),
     value: text("value").notNull(),
-    expiresAt: timestamp("expiresAt", { mode: "date", precision: 3 }).notNull(),
-    createdAt: timestamp("createdAt", { mode: "date", precision: 3 })
+    expiresAt: integer("expiresAt", { mode: "timestamp_ms" }).notNull(),
+    createdAt: integer("createdAt", { mode: "timestamp_ms" })
       .notNull()
-      .defaultNow(),
-    updatedAt: timestamp("updatedAt", { mode: "date", precision: 3 })
+      .$defaultFn(() => new Date()),
+    updatedAt: integer("updatedAt", { mode: "timestamp_ms" })
       .notNull()
       .$defaultFn(() => new Date()),
   },
@@ -144,7 +135,7 @@ export const verifications = pgTable(
   }),
 );
 
-export const media = pgTable(
+export const media = sqliteTable(
   "Media",
   {
     id: text("id")
@@ -153,19 +144,18 @@ export const media = pgTable(
     objectKey: text("objectKey").notNull(),
     url: text("url"),
     alt: text("alt"),
-    type: mediaTypeEnum("type").notNull(),
+    type: text("type", { enum: MEDIA_TYPE_VALUES }).notNull(),
     size: integer("size").notNull(),
     mimeType: text("mimeType").notNull(),
     filename: text("filename").notNull(),
-    createdAt: timestamp("createdAt", { mode: "date", precision: 3 })
+    createdAt: integer("createdAt", { mode: "timestamp_ms" })
       .notNull()
-      .defaultNow(),
-    updatedAt: timestamp("updatedAt", { mode: "date", precision: 3 })
+      .$defaultFn(() => new Date()),
+    updatedAt: integer("updatedAt", { mode: "timestamp_ms" })
       .notNull()
       .$defaultFn(() => new Date()),
     uploadedBy: text("uploadedBy").references(() => users.id, {
       onDelete: "set null",
-      onUpdate: "cascade",
     }),
   },
   (table) => ({
@@ -175,20 +165,20 @@ export const media = pgTable(
   }),
 );
 
-export const courts = pgTable(
+export const courts = sqliteTable(
   "Court",
   {
     id: text("id")
       .primaryKey()
       .$defaultFn(() => createId()),
     name: text("name").notNull(),
-    type: courtTypeEnum("type"),
-    jurisdiction: jurisdictionEnum("jurisdiction"),
+    type: text("type", { enum: COURT_TYPE_VALUES }),
+    jurisdiction: text("jurisdiction", { enum: JURISDICTION_VALUES }),
     description: text("description"),
-    createdAt: timestamp("createdAt", { mode: "date", precision: 3 })
+    createdAt: integer("createdAt", { mode: "timestamp_ms" })
       .notNull()
-      .defaultNow(),
-    updatedAt: timestamp("updatedAt", { mode: "date", precision: 3 })
+      .$defaultFn(() => new Date()),
+    updatedAt: integer("updatedAt", { mode: "timestamp_ms" })
       .notNull()
       .$defaultFn(() => new Date()),
   },
@@ -199,7 +189,7 @@ export const courts = pgTable(
   }),
 );
 
-export const caseTypes = pgTable(
+export const caseTypes = sqliteTable(
   "CaseType",
   {
     id: text("id")
@@ -211,11 +201,11 @@ export const caseTypes = pgTable(
     color: text("color"),
     icon: text("icon"),
     order: integer("order"),
-    active: boolean("active").notNull().default(true),
-    createdAt: timestamp("createdAt", { mode: "date", precision: 3 })
+    active: integer("active", { mode: "boolean" }).notNull().default(true),
+    createdAt: integer("createdAt", { mode: "timestamp_ms" })
       .notNull()
-      .defaultNow(),
-    updatedAt: timestamp("updatedAt", { mode: "date", precision: 3 })
+      .$defaultFn(() => new Date()),
+    updatedAt: integer("updatedAt", { mode: "timestamp_ms" })
       .notNull()
       .$defaultFn(() => new Date()),
   },
@@ -227,7 +217,7 @@ export const caseTypes = pgTable(
   }),
 );
 
-export const legalCases = pgTable(
+export const legalCases = sqliteTable(
   "LegalCase",
   {
     id: text("id")
@@ -243,23 +233,21 @@ export const legalCases = pgTable(
     judges: text("judges"),
     verdict: text("verdict"),
     legalBasis: text("legalBasis"),
-    caseDate: timestamp("caseDate", { mode: "date", precision: 3 }),
-    resolutionDate: timestamp("resolutionDate", { mode: "date", precision: 3 }),
-    createdAt: timestamp("createdAt", { mode: "date", precision: 3 })
+    caseDate: integer("caseDate", { mode: "timestamp_ms" }),
+    resolutionDate: integer("resolutionDate", { mode: "timestamp_ms" }),
+    createdAt: integer("createdAt", { mode: "timestamp_ms" })
       .notNull()
-      .defaultNow(),
-    updatedAt: timestamp("updatedAt", { mode: "date", precision: 3 })
+      .$defaultFn(() => new Date()),
+    updatedAt: integer("updatedAt", { mode: "timestamp_ms" })
       .notNull()
       .$defaultFn(() => new Date()),
     courtId: text("courtId").references(() => courts.id, {
       onDelete: "set null",
-      onUpdate: "cascade",
     }),
     caseTypeId: text("caseTypeId").references(() => caseTypes.id, {
       onDelete: "set null",
-      onUpdate: "cascade",
     }),
-    jurisdiction: jurisdictionEnum("jurisdiction"),
+    jurisdiction: text("jurisdiction", { enum: JURISDICTION_VALUES }),
   },
   (table) => ({
     caseNumberUnique: uniqueIndex("LegalCase_caseNumber_key").on(
@@ -274,7 +262,7 @@ export const legalCases = pgTable(
   }),
 );
 
-export const articles = pgTable(
+export const articles = sqliteTable(
   "Article",
   {
     id: text("id")
@@ -284,20 +272,21 @@ export const articles = pgTable(
     slug: text("slug").notNull(),
     excerpt: text("excerpt"),
     content: text("content").notNull(),
-    status: articleStatusEnum("status").notNull().default("DRAFT"),
-    publishedAt: timestamp("publishedAt", { mode: "date", precision: 3 }),
-    createdAt: timestamp("createdAt", { mode: "date", precision: 3 })
+    status: text("status", { enum: ARTICLE_STATUS_VALUES })
       .notNull()
-      .defaultNow(),
-    updatedAt: timestamp("updatedAt", { mode: "date", precision: 3 })
+      .default("DRAFT"),
+    publishedAt: integer("publishedAt", { mode: "timestamp_ms" }),
+    createdAt: integer("createdAt", { mode: "timestamp_ms" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    updatedAt: integer("updatedAt", { mode: "timestamp_ms" })
       .notNull()
       .$defaultFn(() => new Date()),
     authorId: text("authorId")
       .notNull()
-      .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" }),
+      .references(() => users.id, { onDelete: "cascade" }),
     featuredImageId: text("featuredImageId").references(() => media.id, {
       onDelete: "set null",
-      onUpdate: "cascade",
     }),
     views: integer("views").notNull().default(0),
     readingTimeMin: integer("readingTimeMin"),
@@ -311,7 +300,7 @@ export const articles = pgTable(
   }),
 );
 
-export const categories = pgTable(
+export const categories = sqliteTable(
   "Category",
   {
     id: text("id")
@@ -320,10 +309,10 @@ export const categories = pgTable(
     name: text("name").notNull(),
     slug: text("slug").notNull(),
     description: text("description"),
-    createdAt: timestamp("createdAt", { mode: "date", precision: 3 })
+    createdAt: integer("createdAt", { mode: "timestamp_ms" })
       .notNull()
-      .defaultNow(),
-    updatedAt: timestamp("updatedAt", { mode: "date", precision: 3 })
+      .$defaultFn(() => new Date()),
+    updatedAt: integer("updatedAt", { mode: "timestamp_ms" })
       .notNull()
       .$defaultFn(() => new Date()),
   },
@@ -334,7 +323,7 @@ export const categories = pgTable(
   }),
 );
 
-export const tags = pgTable(
+export const tags = sqliteTable(
   "Tag",
   {
     id: text("id")
@@ -342,10 +331,10 @@ export const tags = pgTable(
       .$defaultFn(() => createId()),
     name: text("name").notNull(),
     slug: text("slug").notNull(),
-    createdAt: timestamp("createdAt", { mode: "date", precision: 3 })
+    createdAt: integer("createdAt", { mode: "timestamp_ms" })
       .notNull()
-      .defaultNow(),
-    updatedAt: timestamp("updatedAt", { mode: "date", precision: 3 })
+      .$defaultFn(() => new Date()),
+    updatedAt: integer("updatedAt", { mode: "timestamp_ms" })
       .notNull()
       .$defaultFn(() => new Date()),
   },
@@ -356,18 +345,15 @@ export const tags = pgTable(
   }),
 );
 
-export const articleAttachments = pgTable(
+export const articleAttachments = sqliteTable(
   "_ArticleAttachments",
   {
     articleId: text("A")
       .notNull()
-      .references(() => articles.id, {
-        onDelete: "cascade",
-        onUpdate: "cascade",
-      }),
+      .references(() => articles.id, { onDelete: "cascade" }),
     mediaId: text("B")
       .notNull()
-      .references(() => media.id, { onDelete: "cascade", onUpdate: "cascade" }),
+      .references(() => media.id, { onDelete: "cascade" }),
   },
   (table) => ({
     pk: primaryKey({
@@ -378,21 +364,15 @@ export const articleAttachments = pgTable(
   }),
 );
 
-export const articleToCategories = pgTable(
+export const articleToCategories = sqliteTable(
   "_ArticleToCategory",
   {
     articleId: text("A")
       .notNull()
-      .references(() => articles.id, {
-        onDelete: "cascade",
-        onUpdate: "cascade",
-      }),
+      .references(() => articles.id, { onDelete: "cascade" }),
     categoryId: text("B")
       .notNull()
-      .references(() => categories.id, {
-        onDelete: "cascade",
-        onUpdate: "cascade",
-      }),
+      .references(() => categories.id, { onDelete: "cascade" }),
   },
   (table) => ({
     pk: primaryKey({
@@ -403,18 +383,15 @@ export const articleToCategories = pgTable(
   }),
 );
 
-export const articleToTags = pgTable(
+export const articleToTags = sqliteTable(
   "_ArticleToTag",
   {
     articleId: text("A")
       .notNull()
-      .references(() => articles.id, {
-        onDelete: "cascade",
-        onUpdate: "cascade",
-      }),
+      .references(() => articles.id, { onDelete: "cascade" }),
     tagId: text("B")
       .notNull()
-      .references(() => tags.id, { onDelete: "cascade", onUpdate: "cascade" }),
+      .references(() => tags.id, { onDelete: "cascade" }),
   },
   (table) => ({
     pk: primaryKey({
@@ -425,21 +402,15 @@ export const articleToTags = pgTable(
   }),
 );
 
-export const articleToLegalCases = pgTable(
+export const articleToLegalCases = sqliteTable(
   "_ArticleToLegalCase",
   {
     articleId: text("A")
       .notNull()
-      .references(() => articles.id, {
-        onDelete: "cascade",
-        onUpdate: "cascade",
-      }),
+      .references(() => articles.id, { onDelete: "cascade" }),
     legalCaseId: text("B")
       .notNull()
-      .references(() => legalCases.id, {
-        onDelete: "cascade",
-        onUpdate: "cascade",
-      }),
+      .references(() => legalCases.id, { onDelete: "cascade" }),
   },
   (table) => ({
     pk: primaryKey({

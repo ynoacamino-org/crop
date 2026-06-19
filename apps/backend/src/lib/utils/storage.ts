@@ -23,11 +23,11 @@ export async function uploadMedia(
   const objectKey = storage.generateKey(prefix);
 
   const arrayBuffer = await file.arrayBuffer();
-  const buffer = Buffer.from(arrayBuffer);
+  const body = new Uint8Array(arrayBuffer);
 
   const url = await storage.upload({
     key: objectKey,
-    body: buffer,
+    body,
     contentType: file.type,
     metadata,
   });

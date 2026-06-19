@@ -2,8 +2,8 @@ import { zValidator } from "@hono/zod-validator";
 import { UploadMediaPayloadSchema } from "@repo/schemas/media";
 import { Hono } from "hono";
 import { media } from "@/db/schema";
-import { auth } from "@/lib/auth";
-import { db } from "@/lib/db";
+import { createAuth } from "@/lib/auth";
+import { getDb } from "@/lib/db";
 import {
   BadRequestError,
   InternalServerError,
@@ -19,12 +19,15 @@ import {
   validateMediaType,
 } from "@/lib/utils/storage";
 
-const mediaRouter = new Hono();
+const mediaRouter = new Hono<{ Bindings: Cloudflare.Env }>();
 
 mediaRouter.post(
   "/upload",
   zValidator("form", UploadMediaPayloadSchema),
   async (c) => {
+    const auth = createAuth(c.env);
+    const db = getDb(c.env);
+
     const session = await auth.api.getSession({ headers: c.req.raw.headers });
     const user = session?.user;
 

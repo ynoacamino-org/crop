@@ -1,9 +1,10 @@
 import { Hono } from "hono";
-import { yoga } from "@/lib/yoga";
+import { createYogaHandler } from "@/lib/yoga";
 
-export const graphqlRouter = new Hono();
+export const graphqlRouter = new Hono<{ Bindings: Cloudflare.Env }>();
 
 graphqlRouter.all("/", (c) => {
+  const yoga = createYogaHandler(c.env);
   return yoga.fetch(c.req.raw);
 });
 

@@ -2,7 +2,7 @@ import SchemaBuilder from "@pothos/core";
 import DrizzlePlugin from "@pothos/plugin-drizzle";
 import ScopeAuthPlugin from "@pothos/plugin-scope-auth";
 import ValidationPlugin from "@pothos/plugin-validation";
-import { getTableConfig } from "drizzle-orm/pg-core";
+import { getTableConfig } from "drizzle-orm/sqlite-core";
 import { DateTimeResolver } from "graphql-scalars";
 import type {
   ArticleModel,

@@ -1,62 +1,58 @@
-import dotenv from "dotenv";
-import { z } from "zod";
+declare const process: { env: Record<string, string | undefined> } | undefined;
 
-dotenv.config({ path: ".env" });
+type NodeEnv = "development" | "production" | "test";
+type S3ForcePathStyle = "true" | "false";
 
-if (process.env.NODE_ENV !== "production") {
-  dotenv.config({ path: ".env.dev" });
+interface AppEnv {
+  NODE_ENV: NodeEnv;
+  GOOGLE_CLIENT_ID: string;
+  GOOGLE_CLIENT_SECRET: string;
+  BETTER_AUTH_SECRET: string;
+  PORT: string;
+  BACKEND_URL: string;
+  S3_ENDPOINT: string;
+  S3_REGION: string;
+  S3_ACCESS_KEY_ID: string;
+  S3_SECRET_ACCESS_KEY: string;
+  S3_BUCKET_NAME: string;
+  S3_PUBLIC_URL: string;
+  S3_FORCE_PATH_STYLE: S3ForcePathStyle;
 }
 
-const envSchema = z.object({
-  NODE_ENV: z
-    .enum(["development", "production", "test"])
-    .default("development"),
-
-  DATABASE_URL: z.string().min(1, "DATABASE_URL is required"),
-
-  GOOGLE_CLIENT_ID: z.string().min(1, "GOOGLE_CLIENT_ID is required"),
-  GOOGLE_CLIENT_SECRET: z.string().min(1, "GOOGLE_CLIENT_SECRET is required"),
-  BETTER_AUTH_SECRET: z
-    .string()
-    .min(32, "BETTER_AUTH_SECRET must be at least 32 characters"),
-
-  PORT: z.string().regex(/^\d+$/, "PORT must be a number").default("7000"),
-
-  BACKEND_URL: z.url("BACKEND_URL must be a valid URL"),
-
-  S3_ENDPOINT: z.string().min(1, "S3_ENDPOINT is required"),
-  S3_REGION: z.string().default("auto"),
-  S3_ACCESS_KEY_ID: z.string().min(1, "S3_ACCESS_KEY_ID is required"),
-  S3_SECRET_ACCESS_KEY: z.string().min(1, "S3_SECRET_ACCESS_KEY is required"),
-  S3_BUCKET_NAME: z.string().default("crop-media"),
-  S3_PUBLIC_URL: z.string().optional(),
-  S3_FORCE_PATH_STYLE: z.enum(["true", "false"]).default("false"),
-});
-
-function validateEnv() {
-  const result = envSchema.safeParse(process.env);
-
-  if (!result.success) {
-    const missingVars = result.error.issues
-      .map((err) => `  - ${err.path.join(".")}: ${err.message}`)
-      .join("\n");
-
-    throw new Error(
-      `Invalid environment variables:
-      ${missingVars}
-      
-      Check your .env file and ensure all required variables are set.\n See .env.example for reference.`,
-    );
+function getVar(key: string, fallback = ""): string {
+  if (typeof process !== "undefined" && process.env) {
+    return process.env[key] ?? fallback;
   }
-
-  return result.data;
+  return fallback;
 }
 
-export const env = validateEnv();
+function readEnv(): AppEnv {
+  const nodeEnv =
+    (getVar("NODE_ENV", "development") as NodeEnv) ?? "development";
+
+  const forcePath = getVar("S3_FORCE_PATH_STYLE", "false") as S3ForcePathStyle;
+
+  return {
+    NODE_ENV: nodeEnv,
+    GOOGLE_CLIENT_ID: getVar("GOOGLE_CLIENT_ID"),
+    GOOGLE_CLIENT_SECRET: getVar("GOOGLE_CLIENT_SECRET"),
+    BETTER_AUTH_SECRET: getVar("BETTER_AUTH_SECRET"),
+    PORT: getVar("PORT", "7000"),
+    BACKEND_URL: getVar("BACKEND_URL", "http://localhost:7000"),
+    S3_ENDPOINT: getVar("S3_ENDPOINT"),
+    S3_REGION: getVar("S3_REGION", "auto"),
+    S3_ACCESS_KEY_ID: getVar("S3_ACCESS_KEY_ID"),
+    S3_SECRET_ACCESS_KEY: getVar("S3_SECRET_ACCESS_KEY"),
+    S3_BUCKET_NAME: getVar("S3_BUCKET_NAME", "crop-media"),
+    S3_PUBLIC_URL: getVar("S3_PUBLIC_URL"),
+    S3_FORCE_PATH_STYLE: forcePath,
+  };
+}
+
+export const env = readEnv();
 
 export const {
   NODE_ENV,
-  DATABASE_URL,
   GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET,
   BETTER_AUTH_SECRET,

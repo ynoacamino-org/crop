@@ -7,6 +7,11 @@ import {
   NotFoundError,
 } from "@/lib/errors/gql";
 
+const UNIQUE_PATTERN = /UNIQUE constraint failed/i;
+const FOREIGN_KEY_PATTERN = /FOREIGN KEY constraint failed/i;
+const NOT_NULL_PATTERN = /NOT NULL constraint failed/i;
+const CHECK_PATTERN = /CHECK constraint failed/i;
+
 export function handleDbError(
   error: unknown,
   messages?: {
@@ -16,44 +21,60 @@ export function handleDbError(
     invalidInput?: string;
   },
 ): never {
-  if (error instanceof Error && "code" in error) {
-    const code = String((error as { code?: string }).code ?? "");
+  if (error instanceof Error) {
+    const message = error.message;
 
-    switch (code) {
-      case "23505": {
+    if (UNIQUE_PATTERN.test(message)) {
+      throw new DuplicateFieldError(
+        messages?.duplicate ?? "Ya existe un registro con los mismos valores",
+      );
+    }
+
+    if (FOREIGN_KEY_PATTERN.test(message)) {
+      throw new ForeignKeyConstraintError(
+        messages?.foreignKey ??
+          "No se puede completar la operación por una restricción de clave foránea",
+      );
+    }
+
+    if (NOT_NULL_PATTERN.test(message)) {
+      throw new BadRequestError("Hay campos requeridos faltantes");
+    }
+
+    if (CHECK_PATTERN.test(message)) {
+      throw new InvalidInputError(
+        messages?.invalidInput ?? "Los datos proporcionados no son válidos",
+      );
+    }
+
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "code" in error &&
+      typeof (error as { code?: unknown }).code === "string"
+    ) {
+      const code = (error as { code: string }).code;
+      if (code.startsWith("SQLITE_CONSTRAINT_UNIQUE")) {
         throw new DuplicateFieldError(
           messages?.duplicate ?? "Ya existe un registro con los mismos valores",
         );
       }
-      case "23503": {
+      if (code.startsWith("SQLITE_CONSTRAINT_FOREIGNKEY")) {
         throw new ForeignKeyConstraintError(
           messages?.foreignKey ??
             "No se puede completar la operación por una restricción de clave foránea",
         );
       }
-      case "23502": {
+      if (code.startsWith("SQLITE_CONSTRAINT_NOTNULL")) {
         throw new BadRequestError("Hay campos requeridos faltantes");
       }
-      case "22P02":
-      case "22007": {
-        throw new InvalidInputError(
-          messages?.invalidInput ?? "Los datos proporcionados no son válidos",
-        );
-      }
-      default: {
-        throw new InternalServerError(
-          `Error de base de datos: ${error.message}`,
-        );
-      }
     }
-  }
 
-  if (error instanceof Error) {
-    if (error.message.includes("not found") && messages?.notFound) {
+    if (message.toLowerCase().includes("not found") && messages?.notFound) {
       throw new NotFoundError(messages.notFound);
     }
 
-    throw new InternalServerError(error.message);
+    throw new InternalServerError(message);
   }
 
   throw new InternalServerError("Error interno del servidor");

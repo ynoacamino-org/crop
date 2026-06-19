@@ -1,9 +1,5 @@
-query RecentLegalCases(
-  $take: Int
-  $skip: Int
-  $search: String
-) {
-  legalCases(take: $take skip: $skip search: $search) {
+query RecentLegalCases($take: Int, $skip: Int, $search: String) {
+  legalCases(take: $take, skip: $skip, search: $search) {
     items {
       id
       caseNumber
