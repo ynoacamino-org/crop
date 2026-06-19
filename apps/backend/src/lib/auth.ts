@@ -1,25 +1,25 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import {
-  BACKEND_URL,
-  BETTER_AUTH_SECRET,
-  GOOGLE_CLIENT_ID,
-  GOOGLE_CLIENT_SECRET,
-  NODE_ENV,
-} from "@/config/env";
 import { authSchema } from "@/db/schema";
-import { getDb } from "@/lib/db";
+import type { AuthInstance } from "@/lib/stores/auth/types";
+import type { RuntimeEnv } from "@/lib/stores/runtime/types";
 
-export const createAuth = (env: Cloudflare.Env) =>
-  betterAuth({
-    database: drizzleAdapter(getDb(env), {
+export function AuthFactory(rt: RuntimeEnv): AuthInstance {
+  const secret = rt.env.get("BETTER_AUTH_SECRET") ?? "";
+  const baseURL = rt.env.get("BACKEND_URL") ?? "http://localhost:7000";
+  const nodeEnv = rt.env.get("NODE_ENV") ?? "development";
+  const googleClientId = rt.env.get("GOOGLE_CLIENT_ID") ?? "";
+  const googleClientSecret = rt.env.get("GOOGLE_CLIENT_SECRET") ?? "";
+
+  const auth = betterAuth({
+    database: drizzleAdapter(rt.db.client as never, {
       provider: "sqlite",
       schema: authSchema,
     }),
-    secret: BETTER_AUTH_SECRET,
-    baseURL: BACKEND_URL,
+    secret,
+    baseURL,
     basePath: "/api/auth",
-    trustedOrigins: ["http://localhost:8000", BACKEND_URL],
+    trustedOrigins: ["http://localhost:8000", baseURL],
     user: {
       modelName: "User",
       additionalFields: {
@@ -40,8 +40,8 @@ export const createAuth = (env: Cloudflare.Env) =>
     socialProviders: {
       google: {
         prompt: "select_account",
-        clientId: GOOGLE_CLIENT_ID,
-        clientSecret: GOOGLE_CLIENT_SECRET,
+        clientId: googleClientId,
+        clientSecret: googleClientSecret,
       },
     },
     session: {
@@ -51,19 +51,20 @@ export const createAuth = (env: Cloudflare.Env) =>
       },
     },
     advanced: {
-      useSecureCookies: NODE_ENV === "production",
+      useSecureCookies: nodeEnv === "production",
     },
   });
 
+  return auth as unknown as AuthInstance;
+}
+
+export const createAuth = AuthFactory;
+
 export type AuthType = {
-  user: ReturnType<typeof createAuth> extends infer T
-    ? T extends { $Infer: { Session: { user: infer U } } }
-      ? U
-      : never
-    : never;
-  session: ReturnType<typeof createAuth> extends infer T
-    ? T extends { $Infer: { Session: infer S } }
-      ? S
-      : never
-    : never;
+  user: NonNullable<
+    Awaited<ReturnType<AuthInstance["api"]["getSession"]>>
+  >["user"];
+  session: NonNullable<
+    Awaited<ReturnType<AuthInstance["api"]["getSession"]>>
+  >["session"];
 };

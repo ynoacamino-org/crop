@@ -1,7 +1,3 @@
 {
-  // "languages": {
-  //   "TypeScript": {
-  //     "language_servers": ["tsgo", "vtsls"],
-  //   },
-  // },
+  "languages": {}
 }

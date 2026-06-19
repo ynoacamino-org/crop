@@ -1,0 +1,88 @@
+name: crop
+
+services:
+  libsql:
+    image: ghcr.io/tursodatabase/libsql-server:latest
+    container_name: crop-libsql
+    restart: unless-stopped
+    environment:
+      SQLD_NODE_PRIMARY_URL: "file:primary.db"
+      # Para HA: añadir replicas con SQLD_NODE_REPLICA_URLS
+    volumes:
+      - ./.data/libsql:/var/lib/sqld
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  garage:
+    image: garage:latest
+    container_name: crop-garage
+    restart: unless-stopped
+    environment:
+      GARAGE_RPC_LISTEN_ADDR: "[::]:3901"
+      GARAGE_RPC_PUBLIC_ADDR: "crop-garage:3901"
+      GARAGE_RPC_SECRET: "${GARAGE_RPC_SECRET:-dev-rpc-secret-change-me}"
+      GARAGE_S3_API_LISTEN_ADDR: "[::]:3900"
+      GARAGE_S3_BUCKET_DEFAULT_ALLOW: "true"
+      GARAGE_DEFAULT_ACCESS_KEY: "GKc7b6103f2655e2b34cd0e659cada57c7"
+      GARAGE_DEFAULT_SECRET_KEY: "c5b3b89344ba4f7990045374e4fc7115df9f74e4162e05e760b16e6ca819cd91"
+      GARAGE_DEFAULT_BUCKET: "crop"
+    volumes:
+      - ./.data/garage:/var/lib/garage
+      - ./storage/garage.toml:/etc/garage.toml:ro
+    ports:
+      - "3900:3900"
+      - "3901:3901"
+
+  redis:
+    image: redis:7-alpine
+    container_name: crop-redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - ./.data/redis:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    build:
+      context: ./apps/backend
+      dockerfile: Dockerfile
+    container_name: crop-backend
+    restart: unless-stopped
+    depends_on:
+      libsql:
+        condition: service_healthy
+      garage:
+        condition: service_started
+      redis:
+        condition: service_healthy
+    environment:
+      NODE_ENV: development
+      PORT: "7000"
+      BACKEND_URL: "http://localhost:7000"
+      DATABASE_URL: "http://libsql:8080"
+      REDIS_URL: "redis://redis:6379"
+      S3_ENDPOINT: "http://garage:3900"
+      S3_REGION: "garage"
+      S3_BUCKET_NAME: "crop"
+      S3_ACCESS_KEY_ID: "GKc7b6103f2655e2b34cd0e659cada57c7"
+      S3_SECRET_ACCESS_KEY: "c5b3b89344ba4f7990045374e4fc7115df9f74e4162e05e760b16e6ca819cd91"
+      S3_FORCE_PATH_STYLE: "true"
+      S3_PUBLIC_URL: "http://localhost:3900/crop"
+      BETTER_AUTH_SECRET: "${BETTER_AUTH_SECRET:-dev-auth-secret-change-me-32chars-min}"
+      GOOGLE_CLIENT_ID: "${GOOGLE_CLIENT_ID:-}"
+      GOOGLE_CLIENT_SECRET: "${GOOGLE_CLIENT_SECRET:-}"
+      DEV_SEED_TOKEN: "${DEV_SEED_TOKEN:-dev-seed-token}"
+    ports:
+      - "7000:7000"
+    command: ["bun", "run", "src/server-node.ts"]

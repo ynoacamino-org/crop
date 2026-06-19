@@ -1,10 +1,8 @@
-declare const process: { env: Record<string, string | undefined> } | undefined;
+import { EnvFactory } from "@/lib/stores/env";
+import type { EnvStore } from "@/lib/stores/env/types";
 
-type NodeEnv = "development" | "production" | "test";
-type S3ForcePathStyle = "true" | "false";
-
-interface AppEnv {
-  NODE_ENV: NodeEnv;
+export interface AppEnv {
+  NODE_ENV: string;
   GOOGLE_CLIENT_ID: string;
   GOOGLE_CLIENT_SECRET: string;
   BETTER_AUTH_SECRET: string;
@@ -16,40 +14,59 @@ interface AppEnv {
   S3_SECRET_ACCESS_KEY: string;
   S3_BUCKET_NAME: string;
   S3_PUBLIC_URL: string;
-  S3_FORCE_PATH_STYLE: S3ForcePathStyle;
+  S3_FORCE_PATH_STYLE: "true" | "false";
+  DATABASE_URL: string;
+  REDIS_URL: string;
+  DEV_SEED_TOKEN: string;
 }
 
-function getVar(key: string, fallback = ""): string {
-  if (typeof process !== "undefined" && process.env) {
-    return process.env[key] ?? fallback;
+let _env: EnvStore | null = null;
+
+export function getEnvStore(input?: { cf?: Cloudflare.Env }): EnvStore {
+  if (!_env) {
+    _env = EnvFactory(input);
   }
-  return fallback;
+  return _env;
 }
 
-function readEnv(): AppEnv {
-  const nodeEnv =
-    (getVar("NODE_ENV", "development") as NodeEnv) ?? "development";
+export function resetEnvStore(): void {
+  _env = null;
+}
 
-  const forcePath = getVar("S3_FORCE_PATH_STYLE", "false") as S3ForcePathStyle;
+function readValue(key: string, fallback = ""): string {
+  return getEnvStore().get(key) ?? fallback;
+}
 
+export function getAppEnv(): AppEnv {
+  const forcePath = readValue("S3_FORCE_PATH_STYLE", "false") as
+    | "true"
+    | "false";
   return {
-    NODE_ENV: nodeEnv,
-    GOOGLE_CLIENT_ID: getVar("GOOGLE_CLIENT_ID"),
-    GOOGLE_CLIENT_SECRET: getVar("GOOGLE_CLIENT_SECRET"),
-    BETTER_AUTH_SECRET: getVar("BETTER_AUTH_SECRET"),
-    PORT: getVar("PORT", "7000"),
-    BACKEND_URL: getVar("BACKEND_URL", "http://localhost:7000"),
-    S3_ENDPOINT: getVar("S3_ENDPOINT"),
-    S3_REGION: getVar("S3_REGION", "auto"),
-    S3_ACCESS_KEY_ID: getVar("S3_ACCESS_KEY_ID"),
-    S3_SECRET_ACCESS_KEY: getVar("S3_SECRET_ACCESS_KEY"),
-    S3_BUCKET_NAME: getVar("S3_BUCKET_NAME", "crop-media"),
-    S3_PUBLIC_URL: getVar("S3_PUBLIC_URL"),
+    NODE_ENV: readValue("NODE_ENV", "development"),
+    GOOGLE_CLIENT_ID: readValue("GOOGLE_CLIENT_ID"),
+    GOOGLE_CLIENT_SECRET: readValue("GOOGLE_CLIENT_SECRET"),
+    BETTER_AUTH_SECRET: readValue("BETTER_AUTH_SECRET"),
+    PORT: readValue("PORT", "7000"),
+    BACKEND_URL: readValue("BACKEND_URL", "http://localhost:7000"),
+    S3_ENDPOINT: readValue("S3_ENDPOINT"),
+    S3_REGION: readValue("S3_REGION", "auto"),
+    S3_ACCESS_KEY_ID: readValue("S3_ACCESS_KEY_ID"),
+    S3_SECRET_ACCESS_KEY: readValue("S3_SECRET_ACCESS_KEY"),
+    S3_BUCKET_NAME: readValue("S3_BUCKET_NAME", "crop-media"),
+    S3_PUBLIC_URL: readValue("S3_PUBLIC_URL"),
     S3_FORCE_PATH_STYLE: forcePath,
+    DATABASE_URL: readValue("DATABASE_URL"),
+    REDIS_URL: readValue("REDIS_URL"),
+    DEV_SEED_TOKEN: readValue("DEV_SEED_TOKEN"),
   };
 }
 
-export const env = readEnv();
+export const env = new Proxy({} as AppEnv, {
+  get(_target, prop) {
+    const values = getAppEnv();
+    return values[prop as keyof AppEnv];
+  },
+});
 
 export const {
   NODE_ENV,
@@ -58,4 +75,9 @@ export const {
   BETTER_AUTH_SECRET,
   PORT,
   BACKEND_URL,
-} = env;
+} = new Proxy({} as AppEnv, {
+  get(_target, prop) {
+    const values = getAppEnv();
+    return values[prop as keyof AppEnv];
+  },
+});

@@ -22,20 +22,24 @@ services:
     ports:
       - "5432:5432"
 
-  storage:
-    image: minio/minio:latest
-    container_name: crop-storage-dev
-    command: server /data --console-address ":9001"
-    env_file:
-      - ./storage/.env.dev
+  garage:
+    image: garage:latest
+    container_name: crop-garage
+    restart: unless-stopped
+    environment:
+      GARAGE_RPC_LISTEN_ADDR: "[::]:3901"
+      GARAGE_RPC_PUBLIC_ADDR: "crop-garage:3901"
+      GARAGE_RPC_SECRET: "${GARAGE_RPC_SECRET:-dev-rpc-secret-change-me}"
+      GARAGE_S3_API_LISTEN_ADDR: "[::]:3900"
+      GARAGE_S3_BUCKET_DEFAULT_ALLOW: "true"
+      GARAGE_DEFAULT_ACCESS_KEY: "GKc7b6103f2655e2b34cd0e659cada57c7"
+      GARAGE_DEFAULT_SECRET_KEY: "c5b3b89344ba4f7990045374e4fc7115df9f74e4162e05e760b16e6ca819cd91"
+      GARAGE_DEFAULT_BUCKET: "crop"
+    volumes:
+      - ./storage/garage.toml:/etc/garage.toml:ro
     ports:
-      - "9000:9000"
-      - "9001:9001"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+      - "3900:3900"
+      - "3901:3901"
 
   storage-init:
     image: minio/mc:latest
