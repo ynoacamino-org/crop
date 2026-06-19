@@ -1,5 +1,5 @@
 import { builder } from "@/builder";
-import { db } from "@/lib/db";
+import type { Db } from "@/ports/db/port";
 
 interface PaginationInfoShape {
   totalCount: number;
@@ -12,10 +12,9 @@ interface PaginationParentShape {
   skip: number;
 }
 
-type CountSource = Parameters<typeof db.$count>[0];
-type CountFilter = Parameters<typeof db.$count>[1];
+type CountSource = Parameters<Db["$count"]>[0];
+type CountFilter = Parameters<Db["$count"]>[1];
 
-// PaginationInfo type
 export const PaginationInfo =
   builder.objectRef<PaginationInfoShape>("PaginationInfo");
 
@@ -34,7 +33,6 @@ PaginationInfo.implement({
   }),
 });
 
-// Helper to calculate pagination info
 export function calculatePaginationInfo(params: {
   totalCount: number;
   take: number;
@@ -52,12 +50,16 @@ export function calculatePaginationInfo(params: {
 export function createPageInfoResolver<
   TParent extends PaginationParentShape,
 >(options: {
-  getTotalCount: (parent: TParent) => Promise<number>;
+  getTotalCount: (parent: TParent, ctx: { db: Db }) => Promise<number>;
   onError?: (error: unknown) => never;
-}): (parent: TParent) => Promise<PaginationInfoShape> {
-  return async (parent) => {
+}): (
+  parent: TParent,
+  args: unknown,
+  ctx: { db: Db },
+) => Promise<PaginationInfoShape> {
+  return async (parent, _args, ctx) => {
     try {
-      const totalCount = await options.getTotalCount(parent);
+      const totalCount = await options.getTotalCount(parent, ctx);
 
       return calculatePaginationInfo({
         totalCount,
@@ -80,14 +82,18 @@ export function createDbCountPageInfoResolver<
   source: CountSource;
   where?: (parent: TParent) => CountFilter | Promise<CountFilter>;
   onError?: (error: unknown) => never;
-}): (parent: TParent) => Promise<PaginationInfoShape> {
+}): (
+  parent: TParent,
+  args: unknown,
+  ctx: { db: Db },
+) => Promise<PaginationInfoShape> {
   return createPageInfoResolver<TParent>({
-    getTotalCount: async (parent) => {
+    getTotalCount: async (parent, ctx) => {
       const whereClause = options.where
         ? await options.where(parent)
         : undefined;
 
-      return await db.$count(options.source, whereClause);
+      return await ctx.db.$count(options.source, whereClause);
     },
     onError: options.onError,
   });

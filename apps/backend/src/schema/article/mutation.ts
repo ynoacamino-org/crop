@@ -6,7 +6,6 @@ import {
   articleToLegalCases,
   articleToTags,
 } from "@/db/schema";
-import { db } from "@/lib/db";
 import { handleDbError } from "@/lib/errors/db";
 import { NotFoundError, UnauthorizedError } from "@/lib/errors/gql";
 import { sanitize } from "@/lib/utils/sanitize";
@@ -31,7 +30,7 @@ builder.mutationField("createArticle", (t) =>
       const { input } = sanitize(rawArgs);
 
       try {
-        const [createdArticle] = await db
+        const [createdArticle] = await ctx.db
           .insert(articles)
           .values({
             title: input.title,
@@ -54,7 +53,7 @@ builder.mutationField("createArticle", (t) =>
         }
 
         if (input.categoryIds?.length) {
-          await db.insert(articleToCategories).values(
+          await ctx.db.insert(articleToCategories).values(
             input.categoryIds.map((categoryId) => ({
               articleId: createdArticle.id,
               categoryId,
@@ -63,7 +62,7 @@ builder.mutationField("createArticle", (t) =>
         }
 
         if (input.tagIds?.length) {
-          await db.insert(articleToTags).values(
+          await ctx.db.insert(articleToTags).values(
             input.tagIds.map((tagId) => ({
               articleId: createdArticle.id,
               tagId,
@@ -72,7 +71,7 @@ builder.mutationField("createArticle", (t) =>
         }
 
         if (input.legalCaseIds?.length) {
-          await db.insert(articleToLegalCases).values(
+          await ctx.db.insert(articleToLegalCases).values(
             input.legalCaseIds.map((legalCaseId) => ({
               articleId: createdArticle.id,
               legalCaseId,
@@ -111,7 +110,7 @@ builder.mutationField("updateArticle", (t) =>
       const { id, input } = sanitize(rawArgs);
 
       try {
-        const [article] = await db
+        const [article] = await ctx.db
           .select({ authorId: articles.authorId })
           .from(articles)
           .where(eq(articles.id, id))
@@ -125,7 +124,7 @@ builder.mutationField("updateArticle", (t) =>
           throw new UnauthorizedError();
         }
 
-        const [updatedArticle] = await db
+        const [updatedArticle] = await ctx.db
           .update(articles)
           .set({
             ...(input.title && { title: input.title }),
@@ -156,12 +155,12 @@ builder.mutationField("updateArticle", (t) =>
         }
 
         if (input.categoryIds !== undefined) {
-          await db
+          await ctx.db
             .delete(articleToCategories)
             .where(eq(articleToCategories.articleId, id));
 
           if (input.categoryIds.length) {
-            await db.insert(articleToCategories).values(
+            await ctx.db.insert(articleToCategories).values(
               input.categoryIds.map((categoryId) => ({
                 articleId: id,
                 categoryId,
@@ -171,10 +170,12 @@ builder.mutationField("updateArticle", (t) =>
         }
 
         if (input.tagIds !== undefined) {
-          await db.delete(articleToTags).where(eq(articleToTags.articleId, id));
+          await ctx.db
+            .delete(articleToTags)
+            .where(eq(articleToTags.articleId, id));
 
           if (input.tagIds.length) {
-            await db.insert(articleToTags).values(
+            await ctx.db.insert(articleToTags).values(
               input.tagIds.map((tagId) => ({
                 articleId: id,
                 tagId,
@@ -184,12 +185,12 @@ builder.mutationField("updateArticle", (t) =>
         }
 
         if (input.legalCaseIds !== undefined) {
-          await db
+          await ctx.db
             .delete(articleToLegalCases)
             .where(eq(articleToLegalCases.articleId, id));
 
           if (input.legalCaseIds.length) {
-            await db.insert(articleToLegalCases).values(
+            await ctx.db.insert(articleToLegalCases).values(
               input.legalCaseIds.map((legalCaseId) => ({
                 articleId: id,
                 legalCaseId,
@@ -224,7 +225,7 @@ builder.mutationField("deleteArticle", (t) =>
       const { id } = sanitize(rawArgs);
 
       try {
-        const [article] = await db
+        const [article] = await ctx.db
           .select({ authorId: articles.authorId })
           .from(articles)
           .where(eq(articles.id, id))
@@ -238,7 +239,7 @@ builder.mutationField("deleteArticle", (t) =>
           throw new UnauthorizedError();
         }
 
-        const [deletedArticle] = await db
+        const [deletedArticle] = await ctx.db
           .delete(articles)
           .where(eq(articles.id, id))
           .returning();

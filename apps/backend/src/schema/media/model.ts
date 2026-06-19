@@ -1,5 +1,5 @@
+import { getMediaSignedUrl } from "@/application/media";
 import { builder } from "@/builder";
-import { getMediaSignedUrl } from "@/lib/utils/storage";
 
 export const MediaType = builder.enumType("MediaType", {
   values: ["IMAGE", "VIDEO", "AUDIO", "FILE"] as const,
@@ -12,11 +12,11 @@ export const Media = builder.drizzleObject("media", {
     objectKey: t.exposeString("objectKey"),
     url: t.string({
       nullable: false,
-      resolve: async (media) => {
+      resolve: async (media, _args, ctx) => {
         if (media.url) {
           return media.url;
         }
-        return getMediaSignedUrl(media.objectKey, 3600);
+        return getMediaSignedUrl(ctx.runtime, media.objectKey, 3600);
       },
     }),
     alt: t.exposeString("alt", { nullable: true }),

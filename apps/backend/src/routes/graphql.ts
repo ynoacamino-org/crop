@@ -1,18 +1,18 @@
 import { Hono } from "hono";
-import { RuntimeFactory } from "@/lib/env";
-import { YogaHandlerFactory } from "@/lib/yoga";
+import { createYogaHandler } from "@/lib/yoga";
+import { runtime } from "@/ports/runtime";
 
-export function GraphqlRouterFactory(): Hono<{ Bindings: Cloudflare.Env }> {
+export function graphqlRouter(): Hono<{ Bindings: Cloudflare.Env }> {
   const router = new Hono<{ Bindings: Cloudflare.Env }>();
 
   router.all("/", (c) => {
-    const rt = RuntimeFactory.create({ cf: c.env });
-    const yoga = YogaHandlerFactory(rt);
+    const rt = runtime.create({ cf: c.env });
+    const yoga = createYogaHandler(rt);
     return yoga.fetch(c.req.raw);
   });
 
   return router;
 }
 
-export const graphqlRouter = GraphqlRouterFactory();
-export default graphqlRouter;
+export const graphqlRoutes = graphqlRouter();
+export default graphqlRoutes;

@@ -1,6 +1,5 @@
 import { MediaPayloadSchema, MediasPayloadSchema } from "@repo/schemas/media";
 import { builder } from "@/builder";
-import { db } from "@/lib/db";
 import { handleDbError } from "@/lib/errors/db";
 import { sanitize } from "@/lib/utils/sanitize";
 
@@ -26,13 +25,13 @@ builder.queryField("medias", (t) =>
         validate: MediasPayloadSchema.shape.search,
       }),
     },
-    resolve: async (query, _root, rawArgs) => {
+    resolve: async (query, _root, rawArgs, ctx) => {
       const args = sanitize(rawArgs);
       const search = args.search?.trim();
       const searchTerm = search ? `%${search}%` : undefined;
 
       try {
-        return await db.query.media.findMany(
+        return await ctx.db.query.media.findMany(
           query({
             where: searchTerm
               ? {
@@ -67,11 +66,11 @@ builder.queryField("media", (t) =>
         validate: MediaPayloadSchema.shape.id,
       }),
     },
-    resolve: async (query, _root, rawArgs) => {
+    resolve: async (query, _root, rawArgs, ctx) => {
       const args = sanitize(rawArgs);
 
       try {
-        return await db.query.media.findFirst(
+        return await ctx.db.query.media.findFirst(
           query({
             where: {
               id: args.id,

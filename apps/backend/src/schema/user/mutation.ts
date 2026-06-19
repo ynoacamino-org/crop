@@ -5,7 +5,6 @@ import {
 import { eq } from "drizzle-orm";
 import { builder } from "@/builder";
 import { users } from "@/db/schema";
-import { db } from "@/lib/db";
 import { handleDbError } from "@/lib/errors/db";
 import { UnauthorizedError } from "@/lib/errors/gql";
 import { sanitize } from "@/lib/utils/sanitize";
@@ -30,7 +29,7 @@ builder.mutationField("updateMe", (t) =>
       const { input } = sanitize(rawArgs);
 
       try {
-        const [updatedUser] = await db
+        const [updatedUser] = await ctx.db
           .update(users)
           .set({
             ...(input.name !== undefined && { name: input.name }),
@@ -73,11 +72,11 @@ builder.mutationField("updateUser", (t) =>
     authScopes: {
       admin: true,
     },
-    resolve: async (_root, rawArgs) => {
+    resolve: async (_root, rawArgs, ctx) => {
       const { id, input } = sanitize(rawArgs);
 
       try {
-        const [updatedUser] = await db
+        const [updatedUser] = await ctx.db
           .update(users)
           .set({
             ...(input.name !== undefined && { name: input.name }),
@@ -113,7 +112,7 @@ builder.mutationField("deleteMe", (t) =>
       if (!ctx.user) throw new UnauthorizedError();
 
       try {
-        const [deletedUser] = await db
+        const [deletedUser] = await ctx.db
           .delete(users)
           .where(eq(users.id, ctx.user.id))
           .returning();
@@ -147,11 +146,11 @@ builder.mutationField("deleteUser", (t) =>
     authScopes: {
       admin: true,
     },
-    resolve: async (_root, rawArgs) => {
+    resolve: async (_root, rawArgs, ctx) => {
       const { id } = sanitize(rawArgs);
 
       try {
-        const [deletedUser] = await db
+        const [deletedUser] = await ctx.db
           .delete(users)
           .where(eq(users.id, String(id)))
           .returning();

@@ -1,5 +1,6 @@
 import { cors } from "hono/cors";
-import { BACKEND_URL } from "./env";
+
+const BACKEND_URL = process.env?.BACKEND_URL ?? "http://localhost:7000";
 
 export const corsConfig = cors({
   origin: ["http://localhost:8000", BACKEND_URL],

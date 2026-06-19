@@ -1,7 +1,6 @@
 import { ilike, or } from "drizzle-orm";
 import { builder } from "@/builder";
 import { legalCases } from "@/db/schema";
-import { db } from "@/lib/db";
 import { handleDbError } from "@/lib/errors/db";
 import { NotFoundError } from "@/lib/errors/gql";
 import { sanitize } from "@/lib/utils/sanitize";
@@ -25,11 +24,11 @@ LegalCasesConnection.implement({
   fields: (t) => ({
     items: t.drizzleField({
       type: ["legalCases"],
-      resolve: async (query, parent) => {
+      resolve: async (query, parent, _args, ctx) => {
         const searchTerm = parent.search ? `%${parent.search}%` : undefined;
 
         try {
-          return await db.query.legalCases.findMany(
+          return await ctx.db.query.legalCases.findMany(
             query({
               where: searchTerm
                 ? {
@@ -121,7 +120,7 @@ builder.queryField("legalCase", (t) =>
         description: "Legal case number",
       }),
     },
-    resolve: async (query, _root, rawArgs) => {
+    resolve: async (query, _root, rawArgs, ctx) => {
       const args = sanitize(rawArgs);
 
       if (!args.id && !args.slug && !args.caseNumber) {
@@ -129,7 +128,7 @@ builder.queryField("legalCase", (t) =>
       }
 
       try {
-        const legalCase = await db.query.legalCases.findFirst(
+        const legalCase = await ctx.db.query.legalCases.findFirst(
           query({
             where: args.id
               ? { id: args.id }

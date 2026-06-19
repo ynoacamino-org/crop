@@ -20,7 +20,7 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    "types": ["./worker-configuration.d.ts"]
+    "types": ["./worker-configuration.d.ts", "bun"]
   },
   "include": ["**/*.ts"],
   "exclude": ["dist", "scripts"]

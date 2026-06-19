@@ -16,15 +16,22 @@ import type {
   UserModel,
 } from "@/db/schema";
 import { relations } from "@/db/schema";
-import { db } from "@/lib/db";
-
-type DrizzleRelations = typeof relations;
+import type { Db } from "@/ports/db/port";
+import type { RuntimeEnv } from "@/ports/runtime/port";
 
 export interface CurrentUser {
   id: string;
   email: string;
   role: RoleValue;
 }
+
+export interface AppContextShape {
+  user?: CurrentUser;
+  db: Db;
+  runtime: RuntimeEnv;
+}
+
+type DrizzleRelations = typeof relations;
 
 export const builder = new SchemaBuilder<{
   Defaults: "v3";
@@ -55,14 +62,12 @@ export const builder = new SchemaBuilder<{
       Input: Date;
     };
   };
-  Context: {
-    user?: CurrentUser;
-  };
+  Context: AppContextShape;
 }>({
   defaults: "v3",
   plugins: [DrizzlePlugin, ValidationPlugin, ScopeAuthPlugin],
   drizzle: {
-    client: db,
+    client: (ctx: AppContextShape) => ctx.db,
     getTableConfig,
     relations,
   },

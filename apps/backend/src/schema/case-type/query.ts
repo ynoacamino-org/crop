@@ -1,7 +1,6 @@
 import { caseTypesQuerySchema } from "@repo/schemas";
 import { builder } from "@/builder";
 import { caseTypes } from "@/db/schema";
-import { db } from "@/lib/db";
 import { sanitize } from "@/lib/utils/sanitize";
 import {
   createDbCountPageInfoResolver,
@@ -22,8 +21,8 @@ CaseTypesConnection.implement({
   fields: (t) => ({
     items: t.drizzleField({
       type: ["caseTypes"],
-      resolve: async (query, parent) =>
-        await db.query.caseTypes.findMany(
+      resolve: async (query, parent, _args, ctx) =>
+        await ctx.db.query.caseTypes.findMany(
           query({
             orderBy: {
               order: "asc",
@@ -80,12 +79,12 @@ builder.queryField("caseType", (t) =>
       id: t.arg.string({ required: false }),
       slug: t.arg.string({ required: false }),
     },
-    resolve: async (query, _root, args) => {
+    resolve: async (query, _root, args, ctx) => {
       if (!args.id && !args.slug) {
         return null;
       }
 
-      return await db.query.caseTypes.findFirst(
+      return await ctx.db.query.caseTypes.findFirst(
         query({
           where: args.id
             ? { id: args.id }

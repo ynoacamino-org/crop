@@ -1,7 +1,6 @@
 import { eq } from "drizzle-orm";
 import { builder } from "@/builder";
 import { caseTypes, courts, legalCases } from "@/db/schema";
-import { db } from "@/lib/db";
 import { handleDbError } from "@/lib/errors/db";
 import { NotFoundError, UnauthorizedError } from "@/lib/errors/gql";
 import { generateCaseSlug } from "@/lib/utils/generate-slug";
@@ -26,7 +25,7 @@ builder.mutationField("createLegalCase", (t) =>
 
       try {
         if (input.caseTypeId) {
-          const [existingCaseType] = await db
+          const [existingCaseType] = await ctx.db
             .select({ id: caseTypes.id })
             .from(caseTypes)
             .where(eq(caseTypes.id, input.caseTypeId))
@@ -38,7 +37,7 @@ builder.mutationField("createLegalCase", (t) =>
         }
 
         if (input.courtId) {
-          const [existingCourt] = await db
+          const [existingCourt] = await ctx.db
             .select({ id: courts.id })
             .from(courts)
             .where(eq(courts.id, input.courtId))
@@ -49,7 +48,7 @@ builder.mutationField("createLegalCase", (t) =>
           }
         }
 
-        const [createdCase] = await db
+        const [createdCase] = await ctx.db
           .insert(legalCases)
           .values({
             caseNumber: input.caseNumber,
@@ -106,7 +105,7 @@ builder.mutationField("updateLegalCase", (t) =>
       const { id, input } = sanitize(rawArgs);
 
       try {
-        const [legalCase] = await db
+        const [legalCase] = await ctx.db
           .select()
           .from(legalCases)
           .where(eq(legalCases.id, id))
@@ -117,7 +116,7 @@ builder.mutationField("updateLegalCase", (t) =>
         }
 
         if (input.caseTypeId) {
-          const [existingCaseType] = await db
+          const [existingCaseType] = await ctx.db
             .select({ id: caseTypes.id })
             .from(caseTypes)
             .where(eq(caseTypes.id, input.caseTypeId))
@@ -129,7 +128,7 @@ builder.mutationField("updateLegalCase", (t) =>
         }
 
         if (input.courtId) {
-          const [existingCourt] = await db
+          const [existingCourt] = await ctx.db
             .select({ id: courts.id })
             .from(courts)
             .where(eq(courts.id, input.courtId))
@@ -145,7 +144,7 @@ builder.mutationField("updateLegalCase", (t) =>
         const newCaseNumber = input.caseNumber ?? legalCase.caseNumber;
         const shouldUpdateSlug = input.caseName || input.caseNumber;
 
-        const [updatedCase] = await db
+        const [updatedCase] = await ctx.db
           .update(legalCases)
           .set({
             ...(input.caseNumber && { caseNumber: input.caseNumber }),
@@ -215,7 +214,7 @@ builder.mutationField("deleteLegalCase", (t) =>
       const { id } = sanitize(rawArgs);
 
       try {
-        const [legalCase] = await db
+        const [legalCase] = await ctx.db
           .select()
           .from(legalCases)
           .where(eq(legalCases.id, id))
@@ -225,7 +224,7 @@ builder.mutationField("deleteLegalCase", (t) =>
           throw new NotFoundError("Caso legal no encontrado");
         }
 
-        const [deletedCase] = await db
+        const [deletedCase] = await ctx.db
           .delete(legalCases)
           .where(eq(legalCases.id, id))
           .returning();

@@ -1,5 +1,4 @@
 import { builder } from "@/builder";
-import { db } from "@/lib/db";
 import { handleDbError } from "@/lib/errors/db";
 import { NotFoundError } from "@/lib/errors/gql";
 import { sanitize } from "@/lib/utils/sanitize";
@@ -23,13 +22,13 @@ builder.queryField("courts", (t) =>
         description: "Search term for court name",
       }),
     },
-    resolve: async (query, _root, rawArgs) => {
+    resolve: async (query, _root, rawArgs, ctx) => {
       const args = sanitize(rawArgs);
       const search = args.search?.trim();
       const searchTerm = search ? `%${search}%` : undefined;
 
       try {
-        return await db.query.courts.findMany(
+        return await ctx.db.query.courts.findMany(
           query({
             where: searchTerm
               ? {
@@ -61,11 +60,11 @@ builder.queryField("court", (t) =>
         description: "Court ID",
       }),
     },
-    resolve: async (query, _root, rawArgs) => {
+    resolve: async (query, _root, rawArgs, ctx) => {
       const args = sanitize(rawArgs);
 
       try {
-        const court = await db.query.courts.findFirst(
+        const court = await ctx.db.query.courts.findFirst(
           query({
             where: {
               id: args.id,

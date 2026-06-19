@@ -64,14 +64,13 @@ services:
         condition: service_healthy
       garage:
         condition: service_started
-      redis:
-        condition: service_healthy
     environment:
       NODE_ENV: development
       PORT: "7000"
       BACKEND_URL: "http://localhost:7000"
       DATABASE_URL: "http://libsql:8080"
-      REDIS_URL: "redis://redis:6379"
+      UPSTASH_REDIS_REST_URL: "${UPSTASH_REDIS_REST_URL:-}"
+      UPSTASH_REDIS_REST_TOKEN: "${UPSTASH_REDIS_REST_TOKEN:-}"
       S3_ENDPOINT: "http://garage:3900"
       S3_REGION: "garage"
       S3_BUCKET_NAME: "crop"

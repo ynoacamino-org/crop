@@ -1,16 +1,16 @@
 import { Hono } from "hono";
-import { RuntimeFactory } from "@/lib/env";
+import { runtime } from "@/ports/runtime";
 
-export function AuthRouterFactory(): Hono<{ Bindings: Cloudflare.Env }> {
+export function authRouter(): Hono<{ Bindings: Cloudflare.Env }> {
   const router = new Hono<{ Bindings: Cloudflare.Env }>({ strict: false });
 
   router.on(["POST", "GET"], "/**", (c) => {
-    const rt = RuntimeFactory.create({ cf: c.env });
+    const rt = runtime.create({ cf: c.env });
     return rt.auth.handler(c.req.raw);
   });
 
   return router;
 }
 
-export const authRouter = AuthRouterFactory();
-export default authRouter;
+export const authRoutes = authRouter();
+export default authRoutes;

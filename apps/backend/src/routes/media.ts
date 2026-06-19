@@ -1,8 +1,13 @@
 import { zValidator } from "@hono/zod-validator";
 import { UploadMediaPayloadSchema } from "@repo/schemas/media";
 import { Hono } from "hono";
+import {
+  getMediaService,
+  getMediaTypeFromMime,
+  type UploadMediaResult,
+  validateMediaType,
+} from "@/application/media";
 import { media } from "@/db/schema";
-import { RuntimeFactory } from "@/lib/env";
 import {
   BadRequestError,
   InternalServerError,
@@ -10,23 +15,16 @@ import {
   UnauthorizedError,
   UnsupportedMediaTypeError,
 } from "@/lib/errors/rest";
-import {
-  deleteMedia,
-  getMediaTypeFromMime,
-  type UploadMediaResult,
-  uploadMedia,
-  validateMediaType,
-} from "@/lib/utils/storage";
+import { runtime } from "@/ports/runtime";
 
-export function MediaRouterFactory(): Hono<{ Bindings: Cloudflare.Env }> {
+export function mediaRouter(): Hono<{ Bindings: Cloudflare.Env }> {
   const router = new Hono<{ Bindings: Cloudflare.Env }>();
 
   router.post(
     "/upload",
     zValidator("form", UploadMediaPayloadSchema),
     async (c) => {
-      const rt = RuntimeFactory.create({ cf: c.env });
-      const db = rt.db.client as typeof import("@/lib/db").db;
+      const rt = runtime.create({ cf: c.env });
 
       const session = await rt.auth.api.getSession({
         headers: c.req.raw.headers,
@@ -61,11 +59,12 @@ export function MediaRouterFactory(): Hono<{ Bindings: Cloudflare.Env }> {
       }
 
       const isPublic = validatedData.isPublic ?? true;
+      const service = getMediaService(rt);
 
       let uploadResult: UploadMediaResult | undefined;
 
       try {
-        uploadResult = await uploadMedia({
+        uploadResult = await service.upload({
           file,
           filename: file.name,
           prefix: validatedData.prefix || mediaType.toLowerCase(),
@@ -74,6 +73,14 @@ export function MediaRouterFactory(): Hono<{ Bindings: Cloudflare.Env }> {
             originalName: file.name,
           },
         });
+
+        const db = rt.db.client as unknown as {
+          insert: (t: typeof media) => {
+            values: (v: typeof media.$inferInsert) => {
+              returning: () => Promise<Array<typeof media.$inferSelect>>;
+            };
+          };
+        };
 
         const [createdMedia] = await db
           .insert(media)
@@ -105,7 +112,7 @@ export function MediaRouterFactory(): Hono<{ Bindings: Cloudflare.Env }> {
       } catch (error) {
         if (uploadResult?.objectKey) {
           try {
-            await deleteMedia(uploadResult.objectKey);
+            await service.delete(uploadResult.objectKey);
           } catch {}
         }
 
@@ -122,5 +129,3 @@ export function MediaRouterFactory(): Hono<{ Bindings: Cloudflare.Env }> {
 
   return router;
 }
-
-export const mediaRouter = MediaRouterFactory();

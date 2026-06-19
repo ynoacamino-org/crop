@@ -14,14 +14,13 @@ import {
   tags,
   users,
 } from "@/db/schema";
-import { RuntimeFactory } from "@/lib/env";
+import { runtime } from "@/ports/runtime";
 
-export function DevRouterFactory(): Hono<{ Bindings: Cloudflare.Env }> {
+export function devRouter(): Hono<{ Bindings: Cloudflare.Env }> {
   const router = new Hono<{ Bindings: Cloudflare.Env }>();
 
   router.post("/seed", async (c) => {
-    const rt = RuntimeFactory.create({ cf: c.env });
-    const db = rt.db.client as typeof import("@/lib/db").db;
+    const rt = runtime.create({ cf: c.env });
 
     const expected = rt.env.get("DEV_SEED_TOKEN");
     if (!expected) {
@@ -101,8 +100,16 @@ export function DevRouterFactory(): Hono<{ Bindings: Cloudflare.Env }> {
       },
     ];
 
+    const db = rt.db.client as unknown as {
+      insert: (t: unknown) => {
+        values: (v: unknown) => {
+          returning: () => Promise<unknown[]>;
+        };
+      };
+    };
+
     try {
-      const [admin] = await db
+      const [admin] = (await db
         .insert(users)
         .values({
           id: createId(),
@@ -111,30 +118,33 @@ export function DevRouterFactory(): Hono<{ Bindings: Cloudflare.Env }> {
           emailVerified: true,
           role: "ADMIN",
         })
-        .returning();
+        .returning()) as Array<{ id: string } | undefined>;
 
       if (!admin) {
         return c.json({ error: "No se pudo crear el admin" }, 500);
       }
 
-      const insertedCategories = await db
+      const insertedCategories = (await db
         .insert(categories)
         .values(categorySeed)
-        .returning();
+        .returning()) as Array<{ id: string }>;
 
-      const insertedTags = await db.insert(tags).values(tagSeed).returning();
+      const insertedTags = (await db
+        .insert(tags)
+        .values(tagSeed)
+        .returning()) as Array<{ id: string }>;
 
-      const insertedCourts = await db
+      const insertedCourts = (await db
         .insert(courts)
         .values(courtSeed)
-        .returning();
+        .returning()) as Array<{ id: string }>;
 
-      const insertedCaseTypes = await db
+      const insertedCaseTypes = (await db
         .insert(caseTypes)
         .values(caseTypeSeed)
-        .returning();
+        .returning()) as Array<{ id: string }>;
 
-      const [createdCase] = await db
+      const [createdCase] = (await db
         .insert(legalCases)
         .values({
           caseNumber: "EXP-001-2026",
@@ -147,13 +157,13 @@ export function DevRouterFactory(): Hono<{ Bindings: Cloudflare.Env }> {
           courtId: insertedCourts[0]?.id,
           caseTypeId: insertedCaseTypes[0]?.id,
         })
-        .returning();
+        .returning()) as Array<{ id: string } | undefined>;
 
       if (!createdCase) {
         return c.json({ error: "No se pudo crear el caso legal" }, 500);
       }
 
-      const [createdMedia] = await db
+      const [createdMedia] = (await db
         .insert(media)
         .values({
           objectKey: `seed/${createId()}.jpg`,
@@ -165,9 +175,9 @@ export function DevRouterFactory(): Hono<{ Bindings: Cloudflare.Env }> {
           filename: "seed-cover.jpg",
           uploadedBy: admin.id,
         })
-        .returning();
+        .returning()) as Array<{ id: string } | undefined>;
 
-      const [createdArticle] = await db
+      const [createdArticle] = (await db
         .insert(articles)
         .values({
           title: "Guia practica de jurisprudencia constitucional",
@@ -198,7 +208,7 @@ export function DevRouterFactory(): Hono<{ Bindings: Cloudflare.Env }> {
           featuredImageId: createdMedia?.id,
           readingTimeMin: 6,
         })
-        .returning();
+        .returning()) as Array<{ id: string } | undefined>;
 
       if (!createdArticle) {
         return c.json({ error: "No se pudo crear el articulo" }, 500);
@@ -253,5 +263,3 @@ export function DevRouterFactory(): Hono<{ Bindings: Cloudflare.Env }> {
 
   return router;
 }
-
-export const devRouter = DevRouterFactory();

@@ -2,7 +2,6 @@ import { UsersPayloadSchema } from "@repo/schemas";
 import { ilike, or } from "drizzle-orm";
 import { builder } from "@/builder";
 import { users } from "@/db/schema";
-import { db } from "@/lib/db";
 import { handleDbError } from "@/lib/errors/db";
 import { sanitize } from "@/lib/utils/sanitize";
 import {
@@ -24,12 +23,12 @@ UsersConnection.implement({
   fields: (t) => ({
     items: t.drizzleField({
       type: ["users"],
-      resolve: async (query, parent) => {
+      resolve: async (query, parent, _args, ctx) => {
         const search = parent.search?.trim();
         const searchTerm = search ? `%${search}%` : undefined;
 
         try {
-          return await db.query.users.findMany(
+          return await ctx.db.query.users.findMany(
             query({
               where: searchTerm
                 ? {
@@ -80,7 +79,7 @@ builder.queryField("me", (t) =>
       if (!ctx.user) return null;
 
       try {
-        return await db.query.users.findFirst(
+        return await ctx.db.query.users.findFirst(
           query({
             where: {
               id: ctx.user.id,

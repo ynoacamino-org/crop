@@ -3,7 +3,7 @@
   "name": "hono-app",
   "main": "src/server.ts",
   "compatibility_date": "2026-06-18",
-  "compatibility_flags": ["nodejs_compat"],
+  // "compatibility_flags": ["nodejs_compat"],
 
   "r2_buckets": [
     {

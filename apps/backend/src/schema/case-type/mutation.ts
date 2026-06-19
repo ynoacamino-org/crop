@@ -1,7 +1,6 @@
 import { eq, sql } from "drizzle-orm";
 import { builder } from "@/builder";
 import { caseTypes, legalCases } from "@/db/schema";
-import { db } from "@/lib/db";
 import { handleDbError } from "@/lib/errors/db";
 import { NotFoundError, UnauthorizedError } from "@/lib/errors/gql";
 import { sanitize } from "@/lib/utils/sanitize";
@@ -32,7 +31,7 @@ builder.mutationField("createCaseType", (t) =>
       const validatedInput = createCaseTypeSchema.parse(input);
 
       try {
-        const [createdCaseType] = await db
+        const [createdCaseType] = await ctx.db
           .insert(caseTypes)
           .values({
             name: validatedInput.name,
@@ -83,7 +82,7 @@ builder.mutationField("updateCaseType", (t) =>
       const validatedInput = updateCaseTypeSchema.parse(input);
 
       try {
-        const [caseType] = await db
+        const [caseType] = await ctx.db
           .select()
           .from(caseTypes)
           .where(eq(caseTypes.id, id))
@@ -93,7 +92,7 @@ builder.mutationField("updateCaseType", (t) =>
           throw new NotFoundError("Tipo de caso no encontrado");
         }
 
-        const [updatedCaseType] = await db
+        const [updatedCaseType] = await ctx.db
           .update(caseTypes)
           .set({
             ...(validatedInput.name !== undefined && {
@@ -152,7 +151,7 @@ builder.mutationField("deleteCaseType", (t) =>
       const { id } = sanitize(rawArgs);
 
       try {
-        const [caseType] = await db
+        const [caseType] = await ctx.db
           .select()
           .from(caseTypes)
           .where(eq(caseTypes.id, id))
@@ -162,7 +161,7 @@ builder.mutationField("deleteCaseType", (t) =>
           throw new NotFoundError("Tipo de caso no encontrado");
         }
 
-        const [legalCasesCountRow] = await db
+        const [legalCasesCountRow] = await ctx.db
           .select({ legalCasesCount: sql<number>`count(*)::int` })
           .from(legalCases)
           .where(eq(legalCases.caseTypeId, id));
@@ -176,7 +175,7 @@ builder.mutationField("deleteCaseType", (t) =>
           );
         }
 
-        const [deletedCaseType] = await db
+        const [deletedCaseType] = await ctx.db
           .delete(caseTypes)
           .where(eq(caseTypes.id, id))
           .returning();

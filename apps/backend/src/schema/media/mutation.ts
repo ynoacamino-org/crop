@@ -6,7 +6,6 @@ import {
 import { eq } from "drizzle-orm";
 import { builder } from "@/builder";
 import { media } from "@/db/schema";
-import { db } from "@/lib/db";
 import { handleDbError } from "@/lib/errors/db";
 import { NotFoundError, UnauthorizedError } from "@/lib/errors/gql";
 import { sanitize } from "@/lib/utils/sanitize";
@@ -30,7 +29,7 @@ builder.mutationField("createMedia", (t) =>
       const { input } = sanitize(rawArgs);
 
       try {
-        const [createdMedia] = await db
+        const [createdMedia] = await ctx.db
           .insert(media)
           .values({
             objectKey: input.objectKey,
@@ -81,7 +80,7 @@ builder.mutationField("updateMedia", (t) =>
       const { id, input } = sanitize(rawArgs);
 
       try {
-        const [mediaItem] = await db
+        const [mediaItem] = await ctx.db
           .select({ uploadedBy: media.uploadedBy })
           .from(media)
           .where(eq(media.id, id))
@@ -95,7 +94,7 @@ builder.mutationField("updateMedia", (t) =>
           throw new UnauthorizedError();
         }
 
-        const [updatedMedia] = await db
+        const [updatedMedia] = await ctx.db
           .update(media)
           .set({
             ...(input.alt !== undefined && { alt: input.alt }),
@@ -134,7 +133,7 @@ builder.mutationField("deleteMedia", (t) =>
       const { id } = sanitize(rawArgs);
 
       try {
-        const [mediaItem] = await db
+        const [mediaItem] = await ctx.db
           .select({ uploadedBy: media.uploadedBy })
           .from(media)
           .where(eq(media.id, id))
@@ -148,7 +147,7 @@ builder.mutationField("deleteMedia", (t) =>
           throw new UnauthorizedError();
         }
 
-        const [deletedMedia] = await db
+        const [deletedMedia] = await ctx.db
           .delete(media)
           .where(eq(media.id, id))
           .returning();

@@ -1,7 +1,6 @@
 import { ilike, or } from "drizzle-orm";
 import { builder } from "@/builder";
 import { articles } from "@/db/schema";
-import { db } from "@/lib/db";
 import { handleDbError } from "@/lib/errors/db";
 import { NotFoundError } from "@/lib/errors/gql";
 import { sanitize } from "@/lib/utils/sanitize";
@@ -24,12 +23,12 @@ ArticlesConnection.implement({
   fields: (t) => ({
     items: t.drizzleField({
       type: ["articles"],
-      resolve: async (query, parent) => {
+      resolve: async (query, parent, _args, ctx) => {
         const search = parent.search?.trim();
         const searchTerm = search ? `%${search}%` : undefined;
 
         try {
-          return await db.query.articles.findMany(
+          return await ctx.db.query.articles.findMany(
             query({
               where: searchTerm
                 ? {
@@ -118,7 +117,7 @@ builder.queryField("article", (t) =>
         description: "Article slug",
       }),
     },
-    resolve: async (query, _root, rawArgs) => {
+    resolve: async (query, _root, rawArgs, ctx) => {
       const args = sanitize(rawArgs);
 
       if (!args.id && !args.slug) {
@@ -126,7 +125,7 @@ builder.queryField("article", (t) =>
       }
 
       try {
-        const article = await db.query.articles.findFirst(
+        const article = await ctx.db.query.articles.findFirst(
           query({
             where: args.id ? { id: args.id } : { slug: args.slug as string },
           }),
@@ -147,8 +146,8 @@ builder.queryField("article", (t) =>
 builder.queryField("categories", (t) =>
   t.drizzleField({
     type: ["categories"],
-    resolve: async (query) => {
-      return await db.query.categories.findMany(
+    resolve: async (query, _root, _args, ctx) => {
+      return await ctx.db.query.categories.findMany(
         query({
           orderBy: {
             name: "asc",
@@ -162,8 +161,8 @@ builder.queryField("categories", (t) =>
 builder.queryField("tags", (t) =>
   t.drizzleField({
     type: ["tags"],
-    resolve: async (query) => {
-      return await db.query.tags.findMany(
+    resolve: async (query, _root, _args, ctx) => {
+      return await ctx.db.query.tags.findMany(
         query({
           orderBy: {
             name: "asc",
