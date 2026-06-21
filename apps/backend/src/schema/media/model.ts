@@ -1,4 +1,4 @@
-import { getMediaSignedUrl } from "@/application/media";
+import { getMediaSignedUrl } from "@/application/media/service";
 import { builder } from "@/builder";
 
 export const MediaType = builder.enumType("MediaType", {

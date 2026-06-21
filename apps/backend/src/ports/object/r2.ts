@@ -1,13 +1,15 @@
-import { BaseObjectStore, type IdFactory } from "@/ports/object/base";
-import type { ObjectStorePutOptions } from "@/ports/object/port";
+import { createId } from "@paralleldrive/cuid2";
+import type { ObjectStore, ObjectStorePutOptions } from "@/ports/object/port";
 
-export class R2ObjectStore extends BaseObjectStore {
+export class R2ObjectStore implements ObjectStore {
+  private readonly ids: () => string;
+
   constructor(
     private readonly bucket: R2Bucket,
     private readonly publicUrl: string = "",
-    ids?: IdFactory,
+    ids: () => string = () => createId(),
   ) {
-    super(ids);
+    this.ids = ids;
   }
 
   async put(
@@ -47,5 +49,9 @@ export class R2ObjectStore extends BaseObjectStore {
       return `${this.publicUrl.replace(/\/$/, "")}/${key}`;
     }
     return key;
+  }
+
+  generateKey(prefix: string): string {
+    return `${prefix}/${this.ids()}`;
   }
 }

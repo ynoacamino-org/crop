@@ -1,9 +1,7 @@
-import { BaseKVStore } from "@/ports/kv/base";
+import type { KVStore } from "@/ports/kv/port";
 
-export class CloudflareKV extends BaseKVStore {
-  constructor(private readonly kv: KVNamespace) {
-    super();
-  }
+export class CloudflareKV implements KVStore {
+  constructor(private readonly kv: KVNamespace) {}
 
   async get(key: string): Promise<string | null> {
     return this.kv.get(key);
@@ -25,7 +23,7 @@ export class CloudflareKV extends BaseKVStore {
     await this.kv.delete(key);
   }
 
-  override async list(prefix = ""): Promise<string[]> {
+  async list(prefix = ""): Promise<string[]> {
     const result = await this.kv.list({ prefix });
     return result.keys.map((k) => k.name);
   }

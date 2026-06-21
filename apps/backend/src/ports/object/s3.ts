@@ -1,6 +1,6 @@
+import { createId } from "@paralleldrive/cuid2";
 import { AwsClient } from "aws4fetch";
-import { BaseObjectStore, type IdFactory } from "@/ports/object/base";
-import type { ObjectStorePutOptions } from "@/ports/object/port";
+import type { ObjectStore, ObjectStorePutOptions } from "@/ports/object/port";
 
 export interface S3Config {
   endpoint?: string;
@@ -12,16 +12,17 @@ export interface S3Config {
   forcePathStyle?: boolean;
 }
 
-export class S3ObjectStore extends BaseObjectStore {
+export class S3ObjectStore implements ObjectStore {
   private client: AwsClient;
   private bucket: string;
   private region: string;
   private endpoint: string;
   private publicUrl: string;
   private forcePathStyle: boolean;
+  private readonly ids: () => string;
 
-  constructor(config: S3Config, ids?: IdFactory) {
-    super(ids);
+  constructor(config: S3Config, ids: () => string = () => createId()) {
+    this.ids = ids;
     this.client = new AwsClient({
       accessKeyId: config.accessKeyId,
       secretAccessKey: config.secretAccessKey,
@@ -128,5 +129,9 @@ export class S3ObjectStore extends BaseObjectStore {
       return `https://${this.bucket}.${host}/${key}`;
     }
     return `https://${this.bucket}.s3.${this.region}.amazonaws.com/${key}`;
+  }
+
+  generateKey(prefix: string): string {
+    return `${prefix}/${this.ids()}`;
   }
 }

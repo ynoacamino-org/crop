@@ -1,11 +1,10 @@
 import { Redis } from "@upstash/redis";
-import { BaseKVStore } from "@/ports/kv/base";
+import type { KVStore } from "@/ports/kv/port";
 
-export class UpstashKV extends BaseKVStore {
+export class UpstashKV implements KVStore {
   private readonly client: Redis;
 
   constructor(url: string, token: string) {
-    super();
     this.client = new Redis({ url, token });
   }
 
@@ -29,7 +28,7 @@ export class UpstashKV extends BaseKVStore {
     await this.client.del(key);
   }
 
-  override async list(prefix = ""): Promise<string[]> {
+  async list(prefix = ""): Promise<string[]> {
     const collected: string[] = [];
     let cursor = 0;
     do {

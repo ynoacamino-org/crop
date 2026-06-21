@@ -3,10 +3,12 @@ import { UploadMediaPayloadSchema } from "@repo/schemas/media";
 import { Hono } from "hono";
 import {
   getMediaService,
-  getMediaTypeFromMime,
   type UploadMediaResult,
+} from "@/application/media/service";
+import {
+  getMediaTypeFromMime,
   validateMediaType,
-} from "@/application/media";
+} from "@/application/media/validation";
 import { media } from "@/db/schema";
 import {
   BadRequestError,

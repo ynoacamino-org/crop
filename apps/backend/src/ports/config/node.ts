@@ -1,4 +1,4 @@
-import { BaseEnvStore } from "@/ports/config/base";
+import type { EnvStore } from "@/ports/config/port";
 
 interface ProcessLike {
   env: Record<string, string | undefined>;
@@ -12,12 +12,20 @@ function getProcess(): ProcessLike | undefined {
   return undefined;
 }
 
-export class NodeEnv extends BaseEnvStore {
-  override get(key: string): string | undefined {
+export class NodeEnv implements EnvStore {
+  get(key: string): string | undefined {
     return getProcess()?.env[key];
   }
 
-  override all(): Record<string, string | undefined> {
+  getRequired(key: string): string {
+    const v = this.get(key);
+    if (v === undefined || v === "") {
+      throw new Error(`[env] Falta la variable requerida: ${key}`);
+    }
+    return v;
+  }
+
+  all(): Record<string, string | undefined> {
     const proc = getProcess();
     return proc ? { ...proc.env } : {};
   }

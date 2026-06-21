@@ -1,11 +1,9 @@
-import { BaseEnvStore } from "@/ports/config/base";
+import type { EnvStore } from "@/ports/config/port";
 
-export class CloudflareEnv extends BaseEnvStore {
-  constructor(private readonly bindings: Cloudflare.Env) {
-    super();
-  }
+export class CloudflareEnv implements EnvStore {
+  constructor(private readonly bindings: Cloudflare.Env) {}
 
-  override get(key: string): string | undefined {
+  get(key: string): string | undefined {
     if (!this.bindings) return undefined;
     const value = (this.bindings as unknown as Record<string, unknown>)[key];
     if (typeof value === "string") return value;
@@ -15,7 +13,15 @@ export class CloudflareEnv extends BaseEnvStore {
     return undefined;
   }
 
-  override all(): Record<string, string | undefined> {
+  getRequired(key: string): string {
+    const v = this.get(key);
+    if (v === undefined || v === "") {
+      throw new Error(`[env] Falta la variable requerida: ${key}`);
+    }
+    return v;
+  }
+
+  all(): Record<string, string | undefined> {
     const result: Record<string, string | undefined> = {};
     if (!this.bindings) return result;
     for (const [key, value] of Object.entries(this.bindings)) {
