@@ -1,5 +1,5 @@
-import type { ObjectStore } from "@/ports/object/port";
-import type { RuntimeEnv } from "@/ports/runtime/port";
+import type { ObjectPort } from "@/application/ports/object";
+import type { RuntimeEnv } from "@/application/ports/runtime";
 
 export interface UploadMediaParams {
   file: File | Blob;
@@ -17,7 +17,7 @@ export interface UploadMediaResult {
 }
 
 export class MediaService {
-  constructor(private readonly store: ObjectStore) {}
+  constructor(private readonly store: ObjectPort) {}
 
   async upload(params: UploadMediaParams): Promise<UploadMediaResult> {
     const { file, filename, prefix, metadata } = params;

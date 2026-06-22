@@ -5,7 +5,7 @@
   "scripts": {
     "lint": "biome check --write",
     "dev": "wrangler dev",
-    "dev:node": "bun run src/server-node.ts",
+    "dev:node": "bun run src/entries/node.ts",
     "deploy": "wrangler deploy",
     "start": "wrangler dev",
     "gen-schema": "bun run scripts/gen-schema.ts",

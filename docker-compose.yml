@@ -84,4 +84,4 @@ services:
       DEV_SEED_TOKEN: "${DEV_SEED_TOKEN:-dev-seed-token}"
     ports:
       - "7000:7000"
-    command: ["bun", "run", "src/server-node.ts"]
+    command: ["bun", "run", "src/entries/node.ts"]
