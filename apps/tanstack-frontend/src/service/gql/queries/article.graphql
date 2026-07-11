@@ -1,0 +1,71 @@
+query Article($slug: String!) {
+  article(slug: $slug) {
+    id
+    title
+    slug
+    content
+    excerpt
+    publishedAt
+    readingTimeMin
+    views
+    author {
+      id
+      name
+      image
+    }
+    featuredImage {
+      id
+      url
+      alt
+    }
+    categories {
+      id
+      name
+      slug
+    }
+    tags {
+      id
+      name
+      slug
+    }
+    legalCases {
+      id
+      slug
+      caseNumber
+      caseName
+      jurisdiction
+      caseType {
+        id
+        name
+        slug
+        color
+        icon
+      }
+    }
+  }
+}
+
+query ArticleById($id: String!) {
+  article(id: $id) {
+    id
+    title
+    slug
+    content
+    excerpt
+    status
+    publishedAt
+    readingTimeMin
+    featuredImage {
+      id
+      url
+    }
+    categories {
+      id
+      name
+    }
+    tags {
+      id
+      name
+    }
+  }
+}

@@ -1,0 +1,56 @@
+mutation CreateMedia($input: CreateMediaInput!) {
+  createMedia(input: $input) {
+    id
+    objectKey
+    url
+    alt
+    type
+    size
+    mimeType
+    filename
+    createdAt
+    updatedAt
+    uploader {
+      id
+      name
+      email
+      image
+    }
+  }
+}
+
+mutation UpdateMedia($id: String!, $input: UpdateMediaInput!) {
+  updateMedia(id: $id, input: $input) {
+    id
+    objectKey
+    url
+    alt
+    type
+    size
+    mimeType
+    filename
+    createdAt
+    updatedAt
+    uploader {
+      id
+      name
+      email
+      image
+    }
+  }
+}
+
+mutation DeleteMedia($id: String!) {
+  deleteMedia(id: $id) {
+    id
+    objectKey
+    url
+    alt
+    type
+    size
+    mimeType
+    filename
+    createdAt
+    updatedAt
+  }
+}

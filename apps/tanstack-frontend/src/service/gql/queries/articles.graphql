@@ -1,0 +1,38 @@
+query RecentArticles($take: Int, $skip: Int, $search: String) {
+  articles(take: $take, skip: $skip, search: $search) {
+    items {
+      id
+      title
+      slug
+      excerpt
+      publishedAt
+      readingTimeMin
+      views
+      author {
+        id
+        name
+        image
+      }
+      featuredImage {
+        id
+        url
+        alt
+      }
+      categories {
+        id
+        name
+        slug
+      }
+      tags {
+        id
+        name
+        slug
+      }
+    }
+    pageInfo {
+      totalCount
+      hasNextPage
+      hasPreviousPage
+    }
+  }
+}

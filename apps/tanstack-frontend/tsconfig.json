@@ -1,0 +1,33 @@
+{
+  "include": ["**/*.ts", "**/*.tsx"],
+  "compilerOptions": {
+    "target": "ES2022",
+    "jsx": "react-jsx",
+    "module": "ESNext",
+    "paths": {
+      "@/shared/components/*": ["./src/components/*"],
+      "@/service/gql/generated/gql.client": ["./src/service/gql/generated/gql"],
+      "@/service/gql/generated/gql.node": ["./src/service/gql/generated/gql"],
+      "@/shared/providers/user-provider": ["./src/providers/user-provider"],
+      "next/link": ["./src/components/ui/link"],
+      "#/*": ["./src/*"],
+      "@/*": ["./src/*"]
+    },
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": ["vite/client"],
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "noEmit": true,
+
+    /* Linting */
+    "skipLibCheck": true,
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true
+  }
+}

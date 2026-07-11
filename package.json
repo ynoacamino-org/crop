@@ -17,6 +17,7 @@
     "packages/*"
   ],
   "dependencies": {
-    "@typescript/native-preview": "latest"
+    "@typescript/native-preview": "latest",
+    "nitro": "npm:nitro-nightly@latest"
   }
 }

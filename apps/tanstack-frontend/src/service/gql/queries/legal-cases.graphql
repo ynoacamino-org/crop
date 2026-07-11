@@ -1,0 +1,36 @@
+query RecentLegalCases($take: Int, $skip: Int, $search: String) {
+  legalCases(take: $take, skip: $skip, search: $search) {
+    items {
+      id
+      caseNumber
+      caseName
+      slug
+      summary
+      parties
+      plaintiff
+      defendant
+      jurisdiction
+      caseType {
+        id
+        name
+        slug
+        color
+        icon
+      }
+      caseDate
+      resolutionDate
+      createdAt
+      court {
+        id
+        name
+        type
+        jurisdiction
+      }
+    }
+    pageInfo {
+      totalCount
+      hasNextPage
+      hasPreviousPage
+    }
+  }
+}

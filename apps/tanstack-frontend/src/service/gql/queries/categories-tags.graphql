@@ -1,0 +1,17 @@
+# Query to get all categories for form selection
+query Categories {
+  categories {
+    id
+    name
+    slug
+  }
+}
+
+# Query to get all tags for form selection
+query Tags {
+  tags {
+    id
+    name
+    slug
+  }
+}
