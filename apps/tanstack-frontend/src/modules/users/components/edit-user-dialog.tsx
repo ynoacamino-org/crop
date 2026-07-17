@@ -80,9 +80,9 @@ export function EditUserDialog({
       toast.success("Usuario actualizado correctamente");
       onOpenChange(false);
       router.invalidate();
-    } catch (error: any) {
+    } catch (error) {
       toast.error("Error al actualizar usuario", {
-        description: error.message || String(error),
+        description: error instanceof Error ? error.message : String(error),
       });
     } finally {
       setIsLoading(false);

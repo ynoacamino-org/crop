@@ -4,7 +4,9 @@ import { Navbar } from "#/components/layout/navbar";
 
 export const Route = createFileRoute("/_main")({
   beforeLoad: ({ context, location }) => {
-    const me = context.queryClient.getQueryData(["me"]) as any;
+    const me = context.queryClient.getQueryData<{ me: { role: string } }>([
+      "me",
+    ]);
     if (!me?.me) {
       throw redirect({
         to: "/iniciar-sesion",

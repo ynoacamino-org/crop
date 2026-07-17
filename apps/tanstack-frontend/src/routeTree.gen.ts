@@ -8,354 +8,354 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from './routes/__root'
-import { Route as RegistroRouteImport } from './routes/registro'
-import { Route as IniciarSesionRouteImport } from './routes/iniciar-sesion'
-import { Route as MainRouteImport } from './routes/_main'
-import { Route as MainIndexRouteImport } from './routes/_main.index'
-import { Route as MainCasosRouteImport } from './routes/_main.casos'
-import { Route as MainArticulosRouteImport } from './routes/_main.articulos'
-import { Route as MainAdminRouteImport } from './routes/_main.admin'
-import { Route as MainAdminIndexRouteImport } from './routes/_main.admin.index'
-import { Route as MainCasosSlugRouteImport } from './routes/_main.casos.$slug'
-import { Route as MainArticulosSlugRouteImport } from './routes/_main.articulos.$slug'
-import { Route as MainAdminUsuariosRouteImport } from './routes/_main.admin.usuarios'
-import { Route as MainAdminArticulosRouteImport } from './routes/_main.admin.articulos'
-import { Route as MainAdminArticulosNuevoRouteImport } from './routes/_main.admin.articulos.nuevo'
-import { Route as MainAdminArticulosIdEditarRouteImport } from './routes/_main.admin.articulos.$id.editar'
+import { Route as rootRouteImport } from "./routes/__root";
+import { Route as MainRouteImport } from "./routes/_main";
+import { Route as MainAdminRouteImport } from "./routes/_main.admin";
+import { Route as MainAdminArticulosRouteImport } from "./routes/_main.admin.articulos";
+import { Route as MainAdminArticulosIdEditarRouteImport } from "./routes/_main.admin.articulos.$id.editar";
+import { Route as MainAdminArticulosNuevoRouteImport } from "./routes/_main.admin.articulos.nuevo";
+import { Route as MainAdminIndexRouteImport } from "./routes/_main.admin.index";
+import { Route as MainAdminUsuariosRouteImport } from "./routes/_main.admin.usuarios";
+import { Route as MainArticulosRouteImport } from "./routes/_main.articulos";
+import { Route as MainArticulosSlugRouteImport } from "./routes/_main.articulos.$slug";
+import { Route as MainCasosRouteImport } from "./routes/_main.casos";
+import { Route as MainCasosSlugRouteImport } from "./routes/_main.casos.$slug";
+import { Route as MainIndexRouteImport } from "./routes/_main.index";
+import { Route as IniciarSesionRouteImport } from "./routes/iniciar-sesion";
+import { Route as RegistroRouteImport } from "./routes/registro";
 
 const RegistroRoute = RegistroRouteImport.update({
-  id: '/registro',
-  path: '/registro',
+  id: "/registro",
+  path: "/registro",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const IniciarSesionRoute = IniciarSesionRouteImport.update({
-  id: '/iniciar-sesion',
-  path: '/iniciar-sesion',
+  id: "/iniciar-sesion",
+  path: "/iniciar-sesion",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const MainRoute = MainRouteImport.update({
-  id: '/_main',
+  id: "/_main",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const MainIndexRoute = MainIndexRouteImport.update({
-  id: '/',
-  path: '/',
+  id: "/",
+  path: "/",
   getParentRoute: () => MainRoute,
-} as any)
+} as any);
 const MainCasosRoute = MainCasosRouteImport.update({
-  id: '/casos',
-  path: '/casos',
+  id: "/casos",
+  path: "/casos",
   getParentRoute: () => MainRoute,
-} as any)
+} as any);
 const MainArticulosRoute = MainArticulosRouteImport.update({
-  id: '/articulos',
-  path: '/articulos',
+  id: "/articulos",
+  path: "/articulos",
   getParentRoute: () => MainRoute,
-} as any)
+} as any);
 const MainAdminRoute = MainAdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
+  id: "/admin",
+  path: "/admin",
   getParentRoute: () => MainRoute,
-} as any)
+} as any);
 const MainAdminIndexRoute = MainAdminIndexRouteImport.update({
-  id: '/',
-  path: '/',
+  id: "/",
+  path: "/",
   getParentRoute: () => MainAdminRoute,
-} as any)
+} as any);
 const MainCasosSlugRoute = MainCasosSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
+  id: "/$slug",
+  path: "/$slug",
   getParentRoute: () => MainCasosRoute,
-} as any)
+} as any);
 const MainArticulosSlugRoute = MainArticulosSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
+  id: "/$slug",
+  path: "/$slug",
   getParentRoute: () => MainArticulosRoute,
-} as any)
+} as any);
 const MainAdminUsuariosRoute = MainAdminUsuariosRouteImport.update({
-  id: '/usuarios',
-  path: '/usuarios',
+  id: "/usuarios",
+  path: "/usuarios",
   getParentRoute: () => MainAdminRoute,
-} as any)
+} as any);
 const MainAdminArticulosRoute = MainAdminArticulosRouteImport.update({
-  id: '/articulos',
-  path: '/articulos',
+  id: "/articulos",
+  path: "/articulos",
   getParentRoute: () => MainAdminRoute,
-} as any)
+} as any);
 const MainAdminArticulosNuevoRoute = MainAdminArticulosNuevoRouteImport.update({
-  id: '/nuevo',
-  path: '/nuevo',
+  id: "/nuevo",
+  path: "/nuevo",
   getParentRoute: () => MainAdminArticulosRoute,
-} as any)
+} as any);
 const MainAdminArticulosIdEditarRoute =
   MainAdminArticulosIdEditarRouteImport.update({
-    id: '/$id/editar',
-    path: '/$id/editar',
+    id: "/$id/editar",
+    path: "/$id/editar",
     getParentRoute: () => MainAdminArticulosRoute,
-  } as any)
+  } as any);
 
 export interface FileRoutesByFullPath {
-  '/': typeof MainIndexRoute
-  '/iniciar-sesion': typeof IniciarSesionRoute
-  '/registro': typeof RegistroRoute
-  '/admin': typeof MainAdminRouteWithChildren
-  '/articulos': typeof MainArticulosRouteWithChildren
-  '/casos': typeof MainCasosRouteWithChildren
-  '/admin/articulos': typeof MainAdminArticulosRouteWithChildren
-  '/admin/usuarios': typeof MainAdminUsuariosRoute
-  '/articulos/$slug': typeof MainArticulosSlugRoute
-  '/casos/$slug': typeof MainCasosSlugRoute
-  '/admin/': typeof MainAdminIndexRoute
-  '/admin/articulos/nuevo': typeof MainAdminArticulosNuevoRoute
-  '/admin/articulos/$id/editar': typeof MainAdminArticulosIdEditarRoute
+  "/": typeof MainIndexRoute;
+  "/iniciar-sesion": typeof IniciarSesionRoute;
+  "/registro": typeof RegistroRoute;
+  "/admin": typeof MainAdminRouteWithChildren;
+  "/articulos": typeof MainArticulosRouteWithChildren;
+  "/casos": typeof MainCasosRouteWithChildren;
+  "/admin/articulos": typeof MainAdminArticulosRouteWithChildren;
+  "/admin/usuarios": typeof MainAdminUsuariosRoute;
+  "/articulos/$slug": typeof MainArticulosSlugRoute;
+  "/casos/$slug": typeof MainCasosSlugRoute;
+  "/admin/": typeof MainAdminIndexRoute;
+  "/admin/articulos/nuevo": typeof MainAdminArticulosNuevoRoute;
+  "/admin/articulos/$id/editar": typeof MainAdminArticulosIdEditarRoute;
 }
 export interface FileRoutesByTo {
-  '/iniciar-sesion': typeof IniciarSesionRoute
-  '/registro': typeof RegistroRoute
-  '/articulos': typeof MainArticulosRouteWithChildren
-  '/casos': typeof MainCasosRouteWithChildren
-  '/': typeof MainIndexRoute
-  '/admin/articulos': typeof MainAdminArticulosRouteWithChildren
-  '/admin/usuarios': typeof MainAdminUsuariosRoute
-  '/articulos/$slug': typeof MainArticulosSlugRoute
-  '/casos/$slug': typeof MainCasosSlugRoute
-  '/admin': typeof MainAdminIndexRoute
-  '/admin/articulos/nuevo': typeof MainAdminArticulosNuevoRoute
-  '/admin/articulos/$id/editar': typeof MainAdminArticulosIdEditarRoute
+  "/iniciar-sesion": typeof IniciarSesionRoute;
+  "/registro": typeof RegistroRoute;
+  "/articulos": typeof MainArticulosRouteWithChildren;
+  "/casos": typeof MainCasosRouteWithChildren;
+  "/": typeof MainIndexRoute;
+  "/admin/articulos": typeof MainAdminArticulosRouteWithChildren;
+  "/admin/usuarios": typeof MainAdminUsuariosRoute;
+  "/articulos/$slug": typeof MainArticulosSlugRoute;
+  "/casos/$slug": typeof MainCasosSlugRoute;
+  "/admin": typeof MainAdminIndexRoute;
+  "/admin/articulos/nuevo": typeof MainAdminArticulosNuevoRoute;
+  "/admin/articulos/$id/editar": typeof MainAdminArticulosIdEditarRoute;
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport
-  '/_main': typeof MainRouteWithChildren
-  '/iniciar-sesion': typeof IniciarSesionRoute
-  '/registro': typeof RegistroRoute
-  '/_main/admin': typeof MainAdminRouteWithChildren
-  '/_main/articulos': typeof MainArticulosRouteWithChildren
-  '/_main/casos': typeof MainCasosRouteWithChildren
-  '/_main/': typeof MainIndexRoute
-  '/_main/admin/articulos': typeof MainAdminArticulosRouteWithChildren
-  '/_main/admin/usuarios': typeof MainAdminUsuariosRoute
-  '/_main/articulos/$slug': typeof MainArticulosSlugRoute
-  '/_main/casos/$slug': typeof MainCasosSlugRoute
-  '/_main/admin/': typeof MainAdminIndexRoute
-  '/_main/admin/articulos/nuevo': typeof MainAdminArticulosNuevoRoute
-  '/_main/admin/articulos/$id/editar': typeof MainAdminArticulosIdEditarRoute
+  __root__: typeof rootRouteImport;
+  "/_main": typeof MainRouteWithChildren;
+  "/iniciar-sesion": typeof IniciarSesionRoute;
+  "/registro": typeof RegistroRoute;
+  "/_main/admin": typeof MainAdminRouteWithChildren;
+  "/_main/articulos": typeof MainArticulosRouteWithChildren;
+  "/_main/casos": typeof MainCasosRouteWithChildren;
+  "/_main/": typeof MainIndexRoute;
+  "/_main/admin/articulos": typeof MainAdminArticulosRouteWithChildren;
+  "/_main/admin/usuarios": typeof MainAdminUsuariosRoute;
+  "/_main/articulos/$slug": typeof MainArticulosSlugRoute;
+  "/_main/casos/$slug": typeof MainCasosSlugRoute;
+  "/_main/admin/": typeof MainAdminIndexRoute;
+  "/_main/admin/articulos/nuevo": typeof MainAdminArticulosNuevoRoute;
+  "/_main/admin/articulos/$id/editar": typeof MainAdminArticulosIdEditarRoute;
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
+  fileRoutesByFullPath: FileRoutesByFullPath;
   fullPaths:
-    | '/'
-    | '/iniciar-sesion'
-    | '/registro'
-    | '/admin'
-    | '/articulos'
-    | '/casos'
-    | '/admin/articulos'
-    | '/admin/usuarios'
-    | '/articulos/$slug'
-    | '/casos/$slug'
-    | '/admin/'
-    | '/admin/articulos/nuevo'
-    | '/admin/articulos/$id/editar'
-  fileRoutesByTo: FileRoutesByTo
+    | "/"
+    | "/iniciar-sesion"
+    | "/registro"
+    | "/admin"
+    | "/articulos"
+    | "/casos"
+    | "/admin/articulos"
+    | "/admin/usuarios"
+    | "/articulos/$slug"
+    | "/casos/$slug"
+    | "/admin/"
+    | "/admin/articulos/nuevo"
+    | "/admin/articulos/$id/editar";
+  fileRoutesByTo: FileRoutesByTo;
   to:
-    | '/iniciar-sesion'
-    | '/registro'
-    | '/articulos'
-    | '/casos'
-    | '/'
-    | '/admin/articulos'
-    | '/admin/usuarios'
-    | '/articulos/$slug'
-    | '/casos/$slug'
-    | '/admin'
-    | '/admin/articulos/nuevo'
-    | '/admin/articulos/$id/editar'
+    | "/iniciar-sesion"
+    | "/registro"
+    | "/articulos"
+    | "/casos"
+    | "/"
+    | "/admin/articulos"
+    | "/admin/usuarios"
+    | "/articulos/$slug"
+    | "/casos/$slug"
+    | "/admin"
+    | "/admin/articulos/nuevo"
+    | "/admin/articulos/$id/editar";
   id:
-    | '__root__'
-    | '/_main'
-    | '/iniciar-sesion'
-    | '/registro'
-    | '/_main/admin'
-    | '/_main/articulos'
-    | '/_main/casos'
-    | '/_main/'
-    | '/_main/admin/articulos'
-    | '/_main/admin/usuarios'
-    | '/_main/articulos/$slug'
-    | '/_main/casos/$slug'
-    | '/_main/admin/'
-    | '/_main/admin/articulos/nuevo'
-    | '/_main/admin/articulos/$id/editar'
-  fileRoutesById: FileRoutesById
+    | "__root__"
+    | "/_main"
+    | "/iniciar-sesion"
+    | "/registro"
+    | "/_main/admin"
+    | "/_main/articulos"
+    | "/_main/casos"
+    | "/_main/"
+    | "/_main/admin/articulos"
+    | "/_main/admin/usuarios"
+    | "/_main/articulos/$slug"
+    | "/_main/casos/$slug"
+    | "/_main/admin/"
+    | "/_main/admin/articulos/nuevo"
+    | "/_main/admin/articulos/$id/editar";
+  fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
-  MainRoute: typeof MainRouteWithChildren
-  IniciarSesionRoute: typeof IniciarSesionRoute
-  RegistroRoute: typeof RegistroRoute
+  MainRoute: typeof MainRouteWithChildren;
+  IniciarSesionRoute: typeof IniciarSesionRoute;
+  RegistroRoute: typeof RegistroRoute;
 }
 
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
   interface FileRoutesByPath {
-    '/registro': {
-      id: '/registro'
-      path: '/registro'
-      fullPath: '/registro'
-      preLoaderRoute: typeof RegistroRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/iniciar-sesion': {
-      id: '/iniciar-sesion'
-      path: '/iniciar-sesion'
-      fullPath: '/iniciar-sesion'
-      preLoaderRoute: typeof IniciarSesionRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_main': {
-      id: '/_main'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof MainRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_main/': {
-      id: '/_main/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof MainIndexRouteImport
-      parentRoute: typeof MainRoute
-    }
-    '/_main/casos': {
-      id: '/_main/casos'
-      path: '/casos'
-      fullPath: '/casos'
-      preLoaderRoute: typeof MainCasosRouteImport
-      parentRoute: typeof MainRoute
-    }
-    '/_main/articulos': {
-      id: '/_main/articulos'
-      path: '/articulos'
-      fullPath: '/articulos'
-      preLoaderRoute: typeof MainArticulosRouteImport
-      parentRoute: typeof MainRoute
-    }
-    '/_main/admin': {
-      id: '/_main/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof MainAdminRouteImport
-      parentRoute: typeof MainRoute
-    }
-    '/_main/admin/': {
-      id: '/_main/admin/'
-      path: '/'
-      fullPath: '/admin/'
-      preLoaderRoute: typeof MainAdminIndexRouteImport
-      parentRoute: typeof MainAdminRoute
-    }
-    '/_main/casos/$slug': {
-      id: '/_main/casos/$slug'
-      path: '/$slug'
-      fullPath: '/casos/$slug'
-      preLoaderRoute: typeof MainCasosSlugRouteImport
-      parentRoute: typeof MainCasosRoute
-    }
-    '/_main/articulos/$slug': {
-      id: '/_main/articulos/$slug'
-      path: '/$slug'
-      fullPath: '/articulos/$slug'
-      preLoaderRoute: typeof MainArticulosSlugRouteImport
-      parentRoute: typeof MainArticulosRoute
-    }
-    '/_main/admin/usuarios': {
-      id: '/_main/admin/usuarios'
-      path: '/usuarios'
-      fullPath: '/admin/usuarios'
-      preLoaderRoute: typeof MainAdminUsuariosRouteImport
-      parentRoute: typeof MainAdminRoute
-    }
-    '/_main/admin/articulos': {
-      id: '/_main/admin/articulos'
-      path: '/articulos'
-      fullPath: '/admin/articulos'
-      preLoaderRoute: typeof MainAdminArticulosRouteImport
-      parentRoute: typeof MainAdminRoute
-    }
-    '/_main/admin/articulos/nuevo': {
-      id: '/_main/admin/articulos/nuevo'
-      path: '/nuevo'
-      fullPath: '/admin/articulos/nuevo'
-      preLoaderRoute: typeof MainAdminArticulosNuevoRouteImport
-      parentRoute: typeof MainAdminArticulosRoute
-    }
-    '/_main/admin/articulos/$id/editar': {
-      id: '/_main/admin/articulos/$id/editar'
-      path: '/$id/editar'
-      fullPath: '/admin/articulos/$id/editar'
-      preLoaderRoute: typeof MainAdminArticulosIdEditarRouteImport
-      parentRoute: typeof MainAdminArticulosRoute
-    }
+    "/registro": {
+      id: "/registro";
+      path: "/registro";
+      fullPath: "/registro";
+      preLoaderRoute: typeof RegistroRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/iniciar-sesion": {
+      id: "/iniciar-sesion";
+      path: "/iniciar-sesion";
+      fullPath: "/iniciar-sesion";
+      preLoaderRoute: typeof IniciarSesionRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/_main": {
+      id: "/_main";
+      path: "";
+      fullPath: "/";
+      preLoaderRoute: typeof MainRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/_main/": {
+      id: "/_main/";
+      path: "/";
+      fullPath: "/";
+      preLoaderRoute: typeof MainIndexRouteImport;
+      parentRoute: typeof MainRoute;
+    };
+    "/_main/casos": {
+      id: "/_main/casos";
+      path: "/casos";
+      fullPath: "/casos";
+      preLoaderRoute: typeof MainCasosRouteImport;
+      parentRoute: typeof MainRoute;
+    };
+    "/_main/articulos": {
+      id: "/_main/articulos";
+      path: "/articulos";
+      fullPath: "/articulos";
+      preLoaderRoute: typeof MainArticulosRouteImport;
+      parentRoute: typeof MainRoute;
+    };
+    "/_main/admin": {
+      id: "/_main/admin";
+      path: "/admin";
+      fullPath: "/admin";
+      preLoaderRoute: typeof MainAdminRouteImport;
+      parentRoute: typeof MainRoute;
+    };
+    "/_main/admin/": {
+      id: "/_main/admin/";
+      path: "/";
+      fullPath: "/admin/";
+      preLoaderRoute: typeof MainAdminIndexRouteImport;
+      parentRoute: typeof MainAdminRoute;
+    };
+    "/_main/casos/$slug": {
+      id: "/_main/casos/$slug";
+      path: "/$slug";
+      fullPath: "/casos/$slug";
+      preLoaderRoute: typeof MainCasosSlugRouteImport;
+      parentRoute: typeof MainCasosRoute;
+    };
+    "/_main/articulos/$slug": {
+      id: "/_main/articulos/$slug";
+      path: "/$slug";
+      fullPath: "/articulos/$slug";
+      preLoaderRoute: typeof MainArticulosSlugRouteImport;
+      parentRoute: typeof MainArticulosRoute;
+    };
+    "/_main/admin/usuarios": {
+      id: "/_main/admin/usuarios";
+      path: "/usuarios";
+      fullPath: "/admin/usuarios";
+      preLoaderRoute: typeof MainAdminUsuariosRouteImport;
+      parentRoute: typeof MainAdminRoute;
+    };
+    "/_main/admin/articulos": {
+      id: "/_main/admin/articulos";
+      path: "/articulos";
+      fullPath: "/admin/articulos";
+      preLoaderRoute: typeof MainAdminArticulosRouteImport;
+      parentRoute: typeof MainAdminRoute;
+    };
+    "/_main/admin/articulos/nuevo": {
+      id: "/_main/admin/articulos/nuevo";
+      path: "/nuevo";
+      fullPath: "/admin/articulos/nuevo";
+      preLoaderRoute: typeof MainAdminArticulosNuevoRouteImport;
+      parentRoute: typeof MainAdminArticulosRoute;
+    };
+    "/_main/admin/articulos/$id/editar": {
+      id: "/_main/admin/articulos/$id/editar";
+      path: "/$id/editar";
+      fullPath: "/admin/articulos/$id/editar";
+      preLoaderRoute: typeof MainAdminArticulosIdEditarRouteImport;
+      parentRoute: typeof MainAdminArticulosRoute;
+    };
   }
 }
 
 interface MainAdminArticulosRouteChildren {
-  MainAdminArticulosNuevoRoute: typeof MainAdminArticulosNuevoRoute
-  MainAdminArticulosIdEditarRoute: typeof MainAdminArticulosIdEditarRoute
+  MainAdminArticulosNuevoRoute: typeof MainAdminArticulosNuevoRoute;
+  MainAdminArticulosIdEditarRoute: typeof MainAdminArticulosIdEditarRoute;
 }
 
 const MainAdminArticulosRouteChildren: MainAdminArticulosRouteChildren = {
   MainAdminArticulosNuevoRoute: MainAdminArticulosNuevoRoute,
   MainAdminArticulosIdEditarRoute: MainAdminArticulosIdEditarRoute,
-}
+};
 
 const MainAdminArticulosRouteWithChildren =
-  MainAdminArticulosRoute._addFileChildren(MainAdminArticulosRouteChildren)
+  MainAdminArticulosRoute._addFileChildren(MainAdminArticulosRouteChildren);
 
 interface MainAdminRouteChildren {
-  MainAdminArticulosRoute: typeof MainAdminArticulosRouteWithChildren
-  MainAdminUsuariosRoute: typeof MainAdminUsuariosRoute
-  MainAdminIndexRoute: typeof MainAdminIndexRoute
+  MainAdminArticulosRoute: typeof MainAdminArticulosRouteWithChildren;
+  MainAdminUsuariosRoute: typeof MainAdminUsuariosRoute;
+  MainAdminIndexRoute: typeof MainAdminIndexRoute;
 }
 
 const MainAdminRouteChildren: MainAdminRouteChildren = {
   MainAdminArticulosRoute: MainAdminArticulosRouteWithChildren,
   MainAdminUsuariosRoute: MainAdminUsuariosRoute,
   MainAdminIndexRoute: MainAdminIndexRoute,
-}
+};
 
 const MainAdminRouteWithChildren = MainAdminRoute._addFileChildren(
   MainAdminRouteChildren,
-)
+);
 
 interface MainArticulosRouteChildren {
-  MainArticulosSlugRoute: typeof MainArticulosSlugRoute
+  MainArticulosSlugRoute: typeof MainArticulosSlugRoute;
 }
 
 const MainArticulosRouteChildren: MainArticulosRouteChildren = {
   MainArticulosSlugRoute: MainArticulosSlugRoute,
-}
+};
 
 const MainArticulosRouteWithChildren = MainArticulosRoute._addFileChildren(
   MainArticulosRouteChildren,
-)
+);
 
 interface MainCasosRouteChildren {
-  MainCasosSlugRoute: typeof MainCasosSlugRoute
+  MainCasosSlugRoute: typeof MainCasosSlugRoute;
 }
 
 const MainCasosRouteChildren: MainCasosRouteChildren = {
   MainCasosSlugRoute: MainCasosSlugRoute,
-}
+};
 
 const MainCasosRouteWithChildren = MainCasosRoute._addFileChildren(
   MainCasosRouteChildren,
-)
+);
 
 interface MainRouteChildren {
-  MainAdminRoute: typeof MainAdminRouteWithChildren
-  MainArticulosRoute: typeof MainArticulosRouteWithChildren
-  MainCasosRoute: typeof MainCasosRouteWithChildren
-  MainIndexRoute: typeof MainIndexRoute
+  MainAdminRoute: typeof MainAdminRouteWithChildren;
+  MainArticulosRoute: typeof MainArticulosRouteWithChildren;
+  MainCasosRoute: typeof MainCasosRouteWithChildren;
+  MainIndexRoute: typeof MainIndexRoute;
 }
 
 const MainRouteChildren: MainRouteChildren = {
@@ -363,24 +363,15 @@ const MainRouteChildren: MainRouteChildren = {
   MainArticulosRoute: MainArticulosRouteWithChildren,
   MainCasosRoute: MainCasosRouteWithChildren,
   MainIndexRoute: MainIndexRoute,
-}
+};
 
-const MainRouteWithChildren = MainRoute._addFileChildren(MainRouteChildren)
+const MainRouteWithChildren = MainRoute._addFileChildren(MainRouteChildren);
 
 const rootRouteChildren: RootRouteChildren = {
   MainRoute: MainRouteWithChildren,
   IniciarSesionRoute: IniciarSesionRoute,
   RegistroRoute: RegistroRoute,
-}
+};
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
+  ._addFileTypes<FileRouteTypes>();

@@ -26,9 +26,9 @@ export default function NewArticlePage() {
       });
       toast.success("Artículo creado exitosamente");
       navigate({ to: "/admin/articulos" });
-    } catch (err: any) {
+    } catch (err) {
       toast.error("Error al crear artículo", {
-        description: err.message || String(err),
+        description: err instanceof Error ? err.message : String(err),
       });
     }
   };

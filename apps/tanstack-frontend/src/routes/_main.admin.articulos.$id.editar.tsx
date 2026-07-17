@@ -52,9 +52,9 @@ export default function EditArticlePage() {
       });
       toast.success("Artículo actualizado exitosamente");
       navigate({ to: "/admin/articulos" });
-    } catch (err: any) {
+    } catch (err) {
       toast.error("Error al actualizar artículo", {
-        description: err.message || String(err),
+        description: err instanceof Error ? err.message : String(err),
       });
     }
   };

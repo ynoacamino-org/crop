@@ -23,19 +23,19 @@ export function PaginationNavigator({
   className,
 }: PaginationNavigatorProps) {
   const navigate = useNavigate();
-  const searchParams = useSearch({ strict: false }) as any;
+  const searchParams = useSearch({ strict: false }) as Record<string, unknown>;
 
   const goToPage = (page: number) => {
     const pageLimit = Number(searchParams.limit) || 12;
     const offset = (page - 1) * pageLimit;
 
     navigate({
-      search: {
-        ...searchParams,
+      search: (prev: Record<string, unknown>) => ({
+        ...prev,
         limit: pageLimit,
         offset,
-      },
-    } as any);
+      }),
+    } as never);
   };
 
   const getPageNumbers = () => {
@@ -171,7 +171,7 @@ export function PaginationSection({
   className,
   showInfo = true,
 }: PaginationSectionProps) {
-  const searchParams = useSearch({ strict: false }) as any;
+  const searchParams = useSearch({ strict: false }) as Record<string, unknown>;
 
   const { currentPage, pageLimit, totalPages, offset } = getPaginationInfo(
     {

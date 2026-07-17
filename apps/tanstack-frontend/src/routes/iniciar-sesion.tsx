@@ -1,6 +1,7 @@
 import type { SignInPayload } from "@repo/schemas";
 import {
   createFileRoute,
+  Link,
   useNavigate,
   useSearch,
 } from "@tanstack/react-router";
@@ -98,12 +99,12 @@ function IniciarSesionPage() {
 
           <div className="text-center text-sm">
             <span className="text-muted-foreground">¿No tienes cuenta? </span>
-            <span
-              onClick={() => navigate({ to: "/registro" })}
+            <Link
+              to="/registro"
               className="cursor-pointer text-primary hover:underline"
             >
               Regístrate
-            </span>
+            </Link>
           </div>
         </CardContent>
       </Card>

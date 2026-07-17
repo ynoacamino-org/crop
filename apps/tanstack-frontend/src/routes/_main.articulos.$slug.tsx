@@ -24,8 +24,10 @@ export const Route = createFileRoute("/_main/articulos/$slug")({
         throw new Error("Artículo no encontrado");
       }
       return { article: data.article };
-    } catch (error: any) {
-      throw new Error(error.message || "Error al cargar el artículo");
+    } catch (error) {
+      throw new Error(
+        error instanceof Error ? error.message : "Error al cargar el artículo",
+      );
     }
   },
   errorComponent: ({ error }) => (

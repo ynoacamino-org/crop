@@ -38,9 +38,9 @@ export function DeleteArticleDialog({
       toast.success("Artículo eliminado correctamente");
       onOpenChange(false);
       router.invalidate();
-    } catch (error: any) {
+    } catch (error) {
       toast.error("Error al eliminar artículo", {
-        description: error.message || String(error),
+        description: error instanceof Error ? error.message : String(error),
       });
     } finally {
       setIsLoading(false);

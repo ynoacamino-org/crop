@@ -3,7 +3,15 @@
   "root": false,
   "files": {
     "ignoreUnknown": true,
-    "includes": ["**", "!node_modules", "!.next", "!dist", "!build", "!public", "!src/service/gql/generated/*.ts"]
+    "includes": [
+      "**",
+      "!node_modules",
+      "!dist",
+      "!build",
+      "!public",
+      "!src/service/gql/generated/*.ts",
+      "!src/routeTree.gen.ts"
+    ]
   },
   "css": {
     "parser": {
@@ -31,13 +39,9 @@
             "functions": ["clsx", "cva", "tw", "tw.*"]
           }
         }
-      },
-      "performance": {
-        "noImgElement": "off"
       }
     },
     "domains": {
-      "next": "recommended",
       "react": "recommended"
     }
   }

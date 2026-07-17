@@ -58,9 +58,9 @@ export function UpdateArticleStatusDialog({
       toast.success("Estado actualizado correctamente");
       onOpenChange(false);
       router.invalidate();
-    } catch (error: any) {
+    } catch (error) {
       toast.error("Error al actualizar artículo", {
-        description: error.message || String(error),
+        description: error instanceof Error ? error.message : String(error),
       });
     } finally {
       setIsLoading(false);

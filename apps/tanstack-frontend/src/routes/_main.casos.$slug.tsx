@@ -21,8 +21,12 @@ export const Route = createFileRoute("/_main/casos/$slug")({
         throw new Error("Caso legal no encontrado");
       }
       return { legalCase: data.legalCase };
-    } catch (error: any) {
-      throw new Error(error.message || "Error al cargar el caso legal");
+    } catch (error) {
+      throw new Error(
+        error instanceof Error
+          ? error.message
+          : "Error al cargar el caso legal",
+      );
     }
   },
   errorComponent: ({ error }) => (

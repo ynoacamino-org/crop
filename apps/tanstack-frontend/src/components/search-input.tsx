@@ -14,20 +14,22 @@ export function SearchInput({
   className,
 }: SearchInputProps) {
   const navigate = useNavigate();
-  const searchParams = useSearch({ strict: false }) as any;
+  const searchParams = useSearch({ strict: false }) as Record<string, unknown>;
   const [isPending, startTransition] = useTransition();
 
-  const [searchValue, setSearchValue] = useState(searchParams.search || "");
+  const [searchValue, setSearchValue] = useState(
+    (searchParams.search as string) || "",
+  );
 
   const handleSearch = (term: string) => {
     startTransition(() => {
       navigate({
-        search: {
-          ...searchParams,
+        search: (prev: Record<string, unknown>) => ({
+          ...prev,
           search: term || undefined,
           offset: undefined, // Reset page
-        },
-      } as any);
+        }),
+      } as never);
     });
   };
 
@@ -35,17 +37,17 @@ export function SearchInput({
     setSearchValue("");
     startTransition(() => {
       navigate({
-        search: {
-          ...searchParams,
+        search: (prev: Record<string, unknown>) => ({
+          ...prev,
           search: undefined,
           offset: undefined,
-        },
-      } as any);
+        }),
+      } as never);
     });
   };
 
   useEffect(() => {
-    const currentSearch = searchParams.search || "";
+    const currentSearch = (searchParams.search as string) || "";
     setSearchValue(currentSearch);
   }, [searchParams.search]);
 

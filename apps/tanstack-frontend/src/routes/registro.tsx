@@ -1,5 +1,5 @@
 import type { SignUpPayload } from "@repo/schemas";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { Button } from "#/components/ui/button";
 import {
@@ -88,12 +88,12 @@ function RegistroPage() {
 
           <div className="text-center text-sm">
             <span className="text-muted-foreground">¿Ya tienes cuenta? </span>
-            <span
-              onClick={() => navigate({ to: "/iniciar-sesion" })}
+            <Link
+              to="/iniciar-sesion"
               className="cursor-pointer text-primary hover:underline"
             >
               Inicia sesión
-            </span>
+            </Link>
           </div>
         </CardContent>
       </Card>

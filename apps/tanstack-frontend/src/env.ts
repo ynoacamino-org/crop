@@ -3,11 +3,11 @@ import { z } from "zod";
 
 export const env = createEnv({
   server: {
-    SERVER_URL: z.string().url(),
+    SERVER_URL: z.url(),
   },
   clientPrefix: "VITE_",
   client: {
-    VITE_API_URL: z.string().url(),
+    VITE_API_URL: z.url(),
   },
   runtimeEnv: import.meta.env,
   emptyStringAsUndefined: true,

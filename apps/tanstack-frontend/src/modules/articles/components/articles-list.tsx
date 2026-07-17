@@ -56,7 +56,6 @@ export function ArticlesList({ articles, totalCount }: ArticlesListProps) {
 
   return (
     <div className="space-y-4">
-      {/* Header with Search and Create Button */}
       <div className="flex items-center justify-between gap-4">
         <div className="max-w-md flex-1">
           <SearchInput placeholder="Buscar por título..." />

@@ -98,7 +98,7 @@ bun add zustand                   # Si se necesita state mas complejo (opcional)
 2. **Configurar `biome.json`** heredando del monorepo:
    ```json
    {
-     "$schema": "https://biomejs.dev/schemas/2.3.10/schema.json",
+     "$schema": "https://biomejs.dev/schemas/2.4.5/schema.json",
      "root": false,
      "extends": ["@repo/biome-config/base", "@repo/biome-config/next"]
    }
