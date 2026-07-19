@@ -1,18 +1,18 @@
 import { eq, sql } from "drizzle-orm";
 import { caseTypes, legalCases } from "@/domain/db/schema";
 import { builder } from "@/infrastructure/graphql/builder";
+import {
+  CreateCaseTypeInput,
+  createCaseTypeSchema,
+  UpdateCaseTypeInput,
+  updateCaseTypeSchema,
+} from "@/infrastructure/graphql/schema/case-type/inputs";
 import { handleDbError } from "@/infrastructure/lib/errors/db";
 import {
   NotFoundError,
   UnauthorizedError,
 } from "@/infrastructure/lib/errors/gql";
 import { sanitize } from "@/infrastructure/lib/utils/sanitize";
-import {
-  CreateCaseTypeInput,
-  createCaseTypeSchema,
-  UpdateCaseTypeInput,
-  updateCaseTypeSchema,
-} from "./inputs";
 
 builder.mutationField("createCaseType", (t) =>
   t.field({

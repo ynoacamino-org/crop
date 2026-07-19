@@ -24,11 +24,11 @@ type UpdateUserPayload = z.infer<typeof UpdateUserPayloadSchema>;
 type DeleteUserPayload = z.infer<typeof DeleteUserPayloadSchema>;
 
 export type {
-  SignUpPayload,
+  DeleteUserPayload,
   SignInPayload,
-  UsersPayload,
-  UserPayload,
+  SignUpPayload,
   UpdateMePayload,
   UpdateUserPayload,
-  DeleteUserPayload,
+  UserPayload,
+  UsersPayload,
 };

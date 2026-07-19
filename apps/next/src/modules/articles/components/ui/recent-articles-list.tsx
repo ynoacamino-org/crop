@@ -1,6 +1,7 @@
 "use client";
 
 import { AlertCircle } from "lucide-react";
+import { ArticleCard } from "@/modules/articles/components/ui/article-card";
 import { useRecentArticlesQuery } from "@/service/gql/generated/gql.client";
 import {
   Alert,
@@ -8,7 +9,6 @@ import {
   AlertTitle,
 } from "@/shared/components/ui/alert";
 import { Skeleton } from "@/shared/components/ui/skeleton";
-import { ArticleCard } from "./article-card";
 
 interface RecentArticlesListProps {
   take?: number;

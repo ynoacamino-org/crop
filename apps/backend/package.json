@@ -4,15 +4,19 @@
   "type": "module",
   "scripts": {
     "lint": "biome check --write",
-    "dev": "wrangler dev",
-    "dev:node": "bun run src/entries/node.ts",
-    "deploy": "wrangler deploy",
-    "start": "wrangler dev",
-    "gen-schema": "bun run scripts/gen-schema.ts",
-    "codegen": "bun run gen-schema && graphql-codegen --config codegen.ts && bun scripts/post-codegen.ts",
-    "seed": "bun run scripts/seed.ts",
-    "check-types": "tsc --noEmit",
-    "check-edge": "wrangler deploy --dry-run",
+    "dev:edge": "wrangler dev",
+    "dev:node": "bun run --watch src/entries/node.ts",
+    "build": "bun run build:edge && bun run build:node",
+    "build:edge": "wrangler deploy --dry-run --outdir .output",
+    "build:node": "bun build src/entries/node.ts --outdir .output --target bun",
+    "start:node": "bun run .output/node.js",
+
+    "codegen": "bun run scripts/gen-schema.ts && graphql-codegen --config codegen.ts && bun scripts/post-codegen.ts",
+
+    "typecheck": "tsgo --noEmit",
+    "edgecheck": "wrangler deploy --dry-run",
+
+    "db:seed": "bun run scripts/seed.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate:local": "wrangler d1 migrations apply mi-db --local",
     "db:migrate:remote": "wrangler d1 migrations apply mi-db --remote",
@@ -20,7 +24,8 @@
     "db:studio": "drizzle-kit studio"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.4.5",
+    "@biomejs/biome": "2.5.4",
+    "@typescript/native-preview": "latest",
     "@faker-js/faker": "^10.1.0",
     "@graphql-codegen/add": "^6.0.0",
     "@graphql-codegen/typed-document-node": "^6.1.5",

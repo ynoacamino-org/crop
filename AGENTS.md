@@ -1,342 +1,139 @@
 # Crop App - AI Agent Context
 
-This is a **full-stack monorepo application** for managing posts and media (images, video, audio) built with modern technologies.
+Legal/court management system (articles, legal cases, courts) with GraphQL API.
 
-## Project Architecture
+## Monorepo Structure
 
-### Monorepo Structure
-- **Build System:** Turborepo with Bun workspaces
-- **Package Manager:** Bun 1.3.5+
-- **Linter/Formatter:** Biome (configured in `packages/biome-config`)
+- **Package manager:** Bun 1.3.5+
+- **Build system:** Turborepo + Bun workspaces
+- **Linter/Formatter:** Biome — run `bun run lint` at root before committing
+- **Workspaces:** `apps/*`, `packages/*`
 
-### Applications
+### Apps
 
-#### Backend (`apps/backend`)
-- **Runtime:** Bun
-- **Web Framework:** Hono (lightweight HTTP framework)
-- **GraphQL:** GraphQL Yoga with Pothos Schema Builder (code-first, type-safe)
-- **Database:** PostgreSQL via Prisma ORM
-- **Authentication:** Better Auth with Google OAuth
-- **File Storage:** MinIO (S3-compatible)
-- **Validation:** Zod schemas (shared from `@repo/schemas`)
+| App | Path | Framework | Dev command |
+|-----|------|-----------|-------------|
+| Backend | `apps/backend` | Hono + GraphQL Yoga + Pothos | `bun run dev` (wrangler, port 7000) |
+| Next.js | `apps/next` | Next.js 16 + React 19 | `bun run dev` (port 3000) |
+| TanStack | `apps/tanstack-frontend` | TanStack Start (Vite 8 + Nitro) | `bun run dev` (port 3000) |
 
-**Key Directories:**
-- `src/routes/` - HTTP route handlers (auth, graphql, media upload)
-- `src/schema/` - GraphQL schema modules (user, post, media)
-- `src/lib/` - Core utilities (auth, db, storage, errors)
-- `src/config/` - Environment and CORS configuration
-- `prisma/` - Database schema and migrations
+### Shared packages
+- `@repo/schemas` — Zod validation schemas (`packages/schemas/`)
+- `@repo/biome-config` — Shared Biome configs (`packages/biome-config/`)
 
-**GraphQL Schema Pattern:**
+## Backend (`apps/backend`)
+
+**Runtime:** Bun + Cloudflare Workers (dual mode: `src/entries/edge.ts` for Workers, `src/entries/node.ts` for local Bun)
+
+**Stack:** Hono, GraphQL Yoga, Pothos (code-first), Drizzle ORM, Better Auth, Zod 4.x
+
+**Architecture:** Hexagonal — `src/domain/`, `src/application/`, `src/infrastructure/`
+
+**Database:** SQLite via Drizzle (D1 on Cloudflare, libSQL locally)
+- Schema: `src/domain/db/schema.ts`
+- Migrations: `drizzle/` directory
+- Generate: `bun run db:generate`, Migrate local: `bun run db:migrate:local`
+
+**GraphQL schema pattern:**
 ```
-src/schema/{resource}/
-├── model.ts      # GraphQL type definitions
+src/infrastructure/graphql/schema/{resource}/
+├── model.ts      # Pothos type definitions
 ├── query.ts      # Query resolvers
 ├── mutation.ts   # Mutation resolvers
-└── inputs.ts     # Input type definitions
+└── inputs.ts     # Input types
 ```
 
-**Authorization:**
-- Scope-based auth using Pothos plugin
-- Roles: `PUBLIC`, `COLLABORATOR`, `ADMIN`
-- Context includes authenticated user from session
+**Key scripts:**
+```bash
+bun run dev:edge                # Wrangler dev (port 7000)
+bun run dev:node                # Bun local mode (--watch)
+bun run build                   # Build both edge + node
+bun run build:edge              # Wrangler dry-run build
+bun run build:node              # Bun bundle build
+bun run start:node              # Run node build
+bun run codegen                 # gen-schema + graphql-codegen + post-codegen
+bun run edgecheck               # Wrangler deploy --dry-run
+bun run db:seed                 # Seed database
+bun run db:generate             # Drizzle-kit generate
+bun run db:migrate:local        # Wrangler d1 migrations apply --local
+bun run db:migrate:remote       # Wrangler d1 migrations apply --remote
+bun run db:migrate:node         # Node-mode migration script
+```
 
-#### Frontend (`apps/frontend`)
-- **Framework:** Next.js 15+ (App Router, React 19)
-- **GraphQL Client:** URQL with GraphQL Code Generator
-- **Forms:** React Hook Form + Zod validation
-- **Rich Text Editor:** Lexical with custom MediaNode
-- **UI Components:** Radix UI primitives + custom components (shadcn/ui pattern)
-- **Styling:** Tailwind CSS 4
-- **HTTP Client:** Ky for REST endpoints
+**Auth scopes:** `public`, `authenticated`, `collaborator`, `admin` (Pothos ScopeAuthPlugin)
 
-**Key Directories:**
-- `src/app/` - Next.js App Router pages and layouts
-- `src/modules/` - Feature modules (auth, posts) with components
-- `src/service/` - API client layer (GraphQL + REST)
-- `src/shared/` - Reusable components, hooks, utilities
+## Frontend Apps
 
-**Service Layer Pattern:**
-- `service.client.ts` - For Client Components (uses URQL hooks)
-- `service.server.ts` - For Server Components (direct fetch with cookies)
+### Next.js (`apps/next`)
+- App Router, URQL for GraphQL, React Hook Form, Lexical editor
+- Service layer: `src/service/service.client.ts` (URQL hooks) / `src/service.service.server.ts` (direct fetch)
+- GraphQL queries: `src/service/gql/queries/`, mutations: `src/service/gql/mutations/`
 
-**GraphQL Code Generation:**
-1. Write queries/mutations in `service/gql/{queries|mutations}/*.graphql`
-2. Backend runs codegen to generate types
-3. Frontend gets type-safe hooks: `usePostsQuery()`, `useCreatePostMutation()`
+### TanStack Frontend (`apps/tanstack-frontend`)
+- TanStack Router (file-based routes in `src/routes/`), TanStack Query, TanStack Form
+- GraphQL client: `graphql-request` + generated SDK (`src/lib/graphql-client.ts`)
+- REST client: Ky (`src/lib/http-client.ts`)
+- Env validation: T3 Env (`src/env.ts`)
+- Route generation: `bun run generate-routes` (tsr generate)
+- Codegen: `bun run codegen` (uses `codegen.ts`, generates `src/service/gql/generated/gql.ts`)
 
-#### Shared Packages
-- `@repo/schemas` - Zod validation schemas used by both frontend and backend
-- `@repo/biome-config` - Shared linting/formatting rules
+**Codegen flow:**
+1. Backend: `bun run gen-schema` → `schema.graphql`
+2. TanStack: `bun run codegen` → typed SDK from `schema.graphql`
+3. Next.js: backend `bun run codegen` → URQL typed documents
 
-## Database Schema
+## Infrastructure (Docker Compose)
 
-**Models:**
-- **User** - Authentication, profiles, role-based access
-- **Post** - Blog posts with title, description, optional media
-- **Media** - Files stored in MinIO (IMAGE, VIDEO, AUDIO types)
-- **Session** - Better Auth sessions
-- **Account** - OAuth provider accounts
-- **Verification** - Email verification tokens
+**Main (`docker-compose.yml`):** libSQL (port 8080), Garage S3 (ports 3900/3901), Redis (6379), Backend (7000)
 
-**Relationships:**
-- User → Posts (one-to-many)
-- User → Media (one-to-many, uploaded files)
-- Post → Media (many-to-one, optional featured media)
+**Dev (`docker-compose.dev.yml`):** Kong gateway (8000) → frontend(:3000) / api(:7000) / storage(:9000), PostgreSQL, Garage
 
-## Infrastructure
+Kong routes: `/` → frontend, `/api` → backend, `/crop-media` → storage
 
-**Docker Compose Services:**
-1. **Kong API Gateway** (port 8000)
-   - Routes `/` → Frontend (localhost:3000)
-   - Routes `/api` → Backend (localhost:7000)
-2. **PostgreSQL** (port 5432)
-3. **MinIO** (ports 9000 API, 9001 Console)
-   - Bucket: `crop`
-   - Public read policy for media files
+## Critical Gotchas
 
-## Development Workflow
+1. **NOT Prisma/PostgreSQL** — The old AGENTS.md is wrong. ORM is **Drizzle**, DB is **SQLite/libSQL**
+2. **Two frontends exist** — `apps/next` (legacy) and `apps/tanstack-frontend` (active migration target). See `PLAN-DE-MIGRACION.md`
+3. **Storage is Garage** (S3-compatible), not MinIO
+4. **Backend has two runtimes** — `wrangler dev` (edge/Workers) for production, `bun run dev:node` for local Node
+5. **GraphQL schema is code-first** — Pothos builder in `src/infrastructure/graphql/builder.ts`, not schema-first
+6. **Auth tables** (User, Session, Account, Verification) use Better Auth's naming convention (lowercase table names for sessions/accounts/verification, uppercase `User`/`Media`/`Article` for app tables)
 
-### Commands
+## Code Style
+
+- **Biome:** 120 char line width, 2-space indent, space-based
+- **TypeScript:** Strict mode, prefer interfaces for object shapes
+- **Imports:** External → `@repo/*` → relative (enforced by Biome)
+- **Null → undefined:** Convert null to undefined for consistency
+- **Files:** kebab-case utils, PascalCase components
+- **Run `bun run lint`** before committing (Biome check --write)
+
+## Commands Quick Reference
+
 ```bash
 # Root
 bun install
-bun run lint          # Run Biome linter/formatter across all packages
+bun run lint                    # Biome across all packages
+bun run typecheck               # tsgo --noEmit across all packages
+bun run build                   # Build all apps (wrangler + next + vite/nitro)
 
 # Backend
 cd apps/backend
-bun run dev           # Start server (port 7000)
-bun run build         # Build for production
-bun run lint          # Run Biome linter/formatter
-bun run check-types   # TypeScript type checking
-bun run gen-schema    # Export GraphQL schema
-bun run codegen       # Generate types for frontend
-bun prisma migrate dev
-bun prisma db seed
+bun run dev:edge                # Wrangler dev (port 7000)
+bun run dev:node                # Bun local mode
+bun run build:edge              # Wrangler dry-run build
+bun run build:node              # Bun bundle build
+bun run codegen                 # Schema export + codegen
+bun run db:migrate:local        # Drizzle migrations (local)
 
-# Frontend
-cd apps/frontend
-bun run dev           # Start Next.js (port 3000)
-bun run build         # Build for production
-bun run lint          # Run Biome linter/formatter
-bun run check-types   # TypeScript type checking
+# Next.js
+cd apps/next
+bun run dev                     # Next.js dev
+
+# TanStack
+cd apps/tanstack-frontend
+bun run dev                     # Vite dev
+bun run generate-routes         # Regenerate route tree
+bun run codegen                 # GraphQL codegen
+bun run test                    # Vitest
 ```
-
-### Testing
-This project currently does not have test files configured. When adding tests:
-- Use Jest or Vitest for unit/integration tests
-- Place test files alongside source files with `.test.ts` or `.spec.ts` suffix
-- Run single test: `bun test path/to/test.test.ts`
-
-### Environment Variables
-**Backend:**
-- `DATABASE_URL` - PostgreSQL connection
-- `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` - OAuth
-- `BETTER_AUTH_SECRET` - Session encryption
-- `S3_ENDPOINT`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY` - MinIO config
-
-**Frontend:**
-- `NEXT_PUBLIC_API_URL` - Public API endpoint
-- `INTERNAL_API_URL` - SSR API endpoint (localhost)
-
-## Media Upload Flow
-
-1. **Upload:** Frontend calls REST endpoint `POST /api/media/upload` (multipart/form-data)
-2. **Validation:** Backend validates MIME type, size (max 100MB)
-3. **Storage:** File uploaded to MinIO with unique CUID key
-4. **Database:** Media record created in PostgreSQL
-5. **Usage:** Reference media by ID in Post mutations via GraphQL
-
-## Key Patterns & Conventions
-
-### Backend
-- **Code-First GraphQL:** Pothos schema builder with TypeScript
-- **Error Handling:** Custom error classes (`NotFoundError`, `UnauthorizedError`, etc.)
-- **Input Sanitization:** Null to undefined conversion utility
-- **Dependency Injection:** Context-based (db, auth, storage)
-
-### Frontend
-- **Server Components First:** Fetch data in Server Components, pass as props
-- **Client Components for Interactivity:** Forms, mutations, user actions
-- **Component Organization:** Feature modules (`modules/`) + shared components (`shared/`)
-- **Lexical Editor:** Custom MediaNode for inline images/video/audio
-- **Form Validation:** React Hook Form + Zod resolver (shared schemas)
-
-## Code Style Guidelines
-
-### Formatting & Linting
-- **Tool:** Biome (configured in root `biome.json`)
-- **Line width:** 120 characters
-- **Indentation:** 2 spaces (no tabs)
-- **Run:** `bun run lint` before committing
-- **Type checking:** `bun run check-types` in each app
-
-### Import Organization
-```typescript
-// 1. External libraries (node_modules)
-import { useState } from 'react';
-import { Hono } from 'hono';
-
-// 2. Internal packages (@repo/*)
-import { createPostSchema } from '@repo/schemas';
-
-// 3. Local modules (relative imports)
-import { db } from './lib/db';
-import { Button } from './components/ui/button';
-```
-
-### TypeScript Conventions
-- **Strict mode enabled** - All types must be explicit
-- **Prefer interfaces** for object shapes, types for unions
-- **No implicit any** - Use proper typing
-- **Null vs undefined:** Convert null to undefined for consistency
-- **Generic naming:** Use descriptive names (TEntity, TResponse)
-
-### Naming Conventions
-- **Files:** kebab-case for utilities (`use-mobile.ts`), PascalCase for components (`PostCard.tsx`)
-- **Variables/Functions:** camelCase (`getUserById`, `isLoading`)
-- **Constants:** UPPER_SNAKE_CASE (`MAX_FILE_SIZE`)
-- **Types/Interfaces:** PascalCase (`User`, `PostResponse`)
-- **GraphQL operations:** 
-  - Server: `getPostsQuery`, `createPostMutation`
-  - Client hooks: `usePostsQuery`, `useCreatePostMutation`
-
-### Error Handling
-- **Custom error classes:** `NotFoundError`, `UnauthorizedError`, `ValidationError`
-- **Consistent error responses:** Use standardized error format
-- **Never expose stack traces** to client
-- **Always validate inputs** with Zod schemas
-- **Use try/catch** for async operations, handle gracefully
-
-### React/Next.js Patterns
-- **Server Components first** - Only use Client Components when needed
-- **State management:** Use React hooks for local state, URQL for server state
-- **Form handling:** React Hook Form + Zod resolver
-- **Component structure:** Feature modules in `modules/`, shared in `shared/`
-- **Props interface:** Always define explicit prop types
-
-### Backend Patterns
-- **Dependency injection:** Context-based (db, auth, storage)
-- **Input sanitization:** Convert null to undefined
-- **Authorization:** Scope-based with Pothos plugin
-- **Database operations:** Always use Prisma, never raw SQL
-- **File uploads:** REST endpoints, not GraphQL
-
-## Security Features
-
-- **Authentication:** Session-based with HTTP-only cookies
-- **Authorization:** Role-based access control via GraphQL scopes
-- **Input Validation:** Zod schemas on all mutations
-- **SQL Injection Protection:** Prisma ORM with parameterized queries
-- **File Upload Validation:** MIME type and size limits
-- **CORS:** Configured for allowed origins only
-- **Error Sanitization:** No stack traces exposed to client
-
-## Technologies Summary
-
-**Backend Stack:**
-- Bun, Hono, GraphQL Yoga, Pothos, Prisma, PostgreSQL, Better Auth, MinIO, Zod
-
-**Frontend Stack:**
-- Next.js 15, React 19, URQL, Lexical, React Hook Form, Radix UI, Tailwind CSS 4, Ky
-
-**DevOps:**
-- Docker Compose, Kong API Gateway, Turborepo, Biome
-
-## Code Style Guidelines
-
-### Formatting & Linting
-- **Tool:** Biome (configured in root `biome.json`)
-- **Line width:** 120 characters
-- **Indentation:** 2 spaces (no tabs)
-- **Run:** `bun run lint` before committing
-- **Type checking:** `bun run check-types` in each app
-
-### Import Organization
-```typescript
-// 1. External libraries (node_modules)
-import { useState } from 'react';
-import { Hono } from 'hono';
-
-// 2. Internal packages (@repo/*)
-import { createPostSchema } from '@repo/schemas';
-
-// 3. Local modules (relative imports)
-import { db } from './lib/db';
-import { Button } from './components/ui/button';
-```
-
-### TypeScript Conventions
-- **Strict mode enabled** - All types must be explicit
-- **Prefer interfaces** for object shapes, types for unions
-- **No implicit any** - Use proper typing
-- **Null vs undefined:** Convert null to undefined for consistency
-- **Generic naming:** Use descriptive names (TEntity, TResponse)
-
-### Naming Conventions
-- **Files:** kebab-case for utilities (`use-mobile.ts`), PascalCase for components (`PostCard.tsx`)
-- **Variables/Functions:** camelCase (`getUserById`, `isLoading`)
-- **Constants:** UPPER_SNAKE_CASE (`MAX_FILE_SIZE`)
-- **Types/Interfaces:** PascalCase (`User`, `PostResponse`)
-- **GraphQL operations:** 
-  - Server: `getPostsQuery`, `createPostMutation`
-  - Client hooks: `usePostsQuery`, `useCreatePostMutation`
-
-### Error Handling
-- **Custom error classes:** `NotFoundError`, `UnauthorizedError`, `ValidationError`
-- **Consistent error responses:** Use standardized error format
-- **Never expose stack traces** to client
-- **Always validate inputs** with Zod schemas
-- **Use try/catch** for async operations, handle gracefully
-
-### React/Next.js Patterns
-- **Server Components first** - Only use Client Components when needed
-- **State management:** Use React hooks for local state, URQL for server state
-- **Form handling:** React Hook Form + Zod resolver
-- **Component structure:** Feature modules in `modules/`, shared in `shared/`
-- **Props interface:** Always define explicit prop types
-
-### Backend Patterns
-- **Dependency injection:** Context-based (db, auth, storage)
-- **Input sanitization:** Convert null to undefined
-- **Authorization:** Scope-based with Pothos plugin
-- **Database operations:** Always use Prisma, never raw SQL
-- **File uploads:** REST endpoints, not GraphQL
-
-## Notes for AI Agents
-
-1. **Always use shared schemas** from `@repo/schemas` for validation
-2. **Follow the service layer pattern** - client vs server services
-3. **GraphQL changes require codegen** - run `bun run codegen` after schema changes
-4. **Prisma changes require migration** - `bun prisma migrate dev` after schema.prisma edits
-5. **Keep Server Components where possible** - only use Client Components when needed
-6. **Media uploads use REST** - GraphQL is for queries/mutations, not file uploads
-7. **Authorization scopes** - Use `public`, `collaborator`, or `admin` in Pothos resolvers
-8. **Lexical nodes are immutable** - Always create new nodes, never mutate existing
-9. **Code style enforced by Biome** - Run `bun run lint` before committing
-10. **TypeScript strict mode** - Always run `bun run check-types` to verify types
-
-## Common Tasks
-
-### Add a new GraphQL query
-1. Define query in `apps/backend/src/schema/{resource}/query.ts`
-2. Run `bun run gen-schema` in backend
-3. Create `.graphql` file in `apps/frontend/src/service/gql/queries/`
-4. Run `bun run codegen` in backend
-5. Use generated hook in frontend
-
-### Add a new database model
-1. Update `apps/backend/prisma/schema.prisma`
-2. Run `bun prisma migrate dev --name description`
-3. Create GraphQL schema module in `src/schema/`
-4. Update Pothos builder with new type
-5. Run codegen to update frontend types
-
-### Add a new UI component
-1. Place in `apps/frontend/src/shared/components/ui/` if generic
-2. Place in `apps/frontend/src/modules/{feature}/components/` if feature-specific
-3. Use Radix UI primitives where possible
-4. Style with Tailwind CSS
-5. Export from parent component index if needed
-
-This context should help AI agents understand the project structure, patterns, and conventions when assisting with development tasks.

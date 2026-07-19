@@ -6,9 +6,9 @@ import {
   type MediaPayload,
   type MediaType,
   type SerializedMediaNode,
-} from "./media-node.core";
+} from "@/shared/components/lexical/nodes/media-node.core";
 
-export type { MediaType, MediaPayload, SerializedMediaNode };
+export type { MediaPayload, MediaType, SerializedMediaNode };
 
 export class MediaNode extends MediaNodeBase<HTMLElement> {
   static clone(node: MediaNode): MediaNode {

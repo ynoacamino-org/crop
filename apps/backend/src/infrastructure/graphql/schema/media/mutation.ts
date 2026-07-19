@@ -6,13 +6,16 @@ import {
 import { eq } from "drizzle-orm";
 import { media } from "@/domain/db/schema";
 import { builder } from "@/infrastructure/graphql/builder";
+import {
+  CreateMediaInput,
+  UpdateMediaInput,
+} from "@/infrastructure/graphql/schema/media/inputs";
 import { handleDbError } from "@/infrastructure/lib/errors/db";
 import {
   NotFoundError,
   UnauthorizedError,
 } from "@/infrastructure/lib/errors/gql";
 import { sanitize } from "@/infrastructure/lib/utils/sanitize";
-import { CreateMediaInput, UpdateMediaInput } from "./inputs";
 
 builder.mutationField("createMedia", (t) =>
   t.field({

@@ -20,8 +20,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
     {},
   );
 
-  // Redirect if not admin
-  if (!result.data?.me || result.data.me.role !== "ADMIN") {
+  if (result.data.me?.role !== "ADMIN") {
     redirect("/");
   }
 

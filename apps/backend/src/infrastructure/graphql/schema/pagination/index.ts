@@ -1,1 +1,1 @@
-import "./model";
+import "@/infrastructure/graphql/schema/pagination/model";

@@ -1,5 +1,5 @@
-import { ThemeProvider } from "./theme-provider";
-import { UrqlProvider } from "./urql";
+import { ThemeProvider } from "@/shared/providers/theme-provider";
+import { UrqlProvider } from "@/shared/providers/urql";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (

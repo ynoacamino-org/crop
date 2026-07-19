@@ -7,11 +7,13 @@ import {
   type MediaPayload,
   type MediaType,
   type SerializedMediaNode,
-} from "./media-node.core";
+} from "@/components/lexical/nodes/media-node.core";
 
-const MediaComponentLazy = lazy(() => import("./media-component"));
+const MediaComponentLazy = lazy(
+  () => import("@/components/lexical/nodes/media-component"),
+);
 
-export type { MediaType, MediaPayload, SerializedMediaNode };
+export type { MediaPayload, MediaType, SerializedMediaNode };
 
 export class MediaNode extends MediaNodeBase<React.ReactElement> {
   static clone(node: MediaNode): MediaNode {

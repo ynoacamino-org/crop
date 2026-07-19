@@ -38,9 +38,9 @@ import {
   Video,
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { uploadMedia } from "@/shared/components/lexical/plugins/media-plugin";
 import { Button } from "@/shared/components/ui/button";
 import { Separator } from "@/shared/components/ui/separator";
-import { uploadMedia } from "./media-plugin";
 
 export function ToolbarPlugin() {
   const [editor] = useLexicalComposerContext();

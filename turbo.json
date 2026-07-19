@@ -5,11 +5,11 @@
       "dependsOn": ["^build"],
       "outputs": [".next/**", "!.next/cache/**", ".output/**", ".nitro/**", ".tanstack/**"]
     },
-    "check-types": {
-      "dependsOn": ["^check-types"]
-    },
     "lint": {
       "dependsOn": ["^lint"]
+    },
+    "typecheck": {
+      "dependsOn": ["^typecheck"]
     },
     "dev": {
       "cache": false,

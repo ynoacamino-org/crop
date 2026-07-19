@@ -6,4 +6,4 @@ export type UpdateArticleInput = z.infer<typeof updateArticleSchema>;
 export type ArticlesQueryInput = z.infer<typeof articlesQuerySchema>;
 export type ArticleStatusType = z.infer<typeof ArticleStatus>;
 
-export type { createArticleSchema, updateArticleSchema, articlesQuerySchema, ArticleStatus };
+export type { ArticleStatus, articlesQuerySchema, createArticleSchema, updateArticleSchema };

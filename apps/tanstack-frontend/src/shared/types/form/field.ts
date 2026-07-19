@@ -1,7 +1,10 @@
 import type { LucideProps } from "lucide-react";
 import type React from "react";
-import type { SelectOption, UploadFileConfig } from "./config-field";
-import type { SUPPORTED_FIELDS } from "./supported-fields";
+import type {
+  SelectOption,
+  UploadFileConfig,
+} from "@/shared/types/form/config-field";
+import type { SUPPORTED_FIELDS } from "@/shared/types/form/supported-fields";
 
 export type SupportedFieldType =
   (typeof SUPPORTED_FIELDS)[keyof typeof SUPPORTED_FIELDS];

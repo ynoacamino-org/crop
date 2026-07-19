@@ -1,6 +1,6 @@
 import { UpdateMePayloadSchema, UpdateUserPayloadSchema } from "@repo/schemas";
 import { builder } from "@/infrastructure/graphql/builder";
-import { Role } from "./model";
+import { Role } from "@/infrastructure/graphql/schema/user/model";
 
 export const UpdateUserInput = builder.inputType("UpdateUserInput", {
   fields: (t) => ({

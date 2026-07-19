@@ -2,6 +2,8 @@
 
 import { MoreVertical, Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { DeleteUserDialog } from "@/modules/users/components/delete-user-dialog";
+import { EditUserDialog } from "@/modules/users/components/edit-user-dialog";
 import { Role, type UsersQuery } from "@/service/gql/generated/gql.client";
 import {
   Avatar,
@@ -25,8 +27,6 @@ import {
   TableRow,
 } from "@/shared/components/ui/table";
 import { formatMediumDate } from "@/shared/lib/format-date";
-import { DeleteUserDialog } from "./delete-user-dialog";
-import { EditUserDialog } from "./edit-user-dialog";
 
 type User = UsersQuery["users"]["items"][number];
 

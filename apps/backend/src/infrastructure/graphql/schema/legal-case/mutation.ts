@@ -1,6 +1,10 @@
 import { eq } from "drizzle-orm";
 import { caseTypes, courts, legalCases } from "@/domain/db/schema";
 import { builder } from "@/infrastructure/graphql/builder";
+import {
+  CreateLegalCaseInput,
+  UpdateLegalCaseInput,
+} from "@/infrastructure/graphql/schema/legal-case/inputs";
 import { handleDbError } from "@/infrastructure/lib/errors/db";
 import {
   NotFoundError,
@@ -8,7 +12,6 @@ import {
 } from "@/infrastructure/lib/errors/gql";
 import { generateCaseSlug } from "@/infrastructure/lib/utils/generate-slug";
 import { sanitize } from "@/infrastructure/lib/utils/sanitize";
-import { CreateLegalCaseInput, UpdateLegalCaseInput } from "./inputs";
 
 builder.mutationField("createLegalCase", (t) =>
   t.field({

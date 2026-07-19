@@ -7,7 +7,7 @@
     "build": "bun --bun next build",
     "start": "bun --bun next start",
     "lint": "biome check --write",
-    "check-types": "bun --bun tsc --noEmit"
+    "typecheck": "tsgo --noEmit"
   },
   "dependencies": {
     "@graphql-typed-document-node/core": "^3.2.0",
@@ -76,7 +76,8 @@
     "zod": "^4.3.4"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.4.5",
+    "@biomejs/biome": "2.5.4",
+    "@typescript/native-preview": "latest",
     "@repo/biome-config": "workspace:^",
     "@tailwindcss/postcss": "^4",
     "@tailwindcss/typography": "^0.5.19",

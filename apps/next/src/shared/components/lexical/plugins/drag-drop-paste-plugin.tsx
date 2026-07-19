@@ -4,7 +4,7 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { COMMAND_PRIORITY_LOW, DRAGOVER_COMMAND, DROP_COMMAND } from "lexical";
 import { useEffect } from "react";
 
-import { uploadMedia } from "./media-plugin";
+import { uploadMedia } from "@/shared/components/lexical/plugins/media-plugin";
 
 const ACCEPTABLE_IMAGE_TYPES = [
   "image/jpeg",

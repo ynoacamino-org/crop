@@ -8,4 +8,4 @@ type HttpOptions = {
   cookies?: ReadonlyRequestCookies;
 };
 
-export type { HttpPath, HttpSearchParams, HttpUploadFile, HttpOptions };
+export type { HttpOptions, HttpPath, HttpSearchParams, HttpUploadFile };

@@ -5,10 +5,13 @@ import {
 import { eq } from "drizzle-orm";
 import { users } from "@/domain/db/schema";
 import { builder } from "@/infrastructure/graphql/builder";
+import {
+  AdminUpdateUserInput,
+  UpdateUserInput,
+} from "@/infrastructure/graphql/schema/user/inputs";
 import { handleDbError } from "@/infrastructure/lib/errors/db";
 import { UnauthorizedError } from "@/infrastructure/lib/errors/gql";
 import { sanitize } from "@/infrastructure/lib/utils/sanitize";
-import { AdminUpdateUserInput, UpdateUserInput } from "./inputs";
 
 builder.mutationField("updateMe", (t) =>
   t.field({

@@ -1,6 +1,7 @@
 "use client";
 
 import { AlertCircle } from "lucide-react";
+import { LegalCaseItem } from "@/modules/legal-cases/components/ui/legal-case-item";
 import { useRecentLegalCasesQuery } from "@/service/gql/generated/gql.client";
 import {
   Alert,
@@ -8,7 +9,6 @@ import {
   AlertTitle,
 } from "@/shared/components/ui/alert";
 import { Skeleton } from "@/shared/components/ui/skeleton";
-import { LegalCaseItem } from "./legal-case-item";
 
 interface RecentCasesListProps {
   take?: number;

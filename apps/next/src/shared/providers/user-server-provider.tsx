@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { MeDocument } from "@/service/gql/generated/gql.node";
 import { getService } from "@/service/service.server";
-import { UserProvider } from "./user-provider";
+import { UserProvider } from "@/shared/providers/user-provider";
 
 export async function UserServerProvider({
   children,

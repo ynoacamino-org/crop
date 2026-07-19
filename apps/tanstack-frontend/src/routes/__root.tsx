@@ -11,9 +11,9 @@ import { Toaster } from "sonner";
 import { sdk } from "#/lib/graphql-client";
 import { ThemeProvider } from "#/providers/theme-provider";
 import { UserProvider } from "#/providers/user-provider";
-import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
+import TanStackQueryDevtools from "@/integrations/tanstack-query/devtools";
 
-import appCss from "../styles.css?url";
+import appCss from "@/styles.css?url";
 
 interface MyRouterContext {
   queryClient: QueryClient;

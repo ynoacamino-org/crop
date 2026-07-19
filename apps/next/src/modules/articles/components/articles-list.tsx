@@ -4,6 +4,8 @@ import { Edit, MoreVertical, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { DeleteArticleDialog } from "@/modules/articles/components/delete-article-dialog";
+import { UpdateArticleStatusDialog } from "@/modules/articles/components/update-article-status-dialog";
 import type { AdminArticlesQuery } from "@/service/gql/generated/gql.client";
 import { PaginationSection } from "@/shared/components/pagination-controls";
 import { SearchInput } from "@/shared/components/search-input";
@@ -24,8 +26,6 @@ import {
   TableRow,
 } from "@/shared/components/ui/table";
 import { formatMediumDate } from "@/shared/lib/format-date";
-import { DeleteArticleDialog } from "./delete-article-dialog";
-import { UpdateArticleStatusDialog } from "./update-article-status-dialog";
 
 type Article = AdminArticlesQuery["articles"]["items"][number];
 

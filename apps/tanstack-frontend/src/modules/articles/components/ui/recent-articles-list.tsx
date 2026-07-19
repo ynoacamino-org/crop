@@ -1,12 +1,12 @@
 import { AlertCircle } from "lucide-react";
 import { useRecentArticles } from "#/service/hooks/articles";
+import { ArticleCard } from "@/modules/articles/components/ui/article-card";
 import {
   Alert,
   AlertDescription,
   AlertTitle,
 } from "@/shared/components/ui/alert";
 import { Skeleton } from "@/shared/components/ui/skeleton";
-import { ArticleCard } from "./article-card";
 
 interface RecentArticlesListProps {
   take?: number;

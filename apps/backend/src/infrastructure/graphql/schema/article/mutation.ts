@@ -6,13 +6,16 @@ import {
   articleToTags,
 } from "@/domain/db/schema";
 import { builder } from "@/infrastructure/graphql/builder";
+import {
+  CreateArticleInput,
+  UpdateArticleInput,
+} from "@/infrastructure/graphql/schema/article/inputs";
 import { handleDbError } from "@/infrastructure/lib/errors/db";
 import {
   NotFoundError,
   UnauthorizedError,
 } from "@/infrastructure/lib/errors/gql";
 import { sanitize } from "@/infrastructure/lib/utils/sanitize";
-import { CreateArticleInput, UpdateArticleInput } from "./inputs";
 
 builder.mutationField("createArticle", (t) =>
   t.field({

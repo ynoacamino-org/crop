@@ -5,8 +5,6 @@ import type { RuntimeEnv } from "@/application/ports/runtime";
 import { authSchema } from "@/domain/db/schema";
 
 export class BetterAuthAdapter implements AuthPort {
-  private readonly client: ReturnType<typeof betterAuth>;
-
   public readonly api: AuthPort["api"];
   public readonly handler: AuthPort["handler"];
 
@@ -17,7 +15,7 @@ export class BetterAuthAdapter implements AuthPort {
     const googleClientId = rt.env.get("GOOGLE_CLIENT_ID") ?? "";
     const googleClientSecret = rt.env.get("GOOGLE_CLIENT_SECRET") ?? "";
 
-    this.client = betterAuth({
+    const auth = betterAuth({
       database: drizzleAdapter(rt.db.client as never, {
         provider: "sqlite",
         schema: authSchema,
@@ -61,7 +59,7 @@ export class BetterAuthAdapter implements AuthPort {
       },
     });
 
-    this.api = this.client.api;
-    this.handler = this.client.handler;
+    this.api = auth.api;
+    this.handler = auth.handler;
   }
 }

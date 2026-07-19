@@ -1,12 +1,12 @@
 import { AlertCircle } from "lucide-react";
 import { useRecentLegalCases } from "#/service/hooks/legal-cases";
+import { LegalCaseItem } from "@/modules/legal-cases/components/ui/legal-case-item";
 import {
   Alert,
   AlertDescription,
   AlertTitle,
 } from "@/shared/components/ui/alert";
 import { Skeleton } from "@/shared/components/ui/skeleton";
-import { LegalCaseItem } from "./legal-case-item";
 
 interface RecentCasesListProps {
   take?: number;

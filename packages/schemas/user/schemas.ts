@@ -72,11 +72,11 @@ const DeleteUserPayloadSchema = z.object({
 });
 
 export {
-  SignUpPayloadSchema,
+  DeleteUserPayloadSchema,
   SignInPayloadSchema,
-  UsersPayloadSchema,
-  UserPayloadSchema,
+  SignUpPayloadSchema,
   UpdateMePayloadSchema,
   UpdateUserPayloadSchema,
-  DeleteUserPayloadSchema,
+  UserPayloadSchema,
+  UsersPayloadSchema,
 };

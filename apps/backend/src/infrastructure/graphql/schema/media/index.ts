@@ -1,4 +1,4 @@
-export { Media, MediaType } from "./model";
+export { Media, MediaType } from "@/infrastructure/graphql/schema/media/model";
 
-import "./query";
-import "./mutation";
+import "@/infrastructure/graphql/schema/media/query";
+import "@/infrastructure/graphql/schema/media/mutation";

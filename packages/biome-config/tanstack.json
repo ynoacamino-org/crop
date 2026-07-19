@@ -9,6 +9,8 @@
       "!dist",
       "!build",
       "!public",
+      "!.nitro",
+      "!.output",
       "!src/service/gql/generated/*.ts",
       "!src/routeTree.gen.ts"
     ]

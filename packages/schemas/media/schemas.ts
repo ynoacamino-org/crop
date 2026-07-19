@@ -84,10 +84,10 @@ const DeleteMediaPayloadSchema = z.object({
 });
 
 export {
-  MediaTypeEnum,
-  MediasPayloadSchema,
-  MediaPayloadSchema,
   CreateMediaPayloadSchema,
-  UpdateMediaPayloadSchema,
   DeleteMediaPayloadSchema,
+  MediaPayloadSchema,
+  MediasPayloadSchema,
+  MediaTypeEnum,
+  UpdateMediaPayloadSchema,
 };
