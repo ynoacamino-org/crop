@@ -1,5 +1,4 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { sdk } from "#/lib/graphql-client";
 import type {
   DeleteMeMutationVariables,
   DeleteUserMutationVariables,
@@ -8,11 +7,12 @@ import type {
   UpdateUserMutationVariables,
   UsersQueryVariables,
 } from "#/service/gql/generated/gql";
+import { service } from "#/service/service.client";
 
 export function useMe(variables?: MeQueryVariables) {
   return useQuery({
     queryKey: ["me", variables],
-    queryFn: () => sdk.me(variables),
+    queryFn: () => service.gql.me(variables),
     retry: false,
   });
 }
@@ -20,7 +20,7 @@ export function useMe(variables?: MeQueryVariables) {
 export function useUsers(variables?: UsersQueryVariables) {
   return useQuery({
     queryKey: ["users", variables],
-    queryFn: () => sdk.users(variables),
+    queryFn: () => service.gql.users(variables),
   });
 }
 
@@ -28,7 +28,7 @@ export function useUpdateMe() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (variables: UpdateMeMutationVariables) =>
-      sdk.updateMe(variables),
+      service.gql.updateMe(variables),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["me"] });
     },
@@ -39,7 +39,7 @@ export function useUpdateUser() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (variables: UpdateUserMutationVariables) =>
-      sdk.updateUser(variables),
+      service.gql.updateUser(variables),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
       queryClient.invalidateQueries({ queryKey: ["me"] });
@@ -51,7 +51,7 @@ export function useDeleteMe() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (variables: DeleteMeMutationVariables) =>
-      sdk.deleteMe(variables),
+      service.gql.deleteMe(variables),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["me"] });
     },
@@ -62,7 +62,7 @@ export function useDeleteUser() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (variables: DeleteUserMutationVariables) =>
-      sdk.deleteUser(variables),
+      service.gql.deleteUser(variables),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
     },

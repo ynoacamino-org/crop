@@ -1,6 +1,8 @@
-import { http } from "#/lib/http-client";
+import type { KyInstance } from "ky";
 import type { AuthGetSession } from "./models/auth";
 
-export async function getSession() {
-  return http.get("auth/get-session").json<AuthGetSession>();
+export function createAuthRest(http: KyInstance) {
+  return {
+    getSession: () => http.get("auth/get-session").json<AuthGetSession>(),
+  };
 }

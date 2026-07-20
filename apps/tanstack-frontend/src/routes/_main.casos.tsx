@@ -1,22 +1,29 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { EmptyState } from "#/components/empty-state";
 import { PaginationSection } from "#/components/pagination-controls";
-import { sdk } from "#/lib/graphql-client";
 import { LegalCaseCard } from "#/modules/legal-cases/components/ui/legal-case-card";
+import { createServerService } from "#/service/service.server";
 
 const searchSchema = z.object({
   limit: z.number().optional().catch(12),
   offset: z.number().optional().catch(0),
 });
 
+const getRecentLegalCases = createServerFn()
+  .validator((input: { take?: number; skip?: number }) => input)
+  .handler(async ({ data }) => {
+    const { gql } = createServerService();
+    return gql.RecentLegalCases(data);
+  });
+
 export const Route = createFileRoute("/_main/casos")({
   validateSearch: (search) => searchSchema.parse(search),
   loaderDeps: ({ search: { limit, offset } }) => ({ limit, offset }),
   loader: async ({ deps: { limit, offset } }) => {
-    const data = await sdk.RecentLegalCases({
-      take: limit,
-      skip: offset,
+    const data = await getRecentLegalCases({
+      data: { take: limit, skip: offset },
     });
     return {
       casesData: data?.legalCases,

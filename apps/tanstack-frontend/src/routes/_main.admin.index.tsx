@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { createServerFn } from "@tanstack/react-start";
 import { Scale, Users } from "lucide-react";
 import {
   Card,
@@ -7,18 +8,21 @@ import {
   CardHeader,
   CardTitle,
 } from "#/components/ui/card";
-import { sdk } from "#/lib/graphql-client";
+import { createServerService } from "#/service/service.server";
+
+const getAdminStats = createServerFn().handler(async () => {
+  const { gql } = createServerService();
+  const data = await gql.AdminStats();
+  return {
+    usersCount: data?.users?.pageInfo.totalCount,
+    articlesCount: data?.articles?.pageInfo.totalCount,
+    legalCasesCount: data?.legalCases?.pageInfo.totalCount,
+    caseTypesCount: data?.caseTypes?.pageInfo.totalCount,
+  };
+});
 
 export const Route = createFileRoute("/_main/admin/")({
-  loader: async () => {
-    const data = await sdk.AdminStats();
-    return {
-      usersCount: data?.users?.pageInfo.totalCount || 0,
-      articlesCount: data?.articles?.pageInfo.totalCount || 0,
-      legalCasesCount: data?.legalCases?.pageInfo.totalCount || 0,
-      caseTypesCount: data?.caseTypes?.pageInfo.totalCount || 0,
-    };
-  },
+  loader: () => getAdminStats(),
   component: AdminDashboardPage,
 });
 

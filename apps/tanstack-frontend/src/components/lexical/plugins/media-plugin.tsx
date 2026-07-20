@@ -15,7 +15,7 @@ import {
 import type React from "react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { upload } from "#/service/rest/media";
+import { service } from "#/service/service.client";
 import {
   $createMediaNode,
   $isMediaNode,
@@ -89,7 +89,7 @@ export async function uploadMedia(
       editor.dispatchCommand(INSERT_MEDIA_COMMAND, tempPayload);
 
       try {
-        const response = await upload(file, {
+        const response = await service.rest.media.upload(file, {
           isPublic: "true",
         });
 

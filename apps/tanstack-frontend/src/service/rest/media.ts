@@ -1,21 +1,25 @@
-import { http } from "#/lib/http-client";
+import type { KyInstance } from "ky";
 import type { MediaUploadResponse, UploadMediaPayload } from "./models/media";
 
-export async function upload(file: File, payload: UploadMediaPayload) {
-  const form = new FormData();
-  form.append("file", file, file.name);
+export function createMediaRest(http: KyInstance) {
+  return {
+    upload: async (file: File, payload: UploadMediaPayload) => {
+      const form = new FormData();
+      form.append("file", file, file.name);
 
-  if (payload) {
-    for (const [key, value] of Object.entries(payload)) {
-      if (value !== undefined && value !== null) {
-        form.append(key, String(value));
+      if (payload) {
+        for (const [key, value] of Object.entries(payload)) {
+          if (value !== undefined && value !== null) {
+            form.append(key, String(value));
+          }
+        }
       }
-    }
-  }
 
-  return http
-    .post("media/upload", {
-      body: form,
-    })
-    .json<MediaUploadResponse>();
+      return http
+        .post("media/upload", {
+          body: form,
+        })
+        .json<MediaUploadResponse>();
+    },
+  };
 }

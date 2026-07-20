@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { createServerFn } from "@tanstack/react-start";
 import {
   AlertCircle,
   Calendar,
@@ -9,14 +10,21 @@ import {
 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "#/components/ui/alert";
 import { Badge } from "#/components/ui/badge";
-import { sdk } from "#/lib/graphql-client";
+import { createServerService } from "#/service/service.server";
 import { JURISDICTION_LABELS } from "#/shared/config/constants";
 import { formatLongDate } from "#/shared/lib/format-date";
+
+const getLegalCase = createServerFn()
+  .validator((input: { slug: string }) => input)
+  .handler(async ({ data }) => {
+    const { gql } = createServerService();
+    return gql.LegalCase(data);
+  });
 
 export const Route = createFileRoute("/_main/casos/$slug")({
   loader: async ({ params: { slug } }) => {
     try {
-      const data = await sdk.LegalCase({ slug });
+      const data = await getLegalCase({ data: { slug } });
       if (!data?.legalCase) {
         throw new Error("Caso legal no encontrado");
       }

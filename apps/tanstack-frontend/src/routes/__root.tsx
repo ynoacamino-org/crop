@@ -7,10 +7,11 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+import { createServerFn } from "@tanstack/react-start";
 import { Toaster } from "sonner";
-import { sdk } from "#/lib/graphql-client";
 import { ThemeProvider } from "#/providers/theme-provider";
 import { UserProvider } from "#/providers/user-provider";
+import { createServerService } from "#/service/service.server";
 import TanStackQueryDevtools from "@/integrations/tanstack-query/devtools";
 
 import appCss from "@/styles.css?url";
@@ -18,6 +19,16 @@ import appCss from "@/styles.css?url";
 interface MyRouterContext {
   queryClient: QueryClient;
 }
+
+const getMe = createServerFn().handler(async () => {
+  try {
+    const { gql } = createServerService();
+    const data = await gql.me();
+    return { user: data?.me || null };
+  } catch {
+    return { user: null };
+  }
+});
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
   head: () => ({
@@ -49,10 +60,10 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
     try {
       const data = await context.queryClient.ensureQueryData({
         queryKey: ["me"],
-        queryFn: () => sdk.me(),
+        queryFn: () => getMe(),
       });
       return {
-        user: data?.me || null,
+        user: data?.user || null,
       };
     } catch {
       return {

@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { createServerFn } from "@tanstack/react-start";
 import {
   AlertCircle,
   Calendar,
@@ -11,15 +12,22 @@ import {
 import { Alert, AlertDescription, AlertTitle } from "#/components/ui/alert";
 import { Badge } from "#/components/ui/badge";
 import { Separator } from "#/components/ui/separator";
-import { sdk } from "#/lib/graphql-client";
 import { RelatedLegalCaseCard } from "#/modules/legal-cases/components/ui/related-legal-case-card";
+import { createServerService } from "#/service/service.server";
 import { formatLongDate } from "#/shared/lib/format-date";
 import { lexicalToHtml } from "#/shared/lib/lexical-to-html";
+
+const getArticle = createServerFn()
+  .validator((input: { slug: string }) => input)
+  .handler(async ({ data }) => {
+    const { gql } = createServerService();
+    return gql.Article(data);
+  });
 
 export const Route = createFileRoute("/_main/articulos/$slug")({
   loader: async ({ params: { slug } }) => {
     try {
-      const data = await sdk.Article({ slug });
+      const data = await getArticle({ data: { slug } });
       if (!data?.article) {
         throw new Error("Artículo no encontrado");
       }
