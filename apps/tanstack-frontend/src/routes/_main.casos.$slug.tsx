@@ -10,6 +10,10 @@ import {
 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "#/components/ui/alert";
 import { Badge } from "#/components/ui/badge";
+import {
+  LegalCaseDocument,
+  type LegalCaseQuery,
+} from "#/service/gql/generated/gql.node";
 import { createServerService } from "#/service/service.server";
 import { JURISDICTION_LABELS } from "#/shared/config/constants";
 import { formatLongDate } from "#/shared/lib/format-date";
@@ -18,7 +22,8 @@ const getLegalCase = createServerFn()
   .validator((input: { slug: string }) => input)
   .handler(async ({ data }) => {
     const { gql } = createServerService();
-    return gql.LegalCase(data);
+    const result = await gql.query(LegalCaseDocument, data).toPromise();
+    return result?.data;
   });
 
 export const Route = createFileRoute("/_main/casos/$slug")({
@@ -238,19 +243,21 @@ function LegalCaseDetailPage() {
         <section className="space-y-4 border-t pt-6">
           <h2 className="font-semibold text-lg">Artículos Relacionados</h2>
           <div className="divide-y">
-            {legalCase.articles.map((article) => (
-              <div
-                key={article.id}
-                className="py-3 transition-colors hover:bg-muted/30"
-              >
-                <h3 className="font-medium">{article.title}</h3>
-                {article.excerpt && (
-                  <p className="mt-1 line-clamp-2 text-muted-foreground">
-                    {article.excerpt}
-                  </p>
-                )}
-              </div>
-            ))}
+            {legalCase.articles.map(
+              (article: LegalCaseQuery["legalCase"]["articles"][number]) => (
+                <div
+                  key={article.id}
+                  className="py-3 transition-colors hover:bg-muted/30"
+                >
+                  <h3 className="font-medium">{article.title}</h3>
+                  {article.excerpt && (
+                    <p className="mt-1 line-clamp-2 text-muted-foreground">
+                      {article.excerpt}
+                    </p>
+                  )}
+                </div>
+              ),
+            )}
           </div>
         </section>
       )}

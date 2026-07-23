@@ -6,8 +6,6 @@
     "module": "ESNext",
     "paths": {
       "@/shared/components/*": ["./src/components/*"],
-      "@/service/gql/generated/gql.client": ["./src/service/gql/generated/gql"],
-      "@/service/gql/generated/gql.node": ["./src/service/gql/generated/gql"],
       "@/shared/providers/user-provider": ["./src/providers/user-provider"],
       "next/link": ["./src/components/ui/link"],
       "#/*": ["./src/*"],

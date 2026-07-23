@@ -1,20 +1,25 @@
-import { GraphQLClient } from "graphql-request";
-import { getSdk } from "#/service/gql/generated/gql";
+import { cacheExchange, fetchExchange, Client as Service } from "urql";
+import { dateExchange } from "./exchanges/date";
 
 type GqlServiceOptions = {
   cookieHeader?: string;
 };
 
-export function createGqlService(baseUrl: string, options?: GqlServiceOptions) {
-  const headers: Record<string, string> = {};
+export const createGqlService = (
+  baseUrl: string,
+  options?: GqlServiceOptions,
+) => {
+  const fetchOptions: RequestInit = {};
+
   if (options?.cookieHeader) {
-    headers.Cookie = options.cookieHeader;
+    fetchOptions.headers = {
+      Cookie: options.cookieHeader,
+    };
   }
 
-  const client = new GraphQLClient(`${baseUrl}/graphql`, {
-    credentials: "include",
-    headers,
+  return new Service({
+    url: `${baseUrl}/graphql`,
+    fetchOptions,
+    exchanges: [cacheExchange, dateExchange, fetchExchange],
   });
-
-  return getSdk(client);
-}
+};

@@ -5,6 +5,10 @@ import { EmptyState } from "#/components/empty-state";
 import { PaginationSection } from "#/components/pagination-controls";
 import { SearchInput } from "#/components/search-input";
 import { ArticleCard } from "#/modules/articles/components/ui/article-card";
+import {
+  RecentArticlesDocument,
+  type RecentArticlesQuery,
+} from "#/service/gql/generated/gql.node";
 import { createServerService } from "#/service/service.server";
 
 const searchSchema = z.object({
@@ -19,7 +23,8 @@ const getRecentArticles = createServerFn()
   )
   .handler(async ({ data }) => {
     const { gql } = createServerService();
-    return gql.RecentArticles(data);
+    const result = await gql.query(RecentArticlesDocument, data).toPromise();
+    return result?.data;
   });
 
 export const Route = createFileRoute("/_main/articulos")({
@@ -80,21 +85,23 @@ function ArticlesPage() {
       ) : (
         <>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {articles.map((article) => (
-              <ArticleCard
-                key={article.id}
-                id={article.id}
-                slug={article.slug}
-                title={article.title}
-                excerpt={article.excerpt}
-                publishedAt={article.publishedAt}
-                readingTimeMin={article.readingTimeMin}
-                views={article.views}
-                featuredImage={article.featuredImage}
-                categories={article.categories}
-                author={article.author}
-              />
-            ))}
+            {articles.map(
+              (article: RecentArticlesQuery["articles"]["items"][number]) => (
+                <ArticleCard
+                  key={article.id}
+                  id={article.id}
+                  slug={article.slug}
+                  title={article.title}
+                  excerpt={article.excerpt}
+                  publishedAt={article.publishedAt}
+                  readingTimeMin={article.readingTimeMin}
+                  views={article.views}
+                  featuredImage={article.featuredImage}
+                  categories={article.categories}
+                  author={article.author}
+                />
+              ),
+            )}
           </div>
           <PaginationSection totalItems={totalItems} />
         </>

@@ -3,7 +3,10 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Edit } from "lucide-react";
 import { toast } from "sonner";
 import { ArticleForm } from "#/modules/articles/components/forms/article-form";
-import { useArticleById, useUpdateArticle } from "#/service/hooks/articles";
+import {
+  useArticleByIdQuery,
+  useUpdateArticleMutation,
+} from "#/service/gql/generated/gql.client";
 
 export const Route = createFileRoute("/_main/admin/articulos/$id/editar")({
   component: EditArticlePage,
@@ -13,8 +16,10 @@ export default function EditArticlePage() {
   const { id: articleId } = Route.useParams();
   const navigate = useNavigate();
 
-  const { data, isLoading, error } = useArticleById({ id: articleId });
-  const updateArticle = useUpdateArticle();
+  const [{ data, fetching: isLoading, error }] = useArticleByIdQuery({
+    variables: { id: articleId },
+  });
+  const [, updateArticle] = useUpdateArticleMutation();
 
   if (error) {
     return (
@@ -40,7 +45,7 @@ export default function EditArticlePage() {
 
   const handleUpdateArticle = async (formData: CreateArticleInput) => {
     try {
-      await updateArticle.mutateAsync({
+      await updateArticle({
         id: articleId,
         input: {
           title: formData.title,

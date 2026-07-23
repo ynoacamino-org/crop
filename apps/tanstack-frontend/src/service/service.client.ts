@@ -1,16 +1,11 @@
 import { env } from "#/env";
 import { createGqlService } from "./gql/service";
-import { createAuthRest } from "./rest/auth";
-import { createHttpService } from "./rest/http";
-import { createMediaRest } from "./rest/media";
+import { RestService } from "./rest/service";
 
-const httpService = createHttpService(env.VITE_API_URL);
+const gqlService = createGqlService(env.VITE_API_URL);
+const restService = new RestService(env.VITE_API_URL);
 
 export const service = {
-  gql: createGqlService(env.VITE_API_URL),
-  http: httpService,
-  rest: {
-    auth: createAuthRest(httpService),
-    media: createMediaRest(httpService),
-  },
+  gql: gqlService,
+  rest: restService,
 };

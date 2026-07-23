@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { UsersList } from "#/modules/users/components/users-list";
+import { UsersDocument } from "#/service/gql/generated/gql.node";
 import { createServerService } from "#/service/service.server";
 
 const searchSchema = z.object({
@@ -16,7 +17,8 @@ const getUsers = createServerFn()
   )
   .handler(async ({ data }) => {
     const { gql } = createServerService();
-    return gql.users(data);
+    const result = await gql.query(UsersDocument, data).toPromise();
+    return result?.data;
   });
 
 export const Route = createFileRoute("/_main/admin/usuarios")({

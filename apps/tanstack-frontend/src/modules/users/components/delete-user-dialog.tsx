@@ -2,8 +2,8 @@ import { useRouter } from "@tanstack/react-router";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { useDeleteUser } from "#/service/hooks/users";
-import type { UsersQuery } from "@/service/gql/generated/gql";
+import { useDeleteUserMutation } from "#/service/gql/generated/gql.client";
+import type { UsersQuery } from "@/service/gql/generated/gql.client";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,13 +30,13 @@ export function DeleteUserDialog({
 }: DeleteUserDialogProps) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const deleteUser = useDeleteUser();
+  const [, deleteUser] = useDeleteUserMutation();
 
   const handleDelete = async (e: React.MouseEvent) => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      await deleteUser.mutateAsync({ id: user.id });
+      await deleteUser({ id: user.id });
       toast.success("Usuario eliminado correctamente");
       onOpenChange(false);
       router.invalidate();

@@ -1,5 +1,8 @@
 import { AlertCircle } from "lucide-react";
-import { useRecentLegalCases } from "#/service/hooks/legal-cases";
+import {
+  type RecentLegalCasesQuery,
+  useRecentLegalCasesQuery,
+} from "#/service/gql/generated/gql.client";
 import { LegalCaseItem } from "@/modules/legal-cases/components/ui/legal-case-item";
 import {
   Alert,
@@ -13,7 +16,9 @@ interface RecentCasesListProps {
 }
 
 export function RecentCasesList({ take = 8 }: RecentCasesListProps) {
-  const { data, isLoading, error } = useRecentLegalCases({ take, skip: 0 });
+  const [{ data, fetching: isLoading, error }] = useRecentLegalCasesQuery({
+    variables: { take, skip: 0 },
+  });
 
   if (isLoading) {
     return (
@@ -56,20 +61,22 @@ export function RecentCasesList({ take = 8 }: RecentCasesListProps) {
 
   return (
     <div className="divide-y">
-      {data.legalCases.items.map((legalCase) => (
-        <LegalCaseItem
-          key={legalCase.id}
-          id={legalCase.id}
-          slug={legalCase.slug}
-          caseNumber={legalCase.caseNumber}
-          caseName={legalCase.caseName}
-          summary={legalCase.summary}
-          jurisdiction={legalCase.jurisdiction}
-          caseType={legalCase.caseType}
-          caseDate={legalCase.caseDate}
-          court={legalCase.court}
-        />
-      ))}
+      {data.legalCases.items.map(
+        (legalCase: RecentLegalCasesQuery["legalCases"]["items"][number]) => (
+          <LegalCaseItem
+            key={legalCase.id}
+            id={legalCase.id}
+            slug={legalCase.slug}
+            caseNumber={legalCase.caseNumber}
+            caseName={legalCase.caseName}
+            summary={legalCase.summary}
+            jurisdiction={legalCase.jurisdiction}
+            caseType={legalCase.caseType}
+            caseDate={legalCase.caseDate}
+            court={legalCase.court}
+          />
+        ),
+      )}
     </div>
   );
 }

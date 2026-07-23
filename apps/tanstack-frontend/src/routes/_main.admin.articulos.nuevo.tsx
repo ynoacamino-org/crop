@@ -3,7 +3,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { FileText } from "lucide-react";
 import { toast } from "sonner";
 import { ArticleForm } from "#/modules/articles/components/forms/article-form";
-import { useCreateArticle } from "#/service/hooks/articles";
+import { useCreateArticleMutation } from "#/service/gql/generated/gql.client";
 
 export const Route = createFileRoute("/_main/admin/articulos/nuevo")({
   component: NewArticlePage,
@@ -11,11 +11,11 @@ export const Route = createFileRoute("/_main/admin/articulos/nuevo")({
 
 export default function NewArticlePage() {
   const navigate = useNavigate();
-  const createArticle = useCreateArticle();
+  const [, createArticle] = useCreateArticleMutation();
 
   const handleCreateArticle = async (data: CreateArticleInput) => {
     try {
-      await createArticle.mutateAsync({
+      await createArticle({
         input: {
           title: data.title,
           slug: data.slug,

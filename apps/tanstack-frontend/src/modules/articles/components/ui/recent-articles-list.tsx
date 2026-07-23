@@ -1,5 +1,8 @@
 import { AlertCircle } from "lucide-react";
-import { useRecentArticles } from "#/service/hooks/articles";
+import {
+  type RecentArticlesQuery,
+  useRecentArticlesQuery,
+} from "#/service/gql/generated/gql.client";
 import { ArticleCard } from "@/modules/articles/components/ui/article-card";
 import {
   Alert,
@@ -13,7 +16,9 @@ interface RecentArticlesListProps {
 }
 
 export function RecentArticlesList({ take = 8 }: RecentArticlesListProps) {
-  const { data, isLoading, error } = useRecentArticles({ take, skip: 0 });
+  const [{ data, fetching: isLoading, error }] = useRecentArticlesQuery({
+    variables: { take, skip: 0 },
+  });
 
   if (isLoading) {
     return (
@@ -56,21 +61,23 @@ export function RecentArticlesList({ take = 8 }: RecentArticlesListProps) {
 
   return (
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {data.articles.items.map((article) => (
-        <ArticleCard
-          key={article.id}
-          id={article.id}
-          title={article.title}
-          slug={article.slug}
-          excerpt={article.excerpt}
-          publishedAt={article.publishedAt}
-          readingTimeMin={article.readingTimeMin}
-          views={article.views}
-          author={article.author}
-          featuredImage={article.featuredImage}
-          categories={article.categories}
-        />
-      ))}
+      {data.articles.items.map(
+        (article: RecentArticlesQuery["articles"]["items"][number]) => (
+          <ArticleCard
+            key={article.id}
+            id={article.id}
+            title={article.title}
+            slug={article.slug}
+            excerpt={article.excerpt}
+            publishedAt={article.publishedAt}
+            readingTimeMin={article.readingTimeMin}
+            views={article.views}
+            author={article.author}
+            featuredImage={article.featuredImage}
+            categories={article.categories}
+          />
+        ),
+      )}
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import type { MeQuery } from "#/service/gql/generated/gql";
+import type { MeQuery } from "#/service/gql/generated/gql.client";
 
 type UserType = NonNullable<MeQuery["me"]>;
 

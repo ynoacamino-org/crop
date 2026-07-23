@@ -10,7 +10,9 @@ import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { createServerFn } from "@tanstack/react-start";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "#/providers/theme-provider";
+import { UrqlProvider } from "#/providers/urql-provider";
 import { UserProvider } from "#/providers/user-provider";
+import { MeDocument } from "#/service/gql/generated/gql.node";
 import { createServerService } from "#/service/service.server";
 import TanStackQueryDevtools from "@/integrations/tanstack-query/devtools";
 
@@ -23,8 +25,8 @@ interface MyRouterContext {
 const getMe = createServerFn().handler(async () => {
   try {
     const { gql } = createServerService();
-    const data = await gql.me();
-    return { user: data?.me || null };
+    const data = await gql.query(MeDocument, {}).toPromise();
+    return { user: data?.data?.me || null };
   } catch {
     return { user: null };
   }
@@ -85,7 +87,9 @@ function RootComponent() {
       disableTransitionOnChange
     >
       <UserProvider user={user}>
-        <Outlet />
+        <UrqlProvider>
+          <Outlet />
+        </UrqlProvider>
       </UserProvider>
     </ThemeProvider>
   );

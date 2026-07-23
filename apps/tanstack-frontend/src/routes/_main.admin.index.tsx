@@ -8,11 +8,13 @@ import {
   CardHeader,
   CardTitle,
 } from "#/components/ui/card";
+import { AdminStatsDocument } from "#/service/gql/generated/gql.node";
 import { createServerService } from "#/service/service.server";
 
 const getAdminStats = createServerFn().handler(async () => {
   const { gql } = createServerService();
-  const data = await gql.AdminStats();
+  const result = await gql.query(AdminStatsDocument, {}).toPromise();
+  const data = result?.data;
   return {
     usersCount: data?.users?.pageInfo.totalCount,
     articlesCount: data?.articles?.pageInfo.totalCount,

@@ -2,8 +2,8 @@ import { useRouter } from "@tanstack/react-router";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { useDeleteArticle } from "#/service/hooks/articles";
-import type { AdminArticlesQuery } from "@/service/gql/generated/gql";
+import { useDeleteArticleMutation } from "#/service/gql/generated/gql.client";
+import type { AdminArticlesQuery } from "@/service/gql/generated/gql.client";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -29,12 +29,12 @@ export function DeleteArticleDialog({
 }: DeleteArticleDialogProps) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const deleteArticle = useDeleteArticle();
+  const [, deleteArticle] = useDeleteArticleMutation();
 
   const handleDelete = async () => {
     setIsLoading(true);
     try {
-      await deleteArticle.mutateAsync({ id: article.id });
+      await deleteArticle({ id: article.id });
       toast.success("Artículo eliminado correctamente");
       onOpenChange(false);
       router.invalidate();

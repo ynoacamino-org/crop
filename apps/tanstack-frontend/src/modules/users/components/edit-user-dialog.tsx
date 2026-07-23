@@ -5,8 +5,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-import { useUpdateUser } from "#/service/hooks/users";
-import { Role, type UsersQuery } from "@/service/gql/generated/gql";
+import { useUpdateUserMutation } from "#/service/gql/generated/gql.client";
+import { Role, type UsersQuery } from "@/service/gql/generated/gql.client";
 import { Button } from "@/shared/components/ui/button";
 import {
   Dialog,
@@ -41,7 +41,7 @@ interface EditUserDialogProps {
 }
 
 const updateUserSchema = z.object({
-  role: z.nativeEnum(Role),
+  role: z.enum(Role),
 });
 
 type UpdateUserFormData = z.infer<typeof updateUserSchema>;
@@ -59,7 +59,7 @@ export function EditUserDialog({
 }: EditUserDialogProps) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const updateUser = useUpdateUser();
+  const [, updateUser] = useUpdateUserMutation();
 
   const form = useForm<UpdateUserFormData>({
     resolver: zodResolver(updateUserSchema),
@@ -71,7 +71,7 @@ export function EditUserDialog({
   const onSubmit = async (data: UpdateUserFormData) => {
     setIsLoading(true);
     try {
-      await updateUser.mutateAsync({
+      await updateUser({
         id: user.id,
         input: {
           role: data.role,
@@ -91,7 +91,7 @@ export function EditUserDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-125">
         <DialogHeader>
           <DialogTitle>Editar Rol de Usuario</DialogTitle>
           <DialogDescription>

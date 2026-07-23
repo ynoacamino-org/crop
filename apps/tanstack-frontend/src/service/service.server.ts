@@ -1,9 +1,7 @@
 import { getCookies } from "@tanstack/react-start/server";
 import { env } from "#/env";
 import { createGqlService } from "./gql/service";
-import { createAuthRest } from "./rest/auth";
-import { createHttpService } from "./rest/http";
-import { createMediaRest } from "./rest/media";
+import { RestService } from "./rest/service";
 
 export function createServerService() {
   const cookies = getCookies();
@@ -11,14 +9,11 @@ export function createServerService() {
     .map(([k, v]) => `${k}=${v}`)
     .join("; ");
 
-  const httpService = createHttpService(env.SERVER_URL, { cookieHeader });
+  const gqlService = createGqlService(env.SERVER_URL, { cookieHeader });
+  const restService = new RestService(env.SERVER_URL, { cookieHeader });
 
   return {
-    gql: createGqlService(env.SERVER_URL, { cookieHeader }),
-    http: httpService,
-    rest: {
-      auth: createAuthRest(httpService),
-      media: createMediaRest(httpService),
-    },
+    gql: gqlService,
+    rest: restService,
   };
 }

@@ -13,6 +13,10 @@ import { Alert, AlertDescription, AlertTitle } from "#/components/ui/alert";
 import { Badge } from "#/components/ui/badge";
 import { Separator } from "#/components/ui/separator";
 import { RelatedLegalCaseCard } from "#/modules/legal-cases/components/ui/related-legal-case-card";
+import {
+  ArticleDocument,
+  type ArticleQuery,
+} from "#/service/gql/generated/gql.node";
 import { createServerService } from "#/service/service.server";
 import { formatLongDate } from "#/shared/lib/format-date";
 import { lexicalToHtml } from "#/shared/lib/lexical-to-html";
@@ -21,7 +25,8 @@ const getArticle = createServerFn()
   .validator((input: { slug: string }) => input)
   .handler(async ({ data }) => {
     const { gql } = createServerService();
-    return gql.Article(data);
+    const result = await gql.query(ArticleDocument, data).toPromise();
+    return result?.data;
   });
 
 export const Route = createFileRoute("/_main/articulos/$slug")({
@@ -62,11 +67,13 @@ function ArticleDetailPage() {
       <header className="space-y-6">
         {/* Categories */}
         <div className="flex flex-wrap items-center gap-2">
-          {article.categories.map((category) => (
-            <Badge key={category.id} variant="secondary">
-              {category.name}
-            </Badge>
-          ))}
+          {article.categories.map(
+            (category: ArticleQuery["article"]["categories"][number]) => (
+              <Badge key={category.id} variant="secondary">
+                {category.name}
+              </Badge>
+            ),
+          )}
         </div>
 
         {/* Title */}
@@ -136,11 +143,13 @@ function ArticleDetailPage() {
           <Separator />
           <div className="flex flex-wrap items-center gap-2">
             <Tag className="h-4 w-4 text-muted-foreground" />
-            {article.tags.map((tag) => (
-              <Badge key={tag.id} variant="outline">
-                {tag.name}
-              </Badge>
-            ))}
+            {article.tags.map(
+              (tag: ArticleQuery["article"]["tags"][number]) => (
+                <Badge key={tag.id} variant="outline">
+                  {tag.name}
+                </Badge>
+              ),
+            )}
           </div>
         </div>
       )}
@@ -158,16 +167,18 @@ function ArticleDetailPage() {
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
-              {article.legalCases.map((legalCase) => (
-                <RelatedLegalCaseCard
-                  key={legalCase.id}
-                  slug={legalCase.slug}
-                  caseName={legalCase.caseName}
-                  caseNumber={legalCase.caseNumber}
-                  jurisdiction={legalCase.jurisdiction}
-                  caseType={legalCase.caseType}
-                />
-              ))}
+              {article.legalCases.map(
+                (legalCase: ArticleQuery["article"]["legalCases"][number]) => (
+                  <RelatedLegalCaseCard
+                    key={legalCase.id}
+                    slug={legalCase.slug}
+                    caseName={legalCase.caseName}
+                    caseNumber={legalCase.caseNumber}
+                    jurisdiction={legalCase.jurisdiction}
+                    caseType={legalCase.caseType}
+                  />
+                ),
+              )}
             </div>
           </section>
         </>

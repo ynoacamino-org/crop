@@ -4,6 +4,10 @@ import { z } from "zod";
 import { EmptyState } from "#/components/empty-state";
 import { PaginationSection } from "#/components/pagination-controls";
 import { LegalCaseCard } from "#/modules/legal-cases/components/ui/legal-case-card";
+import {
+  RecentLegalCasesDocument,
+  type RecentLegalCasesQuery,
+} from "#/service/gql/generated/gql.node";
 import { createServerService } from "#/service/service.server";
 
 const searchSchema = z.object({
@@ -15,7 +19,8 @@ const getRecentLegalCases = createServerFn()
   .validator((input: { take?: number; skip?: number }) => input)
   .handler(async ({ data }) => {
     const { gql } = createServerService();
-    return gql.RecentLegalCases(data);
+    const result = await gql.query(RecentLegalCasesDocument, data).toPromise();
+    return result?.data;
   });
 
 export const Route = createFileRoute("/_main/casos")({
@@ -54,22 +59,26 @@ function LegalCasesPage() {
       ) : (
         <>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {legalCases.map((legalCase) => (
-              <LegalCaseCard
-                key={legalCase.id}
-                id={legalCase.id}
-                slug={legalCase.slug}
-                caseNumber={legalCase.caseNumber}
-                caseName={legalCase.caseName}
-                summary={legalCase.summary}
-                jurisdiction={legalCase.jurisdiction}
-                caseType={legalCase.caseType}
-                caseDate={legalCase.caseDate}
-                plaintiff={legalCase.plaintiff}
-                defendant={legalCase.defendant}
-                court={legalCase.court}
-              />
-            ))}
+            {legalCases.map(
+              (
+                legalCase: RecentLegalCasesQuery["legalCases"]["items"][number],
+              ) => (
+                <LegalCaseCard
+                  key={legalCase.id}
+                  id={legalCase.id}
+                  slug={legalCase.slug}
+                  caseNumber={legalCase.caseNumber}
+                  caseName={legalCase.caseName}
+                  summary={legalCase.summary}
+                  jurisdiction={legalCase.jurisdiction}
+                  caseType={legalCase.caseType}
+                  caseDate={legalCase.caseDate}
+                  plaintiff={legalCase.plaintiff}
+                  defendant={legalCase.defendant}
+                  court={legalCase.court}
+                />
+              ),
+            )}
           </div>
           <PaginationSection totalItems={totalItems} />
         </>

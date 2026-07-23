@@ -2,11 +2,11 @@ import { useRouter } from "@tanstack/react-router";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { useUpdateArticleStatus } from "#/service/hooks/articles";
+import { useUpdateArticleStatusMutation } from "#/service/gql/generated/gql.client";
 import type {
   AdminArticlesQuery,
   ArticleStatus,
-} from "@/service/gql/generated/gql";
+} from "@/service/gql/generated/gql.client";
 import { Button } from "@/shared/components/ui/button";
 import {
   Dialog,
@@ -46,12 +46,12 @@ export function UpdateArticleStatusDialog({
   const [isLoading, setIsLoading] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState<string>(article.status);
   const router = useRouter();
-  const updateArticleStatus = useUpdateArticleStatus();
+  const [, updateArticleStatus] = useUpdateArticleStatusMutation();
 
   const handleUpdate = async () => {
     setIsLoading(true);
     try {
-      await updateArticleStatus.mutateAsync({
+      await updateArticleStatus({
         id: article.id,
         status: selectedStatus as ArticleStatus,
       });
