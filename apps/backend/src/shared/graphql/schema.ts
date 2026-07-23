@@ -1,0 +1,22 @@
+import { builder } from "@/shared/graphql/builder";
+import "@/modules/media/graphql";
+import "@/modules/business/user/model";
+import "@/modules/business/user/query";
+import "@/modules/business/user/mutation";
+import "@/modules/business/court/model";
+import "@/modules/business/court/query";
+import "@/modules/business/case-type/model";
+import "@/modules/business/case-type/inputs";
+import "@/modules/business/case-type/query";
+import "@/modules/business/case-type/mutation";
+import "@/modules/business/legal-case/model";
+import "@/modules/business/legal-case/inputs";
+import "@/modules/business/legal-case/query";
+import "@/modules/business/legal-case/mutation";
+import "@/modules/business/article/model";
+import "@/modules/business/article/inputs";
+import "@/modules/business/article/query";
+import "@/modules/business/article/mutation";
+import "@/shared/pagination/model";
+
+export const schema = builder.toSchema();

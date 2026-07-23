@@ -23,5 +23,5 @@
     "types": ["./worker-configuration.d.ts", "bun"]
   },
   "include": ["**/*.ts"],
-  "exclude": ["dist", "scripts"]
+  "exclude": ["dist"]
 }

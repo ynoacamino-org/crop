@@ -10,10 +10,4 @@ rpc_bind_addr = "[::]:3901"
 s3_api_bind_addr = "[::]:3900"
 
 [s3_api]
-s3_region = "garage"
-root_domain = ".s3.garage.localhost"
-root_bucket = "crop"
-
-[admin]
-api_bind_addr = "[::]:3903"
-admin_token = "dev-admin-token-change-me"
+s3_region = "us-east-1"

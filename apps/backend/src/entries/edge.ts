@@ -1,9 +1,9 @@
 import { Hono } from "hono";
-import { authRouter } from "@/infrastructure/http/routes/auth";
-import { devRouter } from "@/infrastructure/http/routes/dev";
-import { graphqlRouter } from "@/infrastructure/http/routes/graphql";
-import { mediaRouter } from "@/infrastructure/http/routes/media";
-import { corsConfig } from "@/infrastructure/lib/cors";
+import { corsConfig } from "@/core/cors";
+import { authRouter } from "@/modules/auth/http/routes";
+import { mediaRouter } from "@/modules/media/http/routes";
+import { devRouter } from "@/shared/http/routes/dev";
+import { graphqlRouter } from "@/shared/http/routes/graphql";
 
 export const app = new Hono<{ Bindings: Cloudflare.Env }>();
 

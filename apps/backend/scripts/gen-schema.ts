@@ -1,7 +1,7 @@
 import { writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { printSchema } from "graphql";
-import { schema } from "../src/infrastructure/graphql/schema";
+import { schema } from "../src/shared/graphql/schema";
 
 const schemaAsString = printSchema(schema);
 const outputPath = join(__dirname, "../schema.graphql");

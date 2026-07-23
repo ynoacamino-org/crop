@@ -1,60 +1,68 @@
 services:
-  kong:
-    image: kong:3.9
-    container_name: crop-kong-dev
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+  traefik:
+    image: "traefik:v3.4"
+    container_name: crop-traefik-dev
     ports:
       - "8000:8000"
-    environment:
-      KONG_DATABASE: "off"
-      KONG_DECLARATIVE_CONFIG: /kong/kong.yml
-      KONG_PROXY_LISTEN: 0.0.0.0:8000
-      KONG_ADMIN_LISTEN: 0.0.0.0:8001
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
-      - ./kong/kong.dev.yml:/kong/kong.yml
+      - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./traefik/traefik-dynamic.yml:/etc/traefik/traefik-dynamic.yml:ro
+    command:
+      - "--configFile=/etc/traefik/traefik.yml"
 
-  database:
-    image: postgres:18
-    container_name: crop-database-dev
-    env_file:
-      - ./database/.env.dev
+  libsql:
+    image: ghcr.io/tursodatabase/libsql-server:latest
+    container_name: crop-libsql-dev
+    environment:
+      SQLD_NODE_PRIMARY_URL: "file:primary.db"
+    volumes:
+      - libsql_data:/var/lib/sqld
     ports:
-      - "5432:5432"
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
 
   garage:
-    image: garage:latest
-    container_name: crop-garage
+    image: dxflrs/garage:v2.3.0
+    container_name: crop-garage-dev
     restart: unless-stopped
     environment:
       GARAGE_RPC_LISTEN_ADDR: "[::]:3901"
-      GARAGE_RPC_PUBLIC_ADDR: "crop-garage:3901"
-      GARAGE_RPC_SECRET: "${GARAGE_RPC_SECRET:-dev-rpc-secret-change-me}"
+      GARAGE_RPC_PUBLIC_ADDR: "crop-garage-dev:3901"
+      GARAGE_RPC_SECRET: "${GARAGE_RPC_SECRET:-d9316abbd839709669eeca2b449aba2a732949819ea933bab2a1514e9fe00a56}"
       GARAGE_S3_API_LISTEN_ADDR: "[::]:3900"
       GARAGE_S3_BUCKET_DEFAULT_ALLOW: "true"
       GARAGE_DEFAULT_ACCESS_KEY: "GKc7b6103f2655e2b34cd0e659cada57c7"
       GARAGE_DEFAULT_SECRET_KEY: "c5b3b89344ba4f7990045374e4fc7115df9f74e4162e05e760b16e6ca819cd91"
       GARAGE_DEFAULT_BUCKET: "crop"
     volumes:
+      - garage_data:/var/lib/garage
       - ./storage/garage.toml:/etc/garage.toml:ro
     ports:
       - "3900:3900"
       - "3901:3901"
 
-  storage-init:
-    image: minio/mc:latest
-    container_name: crop-storage-init-dev
-    env_file:
-      - ./storage/.env.dev
+  redis:
+    image: redis:7-alpine
+    container_name: crop-redis-dev
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
     volumes:
-      - ./storage:/data
-    depends_on:
-      storage:
-        condition: service_healthy
-    entrypoint: >
-      sh -c "
-      mc alias set minio http://storage:9000 $${MINIO_ROOT_USER} $${MINIO_ROOT_PASSWORD};
-      mc mb minio/crop-media;
-      mc anonymous set-json /data/policy.json minio/crop-media;
-      exit 0;
-      "
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  libsql_data:
+  garage_data:
+  redis_data:

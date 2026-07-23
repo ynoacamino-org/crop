@@ -2,7 +2,16 @@
   "$schema": "https://biomejs.dev/schemas/2.4.5/schema.json",
   "root": false,
   "files": {
-    "includes": ["**", "!node_modules", "!prisma", "!dist", "!build", "!public", "!worker-configuration.d.ts"]
+    "includes": [
+      "**",
+      "!node_modules",
+      "!prisma",
+      "!dist",
+      "!build",
+      "!public",
+      "!worker-configuration.d.ts",
+      "!.output"
+    ]
   },
   "linter": {
     "domains": {
