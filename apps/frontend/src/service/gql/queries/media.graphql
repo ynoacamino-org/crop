@@ -1,20 +1,27 @@
-query Medias($take: Int, $skip: Int, $search: String) {
-  medias(take: $take, skip: $skip, search: $search) {
-    id
-    objectKey
-    url
-    alt
-    type
-    size
-    mimeType
-    filename
-    createdAt
-    updatedAt
-    uploader {
+query Medias($take: Int, $skip: Int, $filter: MediaFilter) {
+  medias(take: $take, skip: $skip, filter: $filter) {
+    items {
       id
-      name
-      email
-      image
+      objectKey
+      url
+      alt
+      type
+      size
+      mimeType
+      filename
+      createdAt
+      updatedAt
+      uploader {
+        id
+        name
+        email
+        image
+      }
+    }
+    pageInfo {
+      totalCount
+      hasNextPage
+      hasPreviousPage
     }
   }
 }

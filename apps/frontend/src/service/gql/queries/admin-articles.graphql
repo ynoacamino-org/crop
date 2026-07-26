@@ -1,6 +1,6 @@
 # Query for admin to get all articles
-query AdminArticles($take: Int, $skip: Int, $search: String) {
-  articles(take: $take, skip: $skip, search: $search) {
+query AdminArticles($take: Int, $skip: Int, $filter: ArticleFilter) {
+  articles(take: $take, skip: $skip, filter: $filter) {
     items {
       id
       title

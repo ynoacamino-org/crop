@@ -13,7 +13,11 @@ const searchSchema = z.object({
 
 const getAdminArticles = createServerFn()
   .validator(
-    (input: { take?: number; skip?: number; search?: string }) => input,
+    (input: {
+      take?: number;
+      skip?: number;
+      filter?: { title?: { contains: string } };
+    }) => input,
   )
   .handler(async ({ data }) => {
     const { gql } = createServerService();
@@ -29,8 +33,9 @@ export const Route = createFileRoute("/_main/admin/articulos")({
     search,
   }),
   loader: async ({ deps: { limit, offset, search } }) => {
+    const filter = search ? { title: { contains: search } } : undefined;
     const data = await getAdminArticles({
-      data: { take: limit, skip: offset, search },
+      data: { take: limit, skip: offset, filter },
     });
     return {
       articlesData: data?.articles,

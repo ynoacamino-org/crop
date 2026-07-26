@@ -1,6 +1,6 @@
 # Query to get a list of users (admin only)
-query users($take: Int, $skip: Int, $search: String) {
-  users(take: $take, skip: $skip, search: $search) {
+query users($take: Int, $skip: Int, $filter: UserFilter) {
+  users(take: $take, skip: $skip, filter: $filter) {
     items {
       id
       email

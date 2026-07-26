@@ -13,7 +13,11 @@ const searchSchema = z.object({
 
 const getUsers = createServerFn()
   .validator(
-    (input: { take?: number; skip?: number; search?: string }) => input,
+    (input: {
+      take?: number;
+      skip?: number;
+      filter?: { name?: { contains: string }; email?: { contains: string } };
+    }) => input,
   )
   .handler(async ({ data }) => {
     const { gql } = createServerService();
@@ -29,8 +33,9 @@ export const Route = createFileRoute("/_main/admin/usuarios")({
     search,
   }),
   loader: async ({ deps: { limit, offset, search } }) => {
+    const filter = search ? { name: { contains: search } } : undefined;
     const data = await getUsers({
-      data: { take: limit, skip: offset, search },
+      data: { take: limit, skip: offset, filter },
     });
     return {
       usersData: data?.users,
