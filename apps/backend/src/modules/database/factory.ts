@@ -1,10 +1,10 @@
-import type { EnvPort } from "@/modules/config/ports/config";
+import type { EnvConfig } from "@/modules/config/env";
 import { D1DbPort } from "@/modules/database/adapters/d1";
 import { LibsqlDbPort } from "@/modules/database/adapters/libsql";
 import type { DbPort } from "@/modules/database/ports/db";
 
 export interface DbOptions {
-  env: EnvPort;
+  config: EnvConfig;
   cf?: Cloudflare.Env;
 }
 
@@ -13,8 +13,8 @@ export function createDb(opts: DbOptions): DbPort {
     return new D1DbPort(opts.cf.DB as D1Database);
   }
 
-  if (LibsqlDbPort.isConfigured(opts.env)) {
-    return new LibsqlDbPort(opts.env);
+  if (LibsqlDbPort.isConfigured(opts.config)) {
+    return new LibsqlDbPort(opts.config);
   }
 
   throw new Error(

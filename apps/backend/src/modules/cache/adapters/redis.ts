@@ -1,20 +1,19 @@
 import { Redis } from "@upstash/redis";
 import type { CachePort } from "@/modules/cache/ports/cache";
-import type { EnvPort } from "@/modules/config/ports/config";
+import type { EnvConfig } from "@/modules/config/env";
 
 export class UpstashCache implements CachePort {
   private readonly client: Redis;
 
-  static isConfigured(env: EnvPort): boolean {
-    return !!(
-      env.get("UPSTASH_REDIS_REST_URL") && env.get("UPSTASH_REDIS_REST_TOKEN")
-    );
+  static isConfigured(config: EnvConfig): boolean {
+    return !!(config.redis.url && config.redis.token);
   }
 
-  constructor(env: EnvPort) {
-    const url = env.get("UPSTASH_REDIS_REST_URL") ?? "";
-    const token = env.get("UPSTASH_REDIS_REST_TOKEN") ?? "";
-    this.client = new Redis({ url, token });
+  constructor(config: EnvConfig) {
+    this.client = new Redis({
+      url: config.redis.url ?? "",
+      token: config.redis.token ?? "",
+    });
   }
 
   async get(key: string): Promise<string | null> {

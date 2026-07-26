@@ -1,10 +1,10 @@
-import type { EnvPort } from "@/modules/config/ports/config";
+import type { EnvConfig } from "@/modules/config/env";
 import { R2ObjectPort } from "@/modules/object-storage/adapters/r2";
 import { S3ObjectPort } from "@/modules/object-storage/adapters/s3";
 import type { ObjectPort } from "@/modules/object-storage/ports/storage";
 
 export interface ObjectOptions {
-  env: EnvPort;
+  config: EnvConfig;
   cf?: Cloudflare.Env;
 }
 
@@ -13,8 +13,8 @@ export function createObject(opts: ObjectOptions): ObjectPort {
     return new R2ObjectPort(opts.cf.MY_BUCKET as R2Bucket);
   }
 
-  if (S3ObjectPort.isConfigured(opts.env)) {
-    return new S3ObjectPort(opts.env);
+  if (S3ObjectPort.isConfigured(opts.config)) {
+    return new S3ObjectPort(opts.config);
   }
 
   throw new Error(

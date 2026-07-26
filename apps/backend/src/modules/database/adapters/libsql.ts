@@ -1,6 +1,6 @@
 import { drizzle } from "drizzle-orm/libsql";
 import { relations } from "@/domain/db/schema";
-import type { EnvPort } from "@/modules/config/ports/config";
+import type { EnvConfig } from "@/modules/config/env";
 import type { DbPort, LibsqlDb } from "@/modules/database/ports/db";
 
 interface MaybeCloseable {
@@ -10,12 +10,12 @@ interface MaybeCloseable {
 export class LibsqlDbPort implements DbPort<LibsqlDb> {
   readonly client: LibsqlDb;
 
-  static isConfigured(env: EnvPort): boolean {
-    return !!env.get("DATABASE_URL");
+  static isConfigured(config: EnvConfig): boolean {
+    return !!config.database.url;
   }
 
-  constructor(env: EnvPort) {
-    const url = env.get("DATABASE_URL");
+  constructor(config: EnvConfig) {
+    const url = config.database.url;
     if (!url) {
       throw new Error("[db] DATABASE_URL no configurado para LibsqlDbPort.");
     }

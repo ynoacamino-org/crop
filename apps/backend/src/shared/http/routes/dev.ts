@@ -22,7 +22,7 @@ export function devRouter(): Hono<{ Bindings: Cloudflare.Env }> {
   router.post("/seed", async (c) => {
     const rt = runtime.create({ cf: c.env });
 
-    const expected = rt.env.get("DEV_SEED_TOKEN");
+    const expected = rt.config.dev.seedToken;
     if (!expected) {
       return c.json({ error: "DEV_SEED_TOKEN not set" }, 500);
     }

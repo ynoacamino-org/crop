@@ -1,6 +1,6 @@
 import { createId } from "@paralleldrive/cuid2";
 import { AwsClient } from "aws4fetch";
-import type { EnvPort } from "@/modules/config/ports/config";
+import type { EnvConfig } from "@/modules/config/env";
 import type {
   ObjectPort,
   ObjectPortPutOptions,
@@ -15,28 +15,25 @@ export class S3ObjectPort implements ObjectPort {
   private forcePathStyle: boolean;
   private readonly ids: () => string;
 
-  static isConfigured(env: EnvPort): boolean {
-    return !!(env.get("S3_ACCESS_KEY_ID") && env.get("S3_SECRET_ACCESS_KEY"));
+  static isConfigured(config: EnvConfig): boolean {
+    return !!(config.s3.accessKeyId && config.s3.secretAccessKey);
   }
 
-  constructor(env: EnvPort, ids: () => string = () => createId()) {
+  constructor(config: EnvConfig, ids: () => string = () => createId()) {
     this.ids = ids;
-    const accessKeyId = env.get("S3_ACCESS_KEY_ID") ?? "";
-    const secretAccessKey = env.get("S3_SECRET_ACCESS_KEY") ?? "";
-    const region = env.get("S3_REGION") ?? "us-east-1";
 
     this.client = new AwsClient({
-      accessKeyId,
-      secretAccessKey,
+      accessKeyId: config.s3.accessKeyId,
+      secretAccessKey: config.s3.secretAccessKey,
       service: "s3",
-      region,
+      region: config.s3.region,
       retries: 3,
     });
-    this.bucket = env.get("S3_BUCKET_NAME") ?? "crop-media";
-    this.region = region;
-    this.endpoint = env.get("S3_ENDPOINT") ?? "";
-    this.publicUrl = env.get("S3_PUBLIC_URL") ?? "";
-    this.forcePathStyle = env.get("S3_FORCE_PATH_STYLE") === "true";
+    this.bucket = config.s3.bucket;
+    this.region = config.s3.region;
+    this.endpoint = config.s3.endpoint;
+    this.publicUrl = config.s3.publicUrl;
+    this.forcePathStyle = config.s3.forcePathStyle;
   }
 
   private getBaseUrl(): string {
