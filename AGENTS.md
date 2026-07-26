@@ -14,8 +14,7 @@ Legal/court management system (articles, legal cases, courts) with GraphQL API.
 | App | Path | Framework | Dev command |
 |-----|------|-----------|-------------|
 | Backend | `apps/backend` | Hono + GraphQL Yoga + Pothos | `bun run dev` (wrangler, port 7000) |
-| Next.js | `apps/next` | Next.js 16 + React 19 | `bun run dev` (port 3000) |
-| TanStack | `apps/frontend` | TanStack Start (Vite 8 + Nitro) | `bun run dev` (port 3000) |
+| Frontend | `apps/frontend` | TanStack Start (Vite 8 + Nitro) | `bun run dev` (port 3000) |
 
 ### Shared packages
 - `@repo/schemas` — Zod validation schemas (`packages/schemas/`)
@@ -62,25 +61,18 @@ bun run db:migrate:node         # Node-mode migration script
 
 **Auth scopes:** `public`, `authenticated`, `collaborator`, `admin` (Pothos ScopeAuthPlugin)
 
-## Frontend Apps
+## Frontend (`apps/frontend`)
 
-### Next.js (`apps/next`)
-- App Router, URQL for GraphQL, React Hook Form, Lexical editor
-- Service layer: `src/service/service.client.ts` (URQL hooks) / `src/service.service.server.ts` (direct fetch)
-- GraphQL queries: `src/service/gql/queries/`, mutations: `src/service/gql/mutations/`
-
-### TanStack Frontend (`apps/frontend`)
 - TanStack Router (file-based routes in `src/routes/`), TanStack Query, TanStack Form
-- GraphQL client: `graphql-request` + generated SDK (`src/lib/graphql-client.ts`)
-- REST client: Ky (`src/lib/http-client.ts`)
-- Env validation: T3 Env (`src/env.ts`)
+- GraphQL client: URQL + generated documents (`src/services/gql/generated/`)
+- REST client: Ky (`src/services/rest/`)
+- Env validation: T3 Env (`src/env/`)
 - Route generation: `bun run generate-routes` (tsr generate)
-- Codegen: `bun run codegen` (uses `codegen.ts`, generates `src/service/gql/generated/gql.ts`)
+- Codegen: `bun run codegen` (uses `codegen.ts`, generates `src/services/gql/generated/gql.client.ts` + `gql.node.ts`)
 
 **Codegen flow:**
 1. Backend: `bun run gen-schema` → `schema.graphql`
-2. TanStack: `bun run codegen` → typed SDK from `schema.graphql`
-3. Next.js: backend `bun run codegen` → URQL typed documents
+2. Frontend: `bun run codegen` → typed documents from `schema.graphql`
 
 ## Infrastructure (Docker Compose)
 
@@ -92,8 +84,8 @@ Kong routes: `/` → frontend, `/api` → backend, `/crop-media` → storage
 
 ## Critical Gotchas
 
-1. **NOT Prisma/PostgreSQL** — The old AGENTS.md is wrong. ORM is **Drizzle**, DB is **SQLite/libSQL**
-2. **Two frontends exist** — `apps/next` (legacy) and `apps/frontend` (active migration target). See `PLAN-DE-MIGRACION.md`
+1. **NOT Prisma/PostgreSQL** — ORM is **Drizzle**, DB is **SQLite/libSQL**
+2. **Single frontend** — `apps/frontend` (TanStack Start). There is no `apps/next`
 3. **Storage is Garage** (S3-compatible), not MinIO
 4. **Backend has two runtimes** — `wrangler dev` (edge/Workers) for production, `bun run dev:node` for local Node
 5. **GraphQL schema is code-first** — Pothos builder in `src/infrastructure/graphql/builder.ts`, not schema-first
@@ -115,7 +107,7 @@ Kong routes: `/` → frontend, `/api` → backend, `/crop-media` → storage
 bun install
 bun run lint                    # Biome across all packages
 bun run typecheck               # tsgo --noEmit across all packages
-bun run build                   # Build all apps (wrangler + next + vite/nitro)
+bun run build                   # Build all apps (wrangler + vite/nitro)
 
 # Backend
 cd apps/backend
@@ -126,11 +118,7 @@ bun run build:node              # Bun bundle build
 bun run codegen                 # Schema export + codegen
 bun run db:migrate:local        # Drizzle migrations (local)
 
-# Next.js
-cd apps/next
-bun run dev                     # Next.js dev
-
-# TanStack
+# Frontend
 cd apps/frontend
 bun run dev                     # Vite dev
 bun run generate-routes         # Regenerate route tree

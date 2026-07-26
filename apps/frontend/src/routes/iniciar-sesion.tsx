@@ -16,8 +16,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { LoginForm } from "@/modules/auth/components/forms/login-form";
-import { signIn } from "@/modules/auth/lib/auth-client";
+import { LoginForm, signIn } from "@/modules/auth";
 
 const searchSchema = z.object({
   redirect: z.string().optional(),

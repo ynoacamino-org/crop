@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { UsersList } from "@/modules/users/components/users-list";
-import { UsersDocument } from "@/service/gql/generated/gql.node";
-import { createServerService } from "@/service/service.server";
+import { UsersList } from "@/modules/users";
+import { UsersDocument } from "@/services/gql/generated/gql.node";
+import { createServerService } from "@/services/service.server";
 
 const searchSchema = z.object({
   limit: z.number().optional().catch(12),

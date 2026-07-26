@@ -1,5 +1,3 @@
-"use client";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { CreateArticleInput } from "@repo/schemas";
 import { createArticleSchema } from "@repo/schemas";

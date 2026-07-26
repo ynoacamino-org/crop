@@ -5,7 +5,7 @@ import { LegalCaseItem } from "@/modules/legal-cases/components/ui/legal-case-it
 import {
   type RecentLegalCasesQuery,
   useRecentLegalCasesQuery,
-} from "@/service/gql/generated/gql.client";
+} from "@/services/gql/generated/gql.client";
 
 interface RecentCasesListProps {
   take?: number;

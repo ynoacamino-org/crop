@@ -1,9 +1,9 @@
-import type { SignUpPayload } from "@repo/schemas";
+import type { SignInPayload } from "@repo/schemas";
 import { Lock, Mail } from "lucide-react";
 import type { FieldType } from "@/shared/types/form/field";
 import { SUPPORTED_FIELDS } from "@/shared/types/form/supported-fields";
 
-export const loginFormStruct: FieldType<keyof SignUpPayload>[] = [
+export const loginFormStruct: FieldType<keyof SignInPayload>[] = [
   {
     name: "email",
     label: "Correo electrónico",

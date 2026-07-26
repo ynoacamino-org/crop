@@ -1,9 +1,9 @@
-import { Http } from "@/service/rest/http";
+import { Http } from "@/services/rest/http";
 import type {
   MediaUploadResponse,
   UploadMediaPayload,
-} from "@/service/rest/models/media";
-import type { HttpOptions } from "@/service/rest/types/http";
+} from "@/services/rest/models/media";
+import type { HttpOptions } from "@/services/rest/types/http";
 
 class MediaModule {
   private http: Http;

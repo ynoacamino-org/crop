@@ -1,5 +1,3 @@
-"use client";
-
 import { Trash2 as RemoveIcon } from "lucide-react";
 import {
   createContext,

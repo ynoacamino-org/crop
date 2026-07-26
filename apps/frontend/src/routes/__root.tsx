@@ -6,15 +6,13 @@ import {
   Outlet,
   Scripts,
 } from "@tanstack/react-router";
-import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { createServerFn } from "@tanstack/react-start";
 import { Toaster } from "sonner";
-import TanStackQueryDevtools from "@/integrations/tanstack-query/devtools";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { UrqlProvider } from "@/providers/urql-provider";
 import { UserProvider } from "@/providers/user-provider";
-import { MeDocument } from "@/service/gql/generated/gql.node";
-import { createServerService } from "@/service/service.server";
+import { MeDocument } from "@/services/gql/generated/gql.node";
+import { createServerService } from "@/services/service.server";
 
 import appCss from "@/styles.css?url";
 
@@ -105,13 +103,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           config={{
             position: "bottom-right",
           }}
-          plugins={[
-            {
-              name: "Tanstack Router",
-              render: <TanStackRouterDevtoolsPanel />,
-            },
-            TanStackQueryDevtools,
-          ]}
         />
         <Scripts />
       </body>

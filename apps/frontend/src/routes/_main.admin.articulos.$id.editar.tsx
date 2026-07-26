@@ -2,11 +2,11 @@ import type { CreateArticleInput } from "@repo/schemas";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Edit } from "lucide-react";
 import { toast } from "sonner";
-import { ArticleForm } from "@/modules/articles/components/forms/article-form";
+import { ArticleForm } from "@/modules/articles";
 import {
   useArticleByIdQuery,
   useUpdateArticleMutation,
-} from "@/service/gql/generated/gql.client";
+} from "@/services/gql/generated/gql.client";
 import { getErrorMessage } from "@/shared/lib/get-error-message";
 
 const EditArticlePage = () => {

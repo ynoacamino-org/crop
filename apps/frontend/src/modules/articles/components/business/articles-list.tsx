@@ -1,5 +1,3 @@
-"use client";
-
 import { useNavigate } from "@tanstack/react-router";
 import { Edit, MoreVertical, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
@@ -22,12 +20,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { DeleteArticleDialog } from "@/modules/articles/components/delete-article-dialog";
-import { UpdateArticleStatusDialog } from "@/modules/articles/components/update-article-status-dialog";
+import { DeleteArticleDialog } from "@/modules/articles/components/business/delete-article-dialog";
+import { UpdateArticleStatusDialog } from "@/modules/articles/components/business/update-article-status-dialog";
 import {
   type AdminArticlesQuery,
   ArticleStatus,
-} from "@/service/gql/generated/gql.client";
+} from "@/services/gql/generated/gql.client";
 import { formatMediumDate } from "@/shared/lib/format-date";
 
 type Article = AdminArticlesQuery["articles"]["items"][number];

@@ -4,12 +4,12 @@ import { z } from "zod";
 import { EmptyState } from "@/components/empty-state";
 import { PaginationSection } from "@/components/pagination-controls";
 import { SearchInput } from "@/components/search-input";
-import { ArticleCard } from "@/modules/articles/components/ui/article-card";
+import { ArticleCard } from "@/modules/articles";
 import {
   RecentArticlesDocument,
   type RecentArticlesQuery,
-} from "@/service/gql/generated/gql.node";
-import { createServerService } from "@/service/service.server";
+} from "@/services/gql/generated/gql.node";
+import { createServerService } from "@/services/service.server";
 
 const searchSchema = z.object({
   limit: z.number().optional().catch(12),

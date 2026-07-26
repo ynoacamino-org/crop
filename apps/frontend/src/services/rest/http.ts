@@ -4,8 +4,8 @@ import type {
   HttpPath,
   HttpSearchParams,
   HttpUploadFile,
-} from "@/service/rest/types/http";
-import { ServiceError } from "@/service/types/errors";
+} from "@/services/rest/types/http";
+import { ServiceError } from "@/services/types/errors";
 
 class Http {
   private client: KyInstance;

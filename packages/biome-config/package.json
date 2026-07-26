@@ -4,7 +4,6 @@
   "private": true,
   "exports": {
     "./base": "./base.json",
-    "./next": "./next.json",
     "./hono": "./hono.json",
     "./tanstack": "./tanstack.json"
   }

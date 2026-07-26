@@ -21,8 +21,8 @@ import {
 import type {
   AdminArticlesQuery,
   ArticleStatus,
-} from "@/service/gql/generated/gql.client";
-import { useUpdateArticleStatusMutation } from "@/service/gql/generated/gql.client";
+} from "@/services/gql/generated/gql.client";
+import { useUpdateArticleStatusMutation } from "@/services/gql/generated/gql.client";
 
 type Article = AdminArticlesQuery["articles"]["items"][number];
 

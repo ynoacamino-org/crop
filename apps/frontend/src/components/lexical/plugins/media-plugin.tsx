@@ -1,5 +1,3 @@
-"use client";
-
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $wrapNodeInElement } from "@lexical/utils";
 import {
@@ -21,7 +19,7 @@ import {
   type MediaPayload,
   type MediaType,
 } from "@/components/lexical/nodes/media-node";
-import { service } from "@/service/service.client";
+import { service } from "@/services/service.client";
 
 export type InsertMediaPayload = Readonly<MediaPayload>;
 

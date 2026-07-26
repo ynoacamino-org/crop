@@ -9,8 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { RegisterForm } from "@/modules/auth/components/forms/register-form";
-import { authClient, signIn } from "@/modules/auth/lib/auth-client";
+import { authClient, RegisterForm, signIn } from "@/modules/auth";
 
 export const Route = createFileRoute("/registro")({
   component: RegistroPage,

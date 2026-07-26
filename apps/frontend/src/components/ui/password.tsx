@@ -1,5 +1,3 @@
-"use client";
-
 import { Eye, EyeOff } from "lucide-react";
 import { forwardRef, useState } from "react";
 import { Button } from "@/components/ui/button";

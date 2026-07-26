@@ -1,5 +1,3 @@
-"use client";
-
 import { Calendar, FileText, Scale } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {

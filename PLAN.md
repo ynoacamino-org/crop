@@ -554,7 +554,7 @@ Si alguno falla, se detiene y se corrige antes de continuar.
 3. Probar endpoint de auth: `curl -X POST http://localhost:7000/api/auth/*`
 4. Probar endpoint GraphQL: `curl -X POST http://localhost:7000/api/graphql`
 5. Probar upload de media (si hay datos de prueba)
-6. Verificar que los frontends (`apps/next`, `apps/tanstack-frontend`) compilan contra el nuevo backend
+6. Verificar que el frontend (`apps/frontend`) compila contra el nuevo backend
 7. Ejecutar `bun run lint` una vez más en todo el monorepo
 8. Actualizar `AGENTS.md` con la nueva estructura de directorios
 9. Eliminar archivos huérfanos o temporales

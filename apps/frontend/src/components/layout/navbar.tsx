@@ -1,5 +1,3 @@
-"use client";
-
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { AccountPopover } from "@/modules/auth/components/ui/account-popover";
 

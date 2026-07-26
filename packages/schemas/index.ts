@@ -1,5 +1,3 @@
-// Media schemas
-
 // Article schemas
 export type {
 	ArticleStatusType,
@@ -69,7 +67,7 @@ export type {
 	UpdateUserPayload,
 	UserPayload,
 	UsersPayload,
-} from "./user/interface";
+} from "./user/interfaces";
 export {
 	DeleteUserPayloadSchema,
 	SignInPayloadSchema,

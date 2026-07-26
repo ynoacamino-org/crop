@@ -8,8 +8,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { AdminStatsDocument } from "@/service/gql/generated/gql.node";
-import { createServerService } from "@/service/service.server";
+import { AdminStatsDocument } from "@/services/gql/generated/gql.node";
+import { createServerService } from "@/services/service.server";
 
 const getAdminStats = createServerFn().handler(async () => {
   const { gql } = createServerService();

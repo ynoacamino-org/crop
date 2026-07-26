@@ -12,12 +12,12 @@ import {
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { RelatedLegalCaseCard } from "@/modules/legal-cases/components/ui/related-legal-case-card";
+import { RelatedLegalCaseCard } from "@/modules/legal-cases";
 import {
   ArticleDocument,
   type ArticleQuery,
-} from "@/service/gql/generated/gql.node";
-import { createServerService } from "@/service/service.server";
+} from "@/services/gql/generated/gql.node";
+import { createServerService } from "@/services/service.server";
 import { formatLongDate } from "@/shared/lib/format-date";
 import { lexicalToHtml } from "@/shared/lib/lexical-to-html";
 

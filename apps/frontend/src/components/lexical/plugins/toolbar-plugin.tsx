@@ -1,5 +1,3 @@
-"use client";
-
 import {
   INSERT_ORDERED_LIST_COMMAND,
   INSERT_UNORDERED_LIST_COMMAND,

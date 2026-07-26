@@ -5,7 +5,7 @@ import { ArticleCard } from "@/modules/articles/components/ui/article-card";
 import {
   type RecentArticlesQuery,
   useRecentArticlesQuery,
-} from "@/service/gql/generated/gql.client";
+} from "@/services/gql/generated/gql.client";
 
 interface RecentArticlesListProps {
   take?: number;

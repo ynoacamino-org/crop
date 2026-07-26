@@ -13,8 +13,8 @@ import { Badge } from "@/components/ui/badge";
 import {
   LegalCaseDocument,
   type LegalCaseQuery,
-} from "@/service/gql/generated/gql.node";
-import { createServerService } from "@/service/service.server";
+} from "@/services/gql/generated/gql.node";
+import { createServerService } from "@/services/service.server";
 import { JURISDICTION_LABELS } from "@/shared/config/constants";
 import { formatLongDate } from "@/shared/lib/format-date";
 

@@ -33,7 +33,7 @@ import {
   Role,
   type UsersQuery,
   useUpdateUserMutation,
-} from "@/service/gql/generated/gql.client";
+} from "@/services/gql/generated/gql.client";
 
 type User = UsersQuery["users"]["items"][number];
 

@@ -1,5 +1,3 @@
-"use client";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { SignUpPayload } from "@repo/schemas";
 import { SignUpPayloadSchema } from "@repo/schemas";

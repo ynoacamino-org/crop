@@ -4,42 +4,44 @@ import { useState } from "react";
 import { toast } from "sonner";
 import {
   AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
-import type { AdminArticlesQuery } from "@/service/gql/generated/gql.client";
-import { useDeleteArticleMutation } from "@/service/gql/generated/gql.client";
+import type { UsersQuery } from "@/services/gql/generated/gql.client";
+import { useDeleteUserMutation } from "@/services/gql/generated/gql.client";
 
-type Article = AdminArticlesQuery["articles"]["items"][number];
+type User = UsersQuery["users"]["items"][number];
 
-interface DeleteArticleDialogProps {
-  article: Article;
+interface DeleteUserDialogProps {
+  user: User;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-export function DeleteArticleDialog({
-  article,
+export function DeleteUserDialog({
+  user,
   open,
   onOpenChange,
-}: DeleteArticleDialogProps) {
+}: DeleteUserDialogProps) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const [, deleteArticle] = useDeleteArticleMutation();
+  const [, deleteUser] = useDeleteUserMutation();
 
-  const handleDelete = async () => {
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.preventDefault();
     setIsLoading(true);
     try {
-      await deleteArticle({ id: article.id });
-      toast.success("Artículo eliminado correctamente");
+      await deleteUser({ id: user.id });
+      toast.success("Usuario eliminado correctamente");
       onOpenChange(false);
       router.invalidate();
     } catch (error) {
-      toast.error("Error al eliminar artículo", {
+      toast.error("Error al eliminar usuario", {
         description: error instanceof Error ? error.message : String(error),
       });
     } finally {
@@ -53,26 +55,20 @@ export function DeleteArticleDialog({
         <AlertDialogHeader>
           <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
           <AlertDialogDescription>
-            Esta acción no se puede deshacer. El artículo "{article.title}" será
-            eliminado permanentemente.
+            Esta acción no se puede deshacer. Esto eliminará permanentemente al
+            usuario <strong>{user.name || user.email}</strong> del sistema.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <Button
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            disabled={isLoading}
-          >
-            Cancelar
-          </Button>
-          <Button
-            variant="destructive"
+          <AlertDialogCancel disabled={isLoading}>Cancelar</AlertDialogCancel>
+          <AlertDialogAction
             onClick={handleDelete}
             disabled={isLoading}
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Eliminar
-          </Button>
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
