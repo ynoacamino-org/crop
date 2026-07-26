@@ -1,7 +1,7 @@
 import { getCookies } from "@tanstack/react-start/server";
 import { env } from "@/env/server";
-import { createGqlService } from "./gql/service";
-import { RestService } from "./rest/service";
+import { createGqlService } from "@/service/gql/service";
+import { RestService } from "@/service/rest/service";
 
 export function createServerService() {
   const cookies = getCookies();

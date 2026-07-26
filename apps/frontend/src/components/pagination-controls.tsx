@@ -1,6 +1,4 @@
 import { useNavigate, useSearch } from "@tanstack/react-router";
-import { getPaginationInfo } from "@/shared/lib/pagination";
-import { cn } from "@/shared/lib/utils";
 import {
   Pagination,
   PaginationContent,
@@ -9,7 +7,9 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "./ui/pagination";
+} from "@/components/ui/pagination";
+import { getPaginationInfo } from "@/shared/lib/pagination";
+import { cn } from "@/shared/lib/utils";
 
 interface PaginationNavigatorProps {
   currentPage: number;

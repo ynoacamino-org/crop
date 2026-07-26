@@ -1,4 +1,4 @@
-import { ServiceError } from "@/service/types/errors";
+import { ServiceError } from "@/service/core/types/errors";
 
 export function getErrorMessage(err: unknown): string {
   if (err instanceof ServiceError) {

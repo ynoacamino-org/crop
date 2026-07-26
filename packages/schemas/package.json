@@ -1,15 +1,15 @@
 {
-  "name": "@repo/schemas",
-  "version": "0.0.0",
-  "private": true,
-  "main": "./index.ts",
-  "types": "./index.ts",
-  "exports": {
-    ".": "./index.ts",
-    "./user": "./user/schemas.ts",
-    "./media": "./media/schemas.ts"
-  },
-  "dependencies": {
-    "zod": "^4.2.1"
-  }
+	"name": "@repo/schemas",
+	"version": "0.0.0",
+	"private": true,
+	"main": "./index.ts",
+	"types": "./index.ts",
+	"exports": {
+		".": "./index.ts",
+		"./user": "./user/schemas.ts",
+		"./media": "./media/schemas.ts"
+	},
+	"dependencies": {
+		"zod": "^4.2.1"
+	}
 }

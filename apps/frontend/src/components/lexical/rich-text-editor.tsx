@@ -17,10 +17,10 @@ import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import type { EditorState, EditorThemeClasses } from "lexical";
 
-import { MediaNode } from "./nodes/media-node";
-import DragDropPastePlugin from "./plugins/drag-drop-paste-plugin";
-import { MediaPlugin } from "./plugins/media-plugin";
-import { ToolbarPlugin } from "./plugins/toolbar-plugin";
+import { MediaNode } from "@/components/lexical/nodes/media-node";
+import DragDropPastePlugin from "@/components/lexical/plugins/drag-drop-paste-plugin";
+import { MediaPlugin } from "@/components/lexical/plugins/media-plugin";
+import { ToolbarPlugin } from "@/components/lexical/plugins/toolbar-plugin";
 
 const theme: EditorThemeClasses = {
   paragraph: "mb-1 relative",

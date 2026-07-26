@@ -68,7 +68,11 @@ function ArticleDetailPage() {
         {/* Categories */}
         <div className="flex flex-wrap items-center gap-2">
           {article.categories.map(
-            (category: NonNullable<ArticleQuery["article"]>["categories"][number]) => (
+            (
+              category: NonNullable<
+                ArticleQuery["article"]
+              >["categories"][number],
+            ) => (
               <Badge key={category.id} variant="secondary">
                 {category.name}
               </Badge>
@@ -168,7 +172,11 @@ function ArticleDetailPage() {
 
             <div className="grid gap-4 md:grid-cols-2">
               {article.legalCases.map(
-                (legalCase: NonNullable<ArticleQuery["article"]>["legalCases"][number]) => (
+                (
+                  legalCase: NonNullable<
+                    ArticleQuery["article"]
+                  >["legalCases"][number],
+                ) => (
                   <RelatedLegalCaseCard
                     key={legalCase.id}
                     slug={legalCase.slug}

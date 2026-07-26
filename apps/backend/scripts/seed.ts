@@ -1,7 +1,7 @@
 import { createId } from "@paralleldrive/cuid2";
 import { hashPassword } from "better-auth/crypto";
 import { drizzle } from "drizzle-orm/libsql";
-import * as schema from "../src/domain/db/schema";
+import * as schema from "@/domain/db/schema";
 
 const DATABASE_URL = process.env.DATABASE_URL;
 

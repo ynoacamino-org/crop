@@ -1,11 +1,11 @@
 import ky, { type KyInstance, type Options } from "ky";
-import { ServiceError } from "@/service/types/errors";
 import type {
   HttpOptions,
   HttpPath,
   HttpSearchParams,
   HttpUploadFile,
-} from "./types/http";
+} from "@/service/rest/types/http";
+import { ServiceError } from "@/service/types/errors";
 
 class Http {
   private client: KyInstance;

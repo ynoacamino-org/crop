@@ -1,5 +1,10 @@
 import type { z } from "zod";
-import type { createLegalCaseSchema, JurisdictionEnum, legalCasesQuerySchema, updateLegalCaseSchema } from "./schemas";
+import type {
+	createLegalCaseSchema,
+	JurisdictionEnum,
+	legalCasesQuerySchema,
+	updateLegalCaseSchema,
+} from "./schemas";
 
 // Type exports for enums
 export type JurisdictionType = z.infer<typeof JurisdictionEnum>;

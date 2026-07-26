@@ -4,20 +4,25 @@ import type {
   FieldPath,
   FieldValues,
 } from "react-hook-form";
-import type { FieldType } from "@/shared/types/form/field";
-import { SUPPORTED_FIELDS } from "@/shared/types/form/supported-fields";
-import { RichTextEditor } from "../lexical/rich-text-editor";
-import { Field, FieldDescription, FieldError, FieldLabel } from "../ui/field";
-import { Input } from "../ui/input";
-import { PasswordInput } from "../ui/password";
+import { RichTextEditor } from "@/components/lexical/rich-text-editor";
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../ui/select";
-import { Textarea } from "../ui/textarea";
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import type { FieldType } from "@/shared/types/form/field";
+import { SUPPORTED_FIELDS } from "@/shared/types/form/supported-fields";
 
 function InferItem<
   FieldName extends string,

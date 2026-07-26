@@ -1,6 +1,6 @@
-import { AuthModule } from "./modules/auth";
-import { MediaModule } from "./modules/media";
-import type { HttpOptions } from "./types/http";
+import { AuthModule } from "@/service/rest/modules/auth";
+import { MediaModule } from "@/service/rest/modules/media";
+import type { HttpOptions } from "@/service/rest/types/http";
 
 class RestService {
   auth: AuthModule;

@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { InferItem } from "@/components/form/infer-field";
 import { Button } from "@/components/ui/button";
 import { Form, FormField } from "@/components/ui/form";
-import { articleFormStruct } from "../../lib/form-struct/article-form-struct";
+import { articleFormStruct } from "@/modules/articles/lib/form-struct/article-form-struct";
 
 interface ArticleFormProps {
   initialValues?: Partial<CreateArticleInput>;

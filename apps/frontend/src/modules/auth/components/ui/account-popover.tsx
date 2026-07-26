@@ -9,10 +9,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { LoginButton } from "@/modules/auth/components/ui/login-button";
+import { LogoutButton } from "@/modules/auth/components/ui/logout-button";
 import { useUser } from "@/providers/user-provider";
 import { getInitials } from "@/shared/lib/utils";
-import { LoginButton } from "../ui/login-button";
-import { LogoutButton } from "../ui/logout-button";
 
 export function AccountPopover() {
   const user = useUser();

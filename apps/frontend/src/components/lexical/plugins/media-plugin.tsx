@@ -15,13 +15,13 @@ import {
 import type React from "react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { service } from "@/service/service.client";
 import {
   $createMediaNode,
   $isMediaNode,
   type MediaPayload,
   type MediaType,
-} from "../nodes/media-node";
+} from "@/components/lexical/nodes/media-node";
+import { service } from "@/service/service.client";
 
 export type InsertMediaPayload = Readonly<MediaPayload>;
 

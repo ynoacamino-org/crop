@@ -1,11 +1,11 @@
 import type { z } from "zod";
 import type {
-  CreateMediaPayloadSchema,
-  DeleteMediaPayloadSchema,
-  MediaPayloadSchema,
-  MediasPayloadSchema,
-  UpdateMediaPayloadSchema,
-  UploadMediaPayloadSchema,
+	CreateMediaPayloadSchema,
+	DeleteMediaPayloadSchema,
+	MediaPayloadSchema,
+	MediasPayloadSchema,
+	UpdateMediaPayloadSchema,
+	UploadMediaPayloadSchema,
 } from "./schemas";
 
 export type UploadMediaPayload = z.infer<typeof UploadMediaPayloadSchema>;

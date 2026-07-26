@@ -9,7 +9,7 @@ import type z from "zod";
 import { InferItem } from "@/components/form/infer-field";
 import { Button } from "@/components/ui/button";
 import { Form, FormField } from "@/components/ui/form";
-import { registerFormStruct } from "../../lib/form-struct/register-struct";
+import { registerFormStruct } from "@/modules/auth/lib/form-struct/register-struct";
 
 interface RegisterFormProps {
   onSubmit?: (data: z.infer<typeof SignUpPayloadSchema>) => Promise<void>;

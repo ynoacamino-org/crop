@@ -1,5 +1,5 @@
 import { cacheExchange, fetchExchange, Client as Service } from "urql";
-import { dateExchange } from "./exchanges/date";
+import { dateExchange } from "@/service/gql/exchanges/date";
 
 type GqlServiceOptions = {
   cookieHeader?: string;

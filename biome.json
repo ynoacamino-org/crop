@@ -9,7 +9,16 @@
     "rules": {
       "preset": "recommended",
       "style": {
-        "noRestrictedImports": "error"
+        "noRestrictedImports": {
+          "level": "error",
+          "options": {
+            "patterns": [
+              {
+                "group": ["./**", "../**"]
+              }
+            ]
+          }
+        }
       }
     }
   },
