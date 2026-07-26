@@ -244,7 +244,7 @@ function LegalCaseDetailPage() {
           <h2 className="font-semibold text-lg">Artículos Relacionados</h2>
           <div className="divide-y">
             {legalCase.articles.map(
-              (article: LegalCaseQuery["legalCase"]["articles"][number]) => (
+              (article: NonNullable<LegalCaseQuery["legalCase"]>["articles"][number]) => (
                 <div
                   key={article.id}
                   className="py-3 transition-colors hover:bg-muted/30"

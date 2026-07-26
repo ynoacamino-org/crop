@@ -68,7 +68,7 @@ function ArticleDetailPage() {
         {/* Categories */}
         <div className="flex flex-wrap items-center gap-2">
           {article.categories.map(
-            (category: ArticleQuery["article"]["categories"][number]) => (
+            (category: NonNullable<ArticleQuery["article"]>["categories"][number]) => (
               <Badge key={category.id} variant="secondary">
                 {category.name}
               </Badge>
@@ -144,7 +144,7 @@ function ArticleDetailPage() {
           <div className="flex flex-wrap items-center gap-2">
             <Tag className="h-4 w-4 text-muted-foreground" />
             {article.tags.map(
-              (tag: ArticleQuery["article"]["tags"][number]) => (
+              (tag: NonNullable<ArticleQuery["article"]>["tags"][number]) => (
                 <Badge key={tag.id} variant="outline">
                   {tag.name}
                 </Badge>
@@ -168,7 +168,7 @@ function ArticleDetailPage() {
 
             <div className="grid gap-4 md:grid-cols-2">
               {article.legalCases.map(
-                (legalCase: ArticleQuery["article"]["legalCases"][number]) => (
+                (legalCase: NonNullable<ArticleQuery["article"]>["legalCases"][number]) => (
                   <RelatedLegalCaseCard
                     key={legalCase.id}
                     slug={legalCase.slug}

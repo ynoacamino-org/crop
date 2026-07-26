@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { createCorsConfig } from "@/core/cors";
 import { authRouter } from "@/modules/auth/http/routes";
+import { exportRouter } from "@/modules/export/http/routes";
 import { mediaRouter } from "@/modules/media/http/routes";
 import { devRouter } from "@/shared/http/routes/dev";
 import { graphqlRouter } from "@/shared/http/routes/graphql";
@@ -15,6 +16,7 @@ app.use("*", createCorsConfig(BACKEND_URL));
 app.route("/api/auth", authRouter());
 app.route("/api/graphql", graphqlRouter());
 app.route("/api/media", mediaRouter());
+app.route("/api/exports", exportRouter());
 
 if (NODE_ENV !== "production") {
   app.route("/api/dev", devRouter());

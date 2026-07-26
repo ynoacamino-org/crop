@@ -413,6 +413,46 @@ export const articleToLegalCases = sqliteTable(
   ],
 );
 
+export const EXPORT_STATUS_VALUES = [
+  "pending",
+  "processing",
+  "completed",
+  "failed",
+] as const;
+export type ExportStatusValue = (typeof EXPORT_STATUS_VALUES)[number];
+
+export const exportJobs = sqliteTable(
+  "ExportJob",
+  {
+    id: text("id").primaryKey(),
+    userId: text("userId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    type: text("type").notNull(),
+    status: text("status", { enum: EXPORT_STATUS_VALUES })
+      .notNull()
+      .default("pending"),
+    filters: text("filters"),
+    columns: text("columns"),
+    progress: integer("progress").notNull().default(0),
+    totalRows: integer("totalRows"),
+    processedRows: integer("processedRows"),
+    fileKey: text("fileKey"),
+    downloadUrl: text("downloadUrl"),
+    error: text("error"),
+    createdAt: integer("createdAt", { mode: "timestamp_ms" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    startedAt: integer("startedAt", { mode: "timestamp_ms" }),
+    completedAt: integer("completedAt", { mode: "timestamp_ms" }),
+  },
+  (table) => [
+    index("ExportJob_userId_idx").on(table.userId),
+    index("ExportJob_status_idx").on(table.status),
+    index("ExportJob_createdAt_idx").on(table.createdAt),
+  ],
+);
+
 export const relations = defineRelations(
   {
     users,
@@ -430,6 +470,7 @@ export const relations = defineRelations(
     articleToCategories,
     articleToTags,
     articleToLegalCases,
+    exportJobs,
   },
   (r) => ({
     users: {
@@ -448,6 +489,10 @@ export const relations = defineRelations(
       articles: r.many.articles({
         from: r.users.id,
         to: r.articles.authorId,
+      }),
+      exportJobs: r.many.exportJobs({
+        from: r.users.id,
+        to: r.exportJobs.userId,
       }),
     },
     sessions: {
@@ -619,6 +664,13 @@ export const relations = defineRelations(
         optional: false,
       }),
     },
+    exportJobs: {
+      user: r.one.users({
+        from: r.exportJobs.userId,
+        to: r.users.id,
+        optional: false,
+      }),
+    },
   }),
 );
 
@@ -630,6 +682,7 @@ export type TagModel = typeof tags.$inferSelect;
 export type LegalCaseModel = typeof legalCases.$inferSelect;
 export type CourtModel = typeof courts.$inferSelect;
 export type CaseTypeModel = typeof caseTypes.$inferSelect;
+export type ExportJobModel = typeof exportJobs.$inferSelect;
 
 export const authSchema = {
   user: users,
