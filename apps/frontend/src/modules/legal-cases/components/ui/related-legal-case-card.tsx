@@ -1,11 +1,6 @@
-import Link from "next/link";
-import { Badge } from "@/shared/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/shared/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Link from "@/components/ui/link";
 
 interface RelatedLegalCaseCardProps {
   slug: string;

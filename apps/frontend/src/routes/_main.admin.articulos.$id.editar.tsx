@@ -2,11 +2,12 @@ import type { CreateArticleInput } from "@repo/schemas";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Edit } from "lucide-react";
 import { toast } from "sonner";
-import { ArticleForm } from "#/modules/articles/components/forms/article-form";
+import { ArticleForm } from "@/modules/articles/components/forms/article-form";
 import {
   useArticleByIdQuery,
   useUpdateArticleMutation,
-} from "#/service/gql/generated/gql.client";
+} from "@/service/gql/generated/gql.client";
+import { getErrorMessage } from "@/shared/lib/get-error-message";
 
 const EditArticlePage = () => {
   const { id: articleId } = Route.useParams();
@@ -55,7 +56,7 @@ const EditArticlePage = () => {
       navigate({ to: "/admin/articulos" });
     } catch (err) {
       toast.error("Error al actualizar artículo", {
-        description: err instanceof Error ? err.message : String(err),
+        description: getErrorMessage(err),
       });
     }
   };

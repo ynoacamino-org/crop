@@ -1,20 +1,16 @@
 "use client";
 
 import { Shield } from "lucide-react";
-import Link from "next/link";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/shared/components/ui/avatar";
-import { Button } from "@/shared/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import Link from "@/components/ui/link";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/shared/components/ui/popover";
+} from "@/components/ui/popover";
+import { useUser } from "@/providers/user-provider";
 import { getInitials } from "@/shared/lib/utils";
-import { useUser } from "@/shared/providers/user-provider";
 import { LoginButton } from "../ui/login-button";
 import { LogoutButton } from "../ui/logout-button";
 

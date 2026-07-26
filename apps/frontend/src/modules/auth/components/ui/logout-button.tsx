@@ -1,7 +1,7 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { signOut } from "@/modules/auth/lib/auth-client";
-import { Button } from "@/shared/components/ui/button";
 
 export function LogoutButton() {
   return (

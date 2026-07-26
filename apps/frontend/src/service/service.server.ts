@@ -1,5 +1,5 @@
 import { getCookies } from "@tanstack/react-start/server";
-import { env } from "#/env/server";
+import { env } from "@/env/server";
 import { createGqlService } from "./gql/service";
 import { RestService } from "./rest/service";
 

@@ -1,15 +1,11 @@
 import { AlertCircle } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Skeleton } from "@/components/ui/skeleton";
+import { LegalCaseItem } from "@/modules/legal-cases/components/ui/legal-case-item";
 import {
   type RecentLegalCasesQuery,
   useRecentLegalCasesQuery,
-} from "#/service/gql/generated/gql.client";
-import { LegalCaseItem } from "@/modules/legal-cases/components/ui/legal-case-item";
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-} from "@/shared/components/ui/alert";
-import { Skeleton } from "@/shared/components/ui/skeleton";
+} from "@/service/gql/generated/gql.client";
 
 interface RecentCasesListProps {
   take?: number;

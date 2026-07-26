@@ -5,10 +5,6 @@
     "jsx": "react-jsx",
     "module": "ESNext",
     "paths": {
-      "@/shared/components/*": ["./src/components/*"],
-      "@/shared/providers/user-provider": ["./src/providers/user-provider"],
-      "next/link": ["./src/components/ui/link"],
-      "#/*": ["./src/*"],
       "@/*": ["./src/*"]
     },
     "lib": ["ES2022", "DOM", "DOM.Iterable"],

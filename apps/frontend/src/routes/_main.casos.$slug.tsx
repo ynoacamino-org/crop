@@ -8,15 +8,15 @@ import {
   Scale,
   Users,
 } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "#/components/ui/alert";
-import { Badge } from "#/components/ui/badge";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 import {
   LegalCaseDocument,
   type LegalCaseQuery,
-} from "#/service/gql/generated/gql.node";
-import { createServerService } from "#/service/service.server";
-import { JURISDICTION_LABELS } from "#/shared/config/constants";
-import { formatLongDate } from "#/shared/lib/format-date";
+} from "@/service/gql/generated/gql.node";
+import { createServerService } from "@/service/service.server";
+import { JURISDICTION_LABELS } from "@/shared/config/constants";
+import { formatLongDate } from "@/shared/lib/format-date";
 
 const getLegalCase = createServerFn()
   .validator((input: { slug: string }) => input)

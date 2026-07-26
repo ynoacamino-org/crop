@@ -2,22 +2,15 @@
 
 import { MoreVertical, Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { DeleteUserDialog } from "@/modules/users/components/delete-user-dialog";
-import { EditUserDialog } from "@/modules/users/components/edit-user-dialog";
-import { Role, type UsersQuery } from "@/service/gql/generated/gql.client";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/shared/components/ui/avatar";
-import { Badge } from "@/shared/components/ui/badge";
-import { Button } from "@/shared/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/shared/components/ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
 import {
   Table,
   TableBody,
@@ -25,7 +18,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/shared/components/ui/table";
+} from "@/components/ui/table";
+import { DeleteUserDialog } from "@/modules/users/components/delete-user-dialog";
+import { EditUserDialog } from "@/modules/users/components/edit-user-dialog";
+import { Role, type UsersQuery } from "@/service/gql/generated/gql.client";
 import { formatMediumDate } from "@/shared/lib/format-date";
 
 type User = UsersQuery["users"]["items"][number];

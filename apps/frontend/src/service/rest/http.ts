@@ -1,4 +1,5 @@
-import ky, { type KyInstance } from "ky";
+import ky, { type KyInstance, type Options } from "ky";
+import { ServiceError } from "@/service/types/errors";
 import type {
   HttpOptions,
   HttpPath,
@@ -23,6 +24,21 @@ class Http {
       retry: { limit: 2 },
       timeout: 5000,
       headers,
+      hooks: {
+        afterResponse: [
+          (_request: Request, _options: Options, response: Response) => {
+            if (!response.ok) {
+              throw new ServiceError(
+                `HTTP ${response.status}: ${response.statusText}`,
+                {
+                  statusCode: response.status,
+                  cause: response,
+                },
+              );
+            }
+          },
+        ],
+      },
     });
   }
 

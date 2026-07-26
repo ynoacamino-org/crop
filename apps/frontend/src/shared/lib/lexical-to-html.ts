@@ -5,7 +5,7 @@ import { ListItemNode, ListNode } from "@lexical/list";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import { Window } from "happy-dom";
 import type { SerializedEditorState } from "lexical";
-import { MediaNode } from "@/shared/components/lexical/nodes/media-node.ssr";
+import { MediaNode } from "@/components/lexical/nodes/media-node.ssr";
 
 export function lexicalToHtml(
   serializedState: string | SerializedEditorState,

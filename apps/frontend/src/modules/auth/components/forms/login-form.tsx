@@ -6,9 +6,9 @@ import { SignInPayloadSchema } from "@repo/schemas";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type z from "zod";
-import { InferItem } from "@/shared/components/form/infer-field";
-import { Button } from "@/shared/components/ui/button";
-import { Form, FormField } from "@/shared/components/ui/form";
+import { InferItem } from "@/components/form/infer-field";
+import { Button } from "@/components/ui/button";
+import { Form, FormField } from "@/components/ui/form";
 import { loginFormStruct } from "../../lib/form-struct/login-struct";
 
 interface LoginFormProps {

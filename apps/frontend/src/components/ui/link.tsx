@@ -1,7 +1,7 @@
 import { Link as RouterLink } from "@tanstack/react-router";
 import type { VariantProps } from "class-variance-authority";
 import type React from "react";
-import { Button, type buttonVariants } from "@/shared/components/ui/button";
+import { Button, type buttonVariants } from "@/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 
 function LinkComp({

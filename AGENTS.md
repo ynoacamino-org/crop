@@ -15,7 +15,7 @@ Legal/court management system (articles, legal cases, courts) with GraphQL API.
 |-----|------|-----------|-------------|
 | Backend | `apps/backend` | Hono + GraphQL Yoga + Pothos | `bun run dev` (wrangler, port 7000) |
 | Next.js | `apps/next` | Next.js 16 + React 19 | `bun run dev` (port 3000) |
-| TanStack | `apps/tanstack-frontend` | TanStack Start (Vite 8 + Nitro) | `bun run dev` (port 3000) |
+| TanStack | `apps/frontend` | TanStack Start (Vite 8 + Nitro) | `bun run dev` (port 3000) |
 
 ### Shared packages
 - `@repo/schemas` — Zod validation schemas (`packages/schemas/`)
@@ -69,7 +69,7 @@ bun run db:migrate:node         # Node-mode migration script
 - Service layer: `src/service/service.client.ts` (URQL hooks) / `src/service.service.server.ts` (direct fetch)
 - GraphQL queries: `src/service/gql/queries/`, mutations: `src/service/gql/mutations/`
 
-### TanStack Frontend (`apps/tanstack-frontend`)
+### TanStack Frontend (`apps/frontend`)
 - TanStack Router (file-based routes in `src/routes/`), TanStack Query, TanStack Form
 - GraphQL client: `graphql-request` + generated SDK (`src/lib/graphql-client.ts`)
 - REST client: Ky (`src/lib/http-client.ts`)
@@ -93,7 +93,7 @@ Kong routes: `/` → frontend, `/api` → backend, `/crop-media` → storage
 ## Critical Gotchas
 
 1. **NOT Prisma/PostgreSQL** — The old AGENTS.md is wrong. ORM is **Drizzle**, DB is **SQLite/libSQL**
-2. **Two frontends exist** — `apps/next` (legacy) and `apps/tanstack-frontend` (active migration target). See `PLAN-DE-MIGRACION.md`
+2. **Two frontends exist** — `apps/next` (legacy) and `apps/frontend` (active migration target). See `PLAN-DE-MIGRACION.md`
 3. **Storage is Garage** (S3-compatible), not MinIO
 4. **Backend has two runtimes** — `wrangler dev` (edge/Workers) for production, `bun run dev:node` for local Node
 5. **GraphQL schema is code-first** — Pothos builder in `src/infrastructure/graphql/builder.ts`, not schema-first
@@ -131,7 +131,7 @@ cd apps/next
 bun run dev                     # Next.js dev
 
 # TanStack
-cd apps/tanstack-frontend
+cd apps/frontend
 bun run dev                     # Vite dev
 bun run generate-routes         # Regenerate route tree
 bun run codegen                 # GraphQL codegen

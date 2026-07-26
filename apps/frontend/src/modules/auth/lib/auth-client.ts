@@ -1,5 +1,5 @@
 import { createAuthClient } from "better-auth/react";
-import { env } from "#/env/client";
+import { env } from "@/env/client";
 
 const baseURL = env.VITE_API_URL.replace(/\/api$/, "");
 

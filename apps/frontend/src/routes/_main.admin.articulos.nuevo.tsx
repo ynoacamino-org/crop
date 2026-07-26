@@ -2,8 +2,9 @@ import type { CreateArticleInput } from "@repo/schemas";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { FileText } from "lucide-react";
 import { toast } from "sonner";
-import { ArticleForm } from "#/modules/articles/components/forms/article-form";
-import { useCreateArticleMutation } from "#/service/gql/generated/gql.client";
+import { ArticleForm } from "@/modules/articles/components/forms/article-form";
+import { useCreateArticleMutation } from "@/service/gql/generated/gql.client";
+import { getErrorMessage } from "@/shared/lib/get-error-message";
 
 const NewArticlePage = () => {
   const navigate = useNavigate();
@@ -24,7 +25,7 @@ const NewArticlePage = () => {
       navigate({ to: "/admin/articulos" });
     } catch (err) {
       toast.error("Error al crear artículo", {
-        description: err instanceof Error ? err.message : String(err),
+        description: getErrorMessage(err),
       });
     }
   };

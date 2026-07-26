@@ -19,8 +19,8 @@ import {
   useDropzone,
 } from "react-dropzone";
 import { toast } from "sonner";
-import { buttonVariants } from "@/shared/components/ui/button";
-import { Input } from "@/shared/components/ui/input";
+import { buttonVariants } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { cn } from "@/shared/lib/utils";
 
 type DirectionOptions = "rtl" | "ltr" | undefined;

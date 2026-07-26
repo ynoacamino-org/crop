@@ -2,21 +2,18 @@
 
 import { useNavigate } from "@tanstack/react-router";
 import { Edit, MoreVertical, Plus, Trash2 } from "lucide-react";
-import Link from "next/link";
 import { useState } from "react";
-import { DeleteArticleDialog } from "@/modules/articles/components/delete-article-dialog";
-import { UpdateArticleStatusDialog } from "@/modules/articles/components/update-article-status-dialog";
-import type { AdminArticlesQuery } from "@/service/gql/generated/gql.client";
-import { PaginationSection } from "@/shared/components/pagination-controls";
-import { SearchInput } from "@/shared/components/search-input";
-import { Badge } from "@/shared/components/ui/badge";
-import { Button } from "@/shared/components/ui/button";
+import { PaginationSection } from "@/components/pagination-controls";
+import { SearchInput } from "@/components/search-input";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/shared/components/ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
+import Link from "@/components/ui/link";
 import {
   Table,
   TableBody,
@@ -24,7 +21,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/shared/components/ui/table";
+} from "@/components/ui/table";
+import { DeleteArticleDialog } from "@/modules/articles/components/delete-article-dialog";
+import { UpdateArticleStatusDialog } from "@/modules/articles/components/update-article-status-dialog";
+import {
+  type AdminArticlesQuery,
+  ArticleStatus,
+} from "@/service/gql/generated/gql.client";
 import { formatMediumDate } from "@/shared/lib/format-date";
 
 type Article = AdminArticlesQuery["articles"]["items"][number];
@@ -34,19 +37,19 @@ interface ArticlesListProps {
   totalCount: number;
 }
 
-const STATUS_LABELS: Record<string, string> = {
-  PUBLISHED: "Publicado",
-  DRAFT: "Borrador",
-  ARCHIVED: "Archivado",
+const STATUS_LABELS: Record<ArticleStatus, string> = {
+  [ArticleStatus.Published]: "Publicado",
+  [ArticleStatus.Draft]: "Borrador",
+  [ArticleStatus.Archived]: "Archivado",
 };
 
 const STATUS_COLORS: Record<
-  string,
+  ArticleStatus,
   "default" | "secondary" | "destructive" | "outline"
 > = {
-  PUBLISHED: "default",
-  DRAFT: "secondary",
-  ARCHIVED: "outline",
+  [ArticleStatus.Published]: "default",
+  [ArticleStatus.Draft]: "secondary",
+  [ArticleStatus.Archived]: "outline",
 };
 
 export function ArticlesList({ articles, totalCount }: ArticlesListProps) {
@@ -110,8 +113,8 @@ export function ArticlesList({ articles, totalCount }: ArticlesListProps) {
                     {article.author.name}
                   </TableCell>
                   <TableCell>
-                    <Badge variant={STATUS_COLORS[article.status] || "default"}>
-                      {STATUS_LABELS[article.status] || article.status}
+                    <Badge variant={STATUS_COLORS[article.status]}>
+                      {STATUS_LABELS[article.status]}
                     </Badge>
                   </TableCell>
                   <TableCell className="hidden whitespace-nowrap text-muted-foreground text-sm lg:table-cell">

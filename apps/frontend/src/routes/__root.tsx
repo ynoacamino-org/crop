@@ -9,12 +9,12 @@ import {
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { createServerFn } from "@tanstack/react-start";
 import { Toaster } from "sonner";
-import { ThemeProvider } from "#/providers/theme-provider";
-import { UrqlProvider } from "#/providers/urql-provider";
-import { UserProvider } from "#/providers/user-provider";
-import { MeDocument } from "#/service/gql/generated/gql.node";
-import { createServerService } from "#/service/service.server";
 import TanStackQueryDevtools from "@/integrations/tanstack-query/devtools";
+import { ThemeProvider } from "@/providers/theme-provider";
+import { UrqlProvider } from "@/providers/urql-provider";
+import { UserProvider } from "@/providers/user-provider";
+import { MeDocument } from "@/service/gql/generated/gql.node";
+import { createServerService } from "@/service/service.server";
 
 import appCss from "@/styles.css?url";
 

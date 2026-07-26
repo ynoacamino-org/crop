@@ -15,7 +15,7 @@ import {
 import type React from "react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { service } from "#/service/service.client";
+import { service } from "@/service/service.client";
 import {
   $createMediaNode,
   $isMediaNode,

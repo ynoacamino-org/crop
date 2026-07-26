@@ -52,7 +52,7 @@
         "typescript": "^5",
       },
     },
-    "apps/next": {
+    "apps/next-legacy": {
       "name": "frontend",
       "version": "0.1.0",
       "dependencies": {
@@ -1697,7 +1697,7 @@
 
     "formdata-polyfill": ["formdata-polyfill@4.0.10", "", { "dependencies": { "fetch-blob": "^3.1.2" } }, "sha512-buewHzMvYL29jdeQTVILecSaZKnt/RJWjoZCF5OW60Z67/GmSLBkOFM7qh1PI3zFNtJbaZL5eQu1vLfazOwj4g=="],
 
-    "frontend": ["frontend@workspace:apps/next"],
+    "frontend": ["frontend@workspace:apps/next-legacy"],
 
     "fs.realpath": ["fs.realpath@1.0.0", "", {}, "sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw=="],
 

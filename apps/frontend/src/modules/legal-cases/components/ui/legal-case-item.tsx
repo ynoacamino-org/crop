@@ -1,8 +1,8 @@
 "use client";
 
 import { Calendar, Gavel, MapPin } from "lucide-react";
-import Link from "next/link";
-import { Badge } from "@/shared/components/ui/badge";
+import { Badge } from "@/components/ui/badge";
+import Link from "@/components/ui/link";
 import { JURISDICTION_LABELS } from "@/shared/config/constants";
 import { formatMediumDate } from "@/shared/lib/format-date";
 

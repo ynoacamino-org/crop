@@ -2,8 +2,6 @@ import { useRouter } from "@tanstack/react-router";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { useDeleteUserMutation } from "#/service/gql/generated/gql.client";
-import type { UsersQuery } from "@/service/gql/generated/gql.client";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,7 +11,9 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/shared/components/ui/alert-dialog";
+} from "@/components/ui/alert-dialog";
+import type { UsersQuery } from "@/service/gql/generated/gql.client";
+import { useDeleteUserMutation } from "@/service/gql/generated/gql.client";
 
 type User = UsersQuery["users"]["items"][number];
 

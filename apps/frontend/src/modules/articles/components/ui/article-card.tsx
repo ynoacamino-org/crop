@@ -1,8 +1,7 @@
 "use client";
 
 import { Calendar, Clock, Eye, User } from "lucide-react";
-import Link from "next/link";
-import { Badge } from "@/shared/components/ui/badge";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
@@ -10,7 +9,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/shared/components/ui/card";
+} from "@/components/ui/card";
+import Link from "@/components/ui/link";
 import { formatLongDate } from "@/shared/lib/format-date";
 
 interface ArticleCardProps {

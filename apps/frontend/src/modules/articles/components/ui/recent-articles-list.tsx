@@ -1,15 +1,11 @@
 import { AlertCircle } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ArticleCard } from "@/modules/articles/components/ui/article-card";
 import {
   type RecentArticlesQuery,
   useRecentArticlesQuery,
-} from "#/service/gql/generated/gql.client";
-import { ArticleCard } from "@/modules/articles/components/ui/article-card";
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-} from "@/shared/components/ui/alert";
-import { Skeleton } from "@/shared/components/ui/skeleton";
+} from "@/service/gql/generated/gql.client";
 
 interface RecentArticlesListProps {
   take?: number;

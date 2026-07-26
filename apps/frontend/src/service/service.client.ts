@@ -1,4 +1,4 @@
-import { env } from "#/env/client";
+import { env } from "@/env/client";
 import { createGqlService } from "./gql/service";
 import { RestService } from "./rest/service";
 

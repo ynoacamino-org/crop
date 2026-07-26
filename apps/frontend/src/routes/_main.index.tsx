@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { RecentArticlesList } from "#/modules/articles/components/ui/recent-articles-list";
-import { RecentCasesList } from "#/modules/legal-cases/components/ui/recent-cases-list";
+import { RecentArticlesList } from "@/modules/articles/components/ui/recent-articles-list";
+import { RecentCasesList } from "@/modules/legal-cases/components/ui/recent-cases-list";
 
 export const Route = createFileRoute("/_main/")({
   component: HomePage,

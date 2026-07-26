@@ -6,7 +6,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/shared/components/ui/breadcrumb";
+} from "@/components/ui/breadcrumb";
 import { ROUTE_LABELS } from "@/shared/config/constants";
 
 interface BreadcrumbSegment {

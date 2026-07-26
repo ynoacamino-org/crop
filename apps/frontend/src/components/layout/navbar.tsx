@@ -1,7 +1,7 @@
 "use client";
 
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { AccountPopover } from "@/modules/auth/components/ui/account-popover";
-import { ThemeToggle } from "@/shared/components/ui/theme-toggle";
 
 export function Navbar() {
   return (

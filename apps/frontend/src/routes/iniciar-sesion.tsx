@@ -8,16 +8,16 @@ import {
 import { Lock } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
-import { Button } from "#/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "#/components/ui/card";
-import { LoginForm } from "#/modules/auth/components/forms/login-form";
-import { signIn } from "#/modules/auth/lib/auth-client";
+} from "@/components/ui/card";
+import { LoginForm } from "@/modules/auth/components/forms/login-form";
+import { signIn } from "@/modules/auth/lib/auth-client";
 
 const searchSchema = z.object({
   redirect: z.string().optional(),

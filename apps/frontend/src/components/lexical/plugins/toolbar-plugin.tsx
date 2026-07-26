@@ -39,8 +39,8 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { uploadMedia } from "@/components/lexical/plugins/media-plugin";
-import { Button } from "@/shared/components/ui/button";
-import { Separator } from "@/shared/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 
 export function ToolbarPlugin() {
   const [editor] = useLexicalComposerContext();
