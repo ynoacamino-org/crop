@@ -57,9 +57,6 @@ function buildFieldFilter(
   return undefined;
 }
 
-/**
- * Converts a GraphQL filter input to a Drizzle relational query where clause.
- */
 export function buildDrizzleWhere(
   filter: Record<string, Record<string, unknown>> | null | undefined,
   enumFields: Set<string> = new Set(),

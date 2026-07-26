@@ -1,6 +1,8 @@
-import type { Column } from "drizzle-orm";
+import type { InputObjectRef } from "@pothos/core";
+import type { Column, Table } from "drizzle-orm";
 import { handleDbError } from "@/core/errors/db";
 import { sanitize } from "@/core/utils/sanitize";
+import type { relations } from "@/domain/db/schema";
 import { builder } from "@/shared/graphql/builder";
 import {
   buildDrizzleOrderBy,
@@ -12,6 +14,10 @@ import {
   PaginationInfo,
 } from "@/shared/graphql/pagination";
 
+type BuilderTypes = (typeof builder)["$inferSchemaTypes"];
+
+type DrizzleKey = keyof typeof relations;
+
 interface ConnectionShape {
   take: number;
   skip: number;
@@ -22,12 +28,10 @@ interface ConnectionShape {
 interface ConnectionConfig {
   typeName: string;
   description: string;
-  table: Parameters<typeof createDbCountPageInfoResolver>[0]["source"];
-  itemType: string;
-  // biome-ignore lint/suspicious/noExplicitAny: Pothos InputObjectRef has incompatible index signatures
-  filterInput: any;
-  // biome-ignore lint/suspicious/noExplicitAny: Pothos InputObjectRef has incompatible index signatures
-  sortInput: any;
+  table: Table;
+  itemType: DrizzleKey;
+  filterInput: InputObjectRef<BuilderTypes, object>;
+  sortInput: InputObjectRef<BuilderTypes, object>;
   enumFields: Set<string>;
   fieldMap: Record<string, string>;
   columns: Record<string, Column>;
@@ -42,20 +46,27 @@ export function createConnectionType(config: ConnectionConfig) {
     description: config.description,
     fields: (t) => ({
       items: t.drizzleField({
-        // @ts-expect-error — Pothos requires a literal type name, but this factory is generic
         type: [config.itemType],
         resolve: async (query, parent, _args, ctx) => {
           try {
-            // biome-ignore lint/suspicious/noExplicitAny: dynamic table lookup
-            const dbQuery = (ctx.db.query as any)[config.itemType];
-            return await dbQuery.findMany(
+            const dbQuery = (
+              ctx.db.query as Record<
+                DrizzleKey,
+                {
+                  findMany: (
+                    opts: unknown,
+                  ) => Promise<readonly Record<string, unknown>[]>;
+                }
+              >
+            )[config.itemType];
+            return (await dbQuery.findMany(
               query({
                 where: buildDrizzleWhere(parent.filter, config.enumFields),
                 orderBy: buildDrizzleOrderBy(parent.sort, config.fieldMap),
                 limit: parent.take,
                 offset: parent.skip,
               }),
-            );
+            )) as never;
           } catch (error) {
             handleDbError(error);
           }

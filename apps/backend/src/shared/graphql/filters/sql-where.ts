@@ -15,12 +15,6 @@ import {
 
 type SqlCondition = SQL | undefined;
 
-/**
- * Converts a GraphQL filter input to Drizzle SQL conditions using drizzle-orm operators.
- * Used for $count() and other SQL-level operations that need actual SQL conditions.
- *
- * Combines field conditions with AND (all conditions must match).
- */
 export function buildDrizzleSqlWhere(
   filter: Record<string, Record<string, unknown>> | null | undefined,
   columns: Record<string, Column>,
