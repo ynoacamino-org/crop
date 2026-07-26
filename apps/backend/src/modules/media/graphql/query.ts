@@ -9,15 +9,7 @@ import {
   MediaSort,
 } from "@/modules/media/graphql/inputs";
 import { builder } from "@/shared/graphql/builder";
-import {
-  buildDrizzleOrderBy,
-  buildDrizzleSqlWhere,
-  buildDrizzleWhere,
-} from "@/shared/graphql/filters";
-import {
-  createDbCountPageInfoResolver,
-  PaginationInfo,
-} from "@/shared/pagination/model";
+import { createConnectionType } from "@/shared/graphql/connection";
 
 const MEDIA_COLUMNS = {
   objectKey: media.objectKey,
@@ -29,86 +21,19 @@ const MEDIA_COLUMNS = {
   size: media.size,
 };
 
-interface MediasConnectionShape {
-  take: number;
-  skip: number;
-  filter?: Record<string, Record<string, unknown>>;
-  sort?: { field: string; direction: "ASC" | "DESC" }[];
-}
-
-const MediasConnection =
-  builder.objectRef<MediasConnectionShape>("MediasConnection");
-
-MediasConnection.implement({
+const { listQuery } = createConnectionType({
+  typeName: "MediasConnection",
   description: "Paginated list of media items",
-  fields: (t) => ({
-    items: t.drizzleField({
-      type: ["media"],
-      resolve: async (query, parent, _args, ctx) => {
-        try {
-          return await ctx.db.query.media.findMany(
-            query({
-              where: buildDrizzleWhere(parent.filter, MEDIA_ENUM_FIELDS),
-              orderBy: buildDrizzleOrderBy(parent.sort, MEDIA_SORT_FIELD_MAP),
-              limit: parent.take,
-              offset: parent.skip,
-            }),
-          );
-        } catch (error) {
-          handleDbError(error);
-        }
-      },
-    }),
-    pageInfo: t.field({
-      type: PaginationInfo,
-      resolve: createDbCountPageInfoResolver<MediasConnectionShape>({
-        source: media,
-        where: (parent) =>
-          buildDrizzleSqlWhere(parent.filter, MEDIA_COLUMNS, MEDIA_ENUM_FIELDS),
-        onError: handleDbError,
-      }),
-    }),
-  }),
+  table: media,
+  itemType: "media",
+  filterInput: MediaFilter,
+  sortInput: MediaSort,
+  enumFields: MEDIA_ENUM_FIELDS,
+  fieldMap: MEDIA_SORT_FIELD_MAP,
+  columns: MEDIA_COLUMNS,
 });
 
-builder.queryField("medias", (t) =>
-  t.field({
-    type: MediasConnection,
-    description: "Get all media items with pagination",
-    args: {
-      take: t.arg.int({
-        required: false,
-        description: "Number of media items to take",
-        defaultValue: 10,
-      }),
-      skip: t.arg.int({
-        required: false,
-        description: "Number of media items to skip",
-        defaultValue: 0,
-      }),
-      filter: t.arg({
-        type: MediaFilter,
-        required: false,
-        description: "Filter media items by fields",
-      }),
-      sort: t.arg({
-        type: [MediaSort],
-        required: false,
-        description: "Sort media items by fields",
-      }),
-    },
-    resolve: (_root, rawArgs) => {
-      const args = sanitize(rawArgs);
-
-      return {
-        take: args.take ?? 10,
-        skip: args.skip ?? 0,
-        filter: args.filter ?? undefined,
-        sort: args.sort ?? undefined,
-      };
-    },
-  }),
-);
+listQuery("medias", "Get all media items with pagination");
 
 builder.queryField("media", (t) =>
   t.drizzleField({

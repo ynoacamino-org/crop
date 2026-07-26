@@ -9,15 +9,7 @@ import {
   LegalCaseSort,
 } from "@/modules/business/legal-case/inputs";
 import { builder } from "@/shared/graphql/builder";
-import {
-  buildDrizzleOrderBy,
-  buildDrizzleSqlWhere,
-  buildDrizzleWhere,
-} from "@/shared/graphql/filters";
-import {
-  createDbCountPageInfoResolver,
-  PaginationInfo,
-} from "@/shared/pagination/model";
+import { createConnectionType } from "@/shared/graphql/connection";
 
 const LEGAL_CASE_COLUMNS = {
   caseNumber: legalCases.caseNumber,
@@ -33,93 +25,19 @@ const LEGAL_CASE_COLUMNS = {
   resolutionDate: legalCases.resolutionDate,
 };
 
-interface LegalCasesConnectionShape {
-  take: number;
-  skip: number;
-  filter?: Record<string, Record<string, unknown>>;
-  sort?: { field: string; direction: "ASC" | "DESC" }[];
-}
-
-const LegalCasesConnection = builder.objectRef<LegalCasesConnectionShape>(
-  "LegalCasesConnection",
-);
-
-LegalCasesConnection.implement({
+const { listQuery } = createConnectionType({
+  typeName: "LegalCasesConnection",
   description: "Paginated list of legal cases",
-  fields: (t) => ({
-    items: t.drizzleField({
-      type: ["legalCases"],
-      resolve: async (query, parent, _args, ctx) => {
-        try {
-          return await ctx.db.query.legalCases.findMany(
-            query({
-              where: buildDrizzleWhere(parent.filter, LEGAL_CASE_ENUM_FIELDS),
-              orderBy: buildDrizzleOrderBy(
-                parent.sort,
-                LEGAL_CASE_SORT_FIELD_MAP,
-              ),
-              limit: parent.take,
-              offset: parent.skip,
-            }),
-          );
-        } catch (error) {
-          handleDbError(error);
-        }
-      },
-    }),
-    pageInfo: t.field({
-      type: PaginationInfo,
-      resolve: createDbCountPageInfoResolver<LegalCasesConnectionShape>({
-        source: legalCases,
-        where: (parent) =>
-          buildDrizzleSqlWhere(
-            parent.filter,
-            LEGAL_CASE_COLUMNS,
-            LEGAL_CASE_ENUM_FIELDS,
-          ),
-        onError: handleDbError,
-      }),
-    }),
-  }),
+  table: legalCases,
+  itemType: "legalCases",
+  filterInput: LegalCaseFilter,
+  sortInput: LegalCaseSort,
+  enumFields: LEGAL_CASE_ENUM_FIELDS,
+  fieldMap: LEGAL_CASE_SORT_FIELD_MAP,
+  columns: LEGAL_CASE_COLUMNS,
 });
 
-builder.queryField("legalCases", (t) =>
-  t.field({
-    type: LegalCasesConnection,
-    args: {
-      take: t.arg.int({
-        required: false,
-        description: "Number of cases to take",
-        defaultValue: 10,
-      }),
-      skip: t.arg.int({
-        required: false,
-        description: "Number of cases to skip",
-        defaultValue: 0,
-      }),
-      filter: t.arg({
-        type: LegalCaseFilter,
-        required: false,
-        description: "Filter legal cases by fields",
-      }),
-      sort: t.arg({
-        type: [LegalCaseSort],
-        required: false,
-        description: "Sort legal cases by fields",
-      }),
-    },
-    resolve: (_root, rawArgs) => {
-      const args = sanitize(rawArgs);
-
-      return {
-        take: args.take ?? 10,
-        skip: args.skip ?? 0,
-        filter: args.filter ?? undefined,
-        sort: args.sort ?? undefined,
-      };
-    },
-  }),
-);
+listQuery("legalCases", "Get all legal cases with pagination");
 
 builder.queryField("legalCase", (t) =>
   t.drizzleField({

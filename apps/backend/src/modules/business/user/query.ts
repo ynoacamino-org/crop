@@ -1,5 +1,4 @@
 import { handleDbError } from "@/core/errors/db";
-import { sanitize } from "@/core/utils/sanitize";
 import { users } from "@/domain/db/schema";
 import {
   USER_ENUM_FIELDS,
@@ -8,15 +7,7 @@ import {
   UserSort,
 } from "@/modules/business/user/inputs";
 import { builder } from "@/shared/graphql/builder";
-import {
-  buildDrizzleOrderBy,
-  buildDrizzleSqlWhere,
-  buildDrizzleWhere,
-} from "@/shared/graphql/filters";
-import {
-  createDbCountPageInfoResolver,
-  PaginationInfo,
-} from "@/shared/pagination/model";
+import { createConnectionType } from "@/shared/graphql/connection";
 
 const USER_COLUMNS = {
   name: users.name,
@@ -25,47 +16,20 @@ const USER_COLUMNS = {
   bio: users.bio,
 };
 
-interface UsersConnectionShape {
-  take: number;
-  skip: number;
-  filter?: Record<string, Record<string, unknown>>;
-  sort?: { field: string; direction: "ASC" | "DESC" }[];
-}
-
-const UsersConnection =
-  builder.objectRef<UsersConnectionShape>("UsersConnection");
-
-UsersConnection.implement({
+const { listQuery } = createConnectionType({
+  typeName: "UsersConnection",
   description: "Paginated list of users",
-  fields: (t) => ({
-    items: t.drizzleField({
-      type: ["users"],
-      resolve: async (query, parent, _args, ctx) => {
-        try {
-          return await ctx.db.query.users.findMany(
-            query({
-              where: buildDrizzleWhere(parent.filter, USER_ENUM_FIELDS),
-              orderBy: buildDrizzleOrderBy(parent.sort, USER_SORT_FIELD_MAP),
-              limit: parent.take,
-              offset: parent.skip,
-            }),
-          );
-        } catch (error) {
-          handleDbError(error);
-        }
-      },
-    }),
-    pageInfo: t.field({
-      type: PaginationInfo,
-      resolve: createDbCountPageInfoResolver<UsersConnectionShape>({
-        source: users,
-        where: (parent) =>
-          buildDrizzleSqlWhere(parent.filter, USER_COLUMNS, USER_ENUM_FIELDS),
-        onError: handleDbError,
-      }),
-    }),
-  }),
+  table: users,
+  itemType: "users",
+  filterInput: UserFilter,
+  sortInput: UserSort,
+  enumFields: USER_ENUM_FIELDS,
+  fieldMap: USER_SORT_FIELD_MAP,
+  columns: USER_COLUMNS,
+  authScopes: { admin: true },
 });
+
+listQuery("users", "Get all users with pagination");
 
 builder.queryField("me", (t) =>
   t.drizzleField({
@@ -90,47 +54,6 @@ builder.queryField("me", (t) =>
           notFound: "Usuario no encontrado",
         });
       }
-    },
-  }),
-);
-
-builder.queryField("users", (t) =>
-  t.field({
-    type: UsersConnection,
-    args: {
-      take: t.arg.int({
-        required: false,
-        description: "Number of users to take",
-        defaultValue: 10,
-      }),
-      skip: t.arg.int({
-        required: false,
-        description: "Number of users to skip",
-        defaultValue: 0,
-      }),
-      filter: t.arg({
-        type: UserFilter,
-        required: false,
-        description: "Filter users by fields",
-      }),
-      sort: t.arg({
-        type: [UserSort],
-        required: false,
-        description: "Sort users by fields",
-      }),
-    },
-    authScopes: {
-      admin: true,
-    },
-    resolve: (_root, rawArgs) => {
-      const args = sanitize(rawArgs);
-
-      return {
-        take: args.take ?? 10,
-        skip: args.skip ?? 0,
-        filter: args.filter ?? undefined,
-        sort: args.sort ?? undefined,
-      };
     },
   }),
 );

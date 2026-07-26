@@ -9,15 +9,7 @@ import {
   ArticleSort,
 } from "@/modules/business/article/inputs";
 import { builder } from "@/shared/graphql/builder";
-import {
-  buildDrizzleOrderBy,
-  buildDrizzleSqlWhere,
-  buildDrizzleWhere,
-} from "@/shared/graphql/filters";
-import {
-  createDbCountPageInfoResolver,
-  PaginationInfo,
-} from "@/shared/pagination/model";
+import { createConnectionType } from "@/shared/graphql/connection";
 
 const ARTICLE_COLUMNS = {
   title: articles.title,
@@ -30,89 +22,19 @@ const ARTICLE_COLUMNS = {
   readingTimeMin: articles.readingTimeMin,
 };
 
-interface ArticlesConnectionShape {
-  take: number;
-  skip: number;
-  filter?: Record<string, Record<string, unknown>>;
-  sort?: { field: string; direction: "ASC" | "DESC" }[];
-}
-
-const ArticlesConnection =
-  builder.objectRef<ArticlesConnectionShape>("ArticlesConnection");
-
-ArticlesConnection.implement({
+const { listQuery } = createConnectionType({
+  typeName: "ArticlesConnection",
   description: "Paginated list of articles",
-  fields: (t) => ({
-    items: t.drizzleField({
-      type: ["articles"],
-      resolve: async (query, parent, _args, ctx) => {
-        try {
-          return await ctx.db.query.articles.findMany(
-            query({
-              where: buildDrizzleWhere(parent.filter, ARTICLE_ENUM_FIELDS),
-              orderBy: buildDrizzleOrderBy(parent.sort, ARTICLE_SORT_FIELD_MAP),
-              limit: parent.take,
-              offset: parent.skip,
-            }),
-          );
-        } catch (error) {
-          handleDbError(error);
-        }
-      },
-    }),
-    pageInfo: t.field({
-      type: PaginationInfo,
-      resolve: createDbCountPageInfoResolver<ArticlesConnectionShape>({
-        source: articles,
-        where: (parent) =>
-          buildDrizzleSqlWhere(
-            parent.filter,
-            ARTICLE_COLUMNS,
-            ARTICLE_ENUM_FIELDS,
-          ),
-        onError: handleDbError,
-      }),
-    }),
-  }),
+  table: articles,
+  itemType: "articles",
+  filterInput: ArticleFilter,
+  sortInput: ArticleSort,
+  enumFields: ARTICLE_ENUM_FIELDS,
+  fieldMap: ARTICLE_SORT_FIELD_MAP,
+  columns: ARTICLE_COLUMNS,
 });
 
-builder.queryField("articles", (t) =>
-  t.field({
-    type: ArticlesConnection,
-    args: {
-      take: t.arg.int({
-        required: false,
-        description: "Number of articles to take",
-        defaultValue: 10,
-      }),
-      skip: t.arg.int({
-        required: false,
-        description: "Number of articles to skip",
-        defaultValue: 0,
-      }),
-      filter: t.arg({
-        type: ArticleFilter,
-        required: false,
-        description: "Filter articles by fields",
-      }),
-      sort: t.arg({
-        type: [ArticleSort],
-        required: false,
-        description: "Sort articles by fields",
-      }),
-    },
-    resolve: (_root, rawArgs) => {
-      const args = sanitize(rawArgs);
-
-      return {
-        take: args.take ?? 10,
-        skip: args.skip ?? 0,
-        filter: args.filter ?? undefined,
-        sort: args.sort ?? undefined,
-      };
-    },
-  }),
-);
+listQuery("articles", "Get all articles with pagination");
 
 builder.queryField("article", (t) =>
   t.drizzleField({

@@ -1,4 +1,3 @@
-import { sanitize } from "@/core/utils/sanitize";
 import { caseTypes } from "@/domain/db/schema";
 import {
   CASE_TYPE_ENUM_FIELDS,
@@ -7,15 +6,7 @@ import {
   CaseTypeSort,
 } from "@/modules/business/case-type/inputs";
 import { builder } from "@/shared/graphql/builder";
-import {
-  buildDrizzleOrderBy,
-  buildDrizzleSqlWhere,
-  buildDrizzleWhere,
-} from "@/shared/graphql/filters";
-import {
-  createDbCountPageInfoResolver,
-  PaginationInfo,
-} from "@/shared/pagination/model";
+import { createConnectionType } from "@/shared/graphql/connection";
 
 const CASE_TYPE_COLUMNS = {
   name: caseTypes.name,
@@ -27,85 +18,20 @@ const CASE_TYPE_COLUMNS = {
   active: caseTypes.active,
 };
 
-interface CaseTypesConnectionShape {
-  take: number;
-  skip: number;
-  filter?: Record<string, Record<string, unknown>>;
-  sort?: { field: string; direction: "ASC" | "DESC" }[];
-}
-
-const CaseTypesConnection = builder.objectRef<CaseTypesConnectionShape>(
-  "CaseTypesConnection",
-);
-
-CaseTypesConnection.implement({
+const { listQuery } = createConnectionType({
+  typeName: "CaseTypesConnection",
   description: "Paginated list of case types",
-  fields: (t) => ({
-    items: t.drizzleField({
-      type: ["caseTypes"],
-      resolve: async (query, parent, _args, ctx) =>
-        await ctx.db.query.caseTypes.findMany(
-          query({
-            where: buildDrizzleWhere(parent.filter, CASE_TYPE_ENUM_FIELDS),
-            orderBy: buildDrizzleOrderBy(parent.sort, CASE_TYPE_SORT_FIELD_MAP),
-            limit: parent.take,
-            offset: parent.skip,
-          }),
-        ),
-    }),
-    pageInfo: t.field({
-      type: PaginationInfo,
-      resolve: createDbCountPageInfoResolver<CaseTypesConnectionShape>({
-        source: caseTypes,
-        where: (parent) =>
-          buildDrizzleSqlWhere(
-            parent.filter,
-            CASE_TYPE_COLUMNS,
-            CASE_TYPE_ENUM_FIELDS,
-          ),
-      }),
-    }),
-  }),
+  table: caseTypes,
+  itemType: "caseTypes",
+  filterInput: CaseTypeFilter,
+  sortInput: CaseTypeSort,
+  enumFields: CASE_TYPE_ENUM_FIELDS,
+  fieldMap: CASE_TYPE_SORT_FIELD_MAP,
+  columns: CASE_TYPE_COLUMNS,
+  defaultTake: 50,
 });
 
-builder.queryField("caseTypes", (t) =>
-  t.field({
-    type: CaseTypesConnection,
-    description: "Get all case types with pagination",
-    args: {
-      take: t.arg.int({
-        required: false,
-        description: "Number of case types to take",
-        defaultValue: 50,
-      }),
-      skip: t.arg.int({
-        required: false,
-        description: "Number of case types to skip",
-        defaultValue: 0,
-      }),
-      filter: t.arg({
-        type: CaseTypeFilter,
-        required: false,
-        description: "Filter case types by fields",
-      }),
-      sort: t.arg({
-        type: [CaseTypeSort],
-        required: false,
-        description: "Sort case types by fields",
-      }),
-    },
-    resolve: (_root, rawArgs) => {
-      const args = sanitize(rawArgs);
-
-      return {
-        take: args.take ?? 50,
-        skip: args.skip ?? 0,
-        filter: args.filter ?? undefined,
-        sort: args.sort ?? undefined,
-      };
-    },
-  }),
-);
+listQuery("caseTypes", "Get all case types with pagination");
 
 builder.queryField("caseType", (t) =>
   t.drizzleField({
