@@ -1,18 +1,43 @@
-import { ilike, or } from "drizzle-orm";
 import { handleDbError } from "@/core/errors/db";
 import { NotFoundError } from "@/core/errors/gql";
 import { sanitize } from "@/core/utils/sanitize";
 import { legalCases } from "@/domain/db/schema";
+import {
+  LEGAL_CASE_ENUM_FIELDS,
+  LEGAL_CASE_SORT_FIELD_MAP,
+  LegalCaseFilter,
+  LegalCaseSort,
+} from "@/modules/business/legal-case/inputs";
 import { builder } from "@/shared/graphql/builder";
+import {
+  buildDrizzleOrderBy,
+  buildDrizzleSqlWhere,
+  buildDrizzleWhere,
+} from "@/shared/graphql/filters";
 import {
   createDbCountPageInfoResolver,
   PaginationInfo,
 } from "@/shared/pagination/model";
 
+const LEGAL_CASE_COLUMNS = {
+  caseNumber: legalCases.caseNumber,
+  caseName: legalCases.caseName,
+  summary: legalCases.summary,
+  parties: legalCases.parties,
+  plaintiff: legalCases.plaintiff,
+  defendant: legalCases.defendant,
+  jurisdiction: legalCases.jurisdiction,
+  caseTypeId: legalCases.caseTypeId,
+  courtId: legalCases.courtId,
+  caseDate: legalCases.caseDate,
+  resolutionDate: legalCases.resolutionDate,
+};
+
 interface LegalCasesConnectionShape {
   take: number;
   skip: number;
-  search?: string;
+  filter?: Record<string, Record<string, unknown>>;
+  sort?: { field: string; direction: "ASC" | "DESC" }[];
 }
 
 const LegalCasesConnection = builder.objectRef<LegalCasesConnectionShape>(
@@ -25,23 +50,14 @@ LegalCasesConnection.implement({
     items: t.drizzleField({
       type: ["legalCases"],
       resolve: async (query, parent, _args, ctx) => {
-        const searchTerm = parent.search ? `%${parent.search}%` : undefined;
-
         try {
           return await ctx.db.query.legalCases.findMany(
             query({
-              where: searchTerm
-                ? {
-                    OR: [
-                      { caseName: { ilike: searchTerm } },
-                      { caseNumber: { ilike: searchTerm } },
-                      { parties: { ilike: searchTerm } },
-                    ],
-                  }
-                : undefined,
-              orderBy: {
-                caseDate: "desc",
-              },
+              where: buildDrizzleWhere(parent.filter, LEGAL_CASE_ENUM_FIELDS),
+              orderBy: buildDrizzleOrderBy(
+                parent.sort,
+                LEGAL_CASE_SORT_FIELD_MAP,
+              ),
               limit: parent.take,
               offset: parent.skip,
             }),
@@ -55,17 +71,12 @@ LegalCasesConnection.implement({
       type: PaginationInfo,
       resolve: createDbCountPageInfoResolver<LegalCasesConnectionShape>({
         source: legalCases,
-        where: (parent) => {
-          const searchTerm = parent.search ? `%${parent.search}%` : undefined;
-
-          return searchTerm
-            ? or(
-                ilike(legalCases.caseName, searchTerm),
-                ilike(legalCases.caseNumber, searchTerm),
-                ilike(legalCases.parties, searchTerm),
-              )
-            : undefined;
-        },
+        where: (parent) =>
+          buildDrizzleSqlWhere(
+            parent.filter,
+            LEGAL_CASE_COLUMNS,
+            LEGAL_CASE_ENUM_FIELDS,
+          ),
         onError: handleDbError,
       }),
     }),
@@ -86,9 +97,15 @@ builder.queryField("legalCases", (t) =>
         description: "Number of cases to skip",
         defaultValue: 0,
       }),
-      search: t.arg.string({
+      filter: t.arg({
+        type: LegalCaseFilter,
         required: false,
-        description: "Search term for case name, case number, or parties",
+        description: "Filter legal cases by fields",
+      }),
+      sort: t.arg({
+        type: [LegalCaseSort],
+        required: false,
+        description: "Sort legal cases by fields",
       }),
     },
     resolve: (_root, rawArgs) => {
@@ -97,7 +114,8 @@ builder.queryField("legalCases", (t) =>
       return {
         take: args.take ?? 10,
         skip: args.skip ?? 0,
-        search: args.search?.trim() || undefined,
+        filter: args.filter ?? undefined,
+        sort: args.sort ?? undefined,
       };
     },
   }),
@@ -106,6 +124,7 @@ builder.queryField("legalCases", (t) =>
 builder.queryField("legalCase", (t) =>
   t.drizzleField({
     type: "legalCases",
+    nullable: true,
     args: {
       id: t.arg.string({
         required: false,

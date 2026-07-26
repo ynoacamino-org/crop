@@ -1,18 +1,35 @@
-import { UsersPayloadSchema } from "@repo/schemas";
-import { ilike, or } from "drizzle-orm";
 import { handleDbError } from "@/core/errors/db";
 import { sanitize } from "@/core/utils/sanitize";
 import { users } from "@/domain/db/schema";
+import {
+  USER_ENUM_FIELDS,
+  USER_SORT_FIELD_MAP,
+  UserFilter,
+  UserSort,
+} from "@/modules/business/user/inputs";
 import { builder } from "@/shared/graphql/builder";
+import {
+  buildDrizzleOrderBy,
+  buildDrizzleSqlWhere,
+  buildDrizzleWhere,
+} from "@/shared/graphql/filters";
 import {
   createDbCountPageInfoResolver,
   PaginationInfo,
 } from "@/shared/pagination/model";
 
+const USER_COLUMNS = {
+  name: users.name,
+  email: users.email,
+  role: users.role,
+  bio: users.bio,
+};
+
 interface UsersConnectionShape {
   take: number;
   skip: number;
-  search?: string;
+  filter?: Record<string, Record<string, unknown>>;
+  sort?: { field: string; direction: "ASC" | "DESC" }[];
 }
 
 const UsersConnection =
@@ -24,23 +41,11 @@ UsersConnection.implement({
     items: t.drizzleField({
       type: ["users"],
       resolve: async (query, parent, _args, ctx) => {
-        const search = parent.search?.trim();
-        const searchTerm = search ? `%${search}%` : undefined;
-
         try {
           return await ctx.db.query.users.findMany(
             query({
-              where: searchTerm
-                ? {
-                    OR: [
-                      { name: { ilike: searchTerm } },
-                      { email: { ilike: searchTerm } },
-                    ],
-                  }
-                : undefined,
-              orderBy: {
-                createdAt: "desc",
-              },
+              where: buildDrizzleWhere(parent.filter, USER_ENUM_FIELDS),
+              orderBy: buildDrizzleOrderBy(parent.sort, USER_SORT_FIELD_MAP),
               limit: parent.take,
               offset: parent.skip,
             }),
@@ -54,14 +59,8 @@ UsersConnection.implement({
       type: PaginationInfo,
       resolve: createDbCountPageInfoResolver<UsersConnectionShape>({
         source: users,
-        where: (parent) => {
-          const search = parent.search?.trim();
-          const searchTerm = search ? `%${search}%` : undefined;
-
-          return searchTerm
-            ? or(ilike(users.name, searchTerm), ilike(users.email, searchTerm))
-            : undefined;
-        },
+        where: (parent) =>
+          buildDrizzleSqlWhere(parent.filter, USER_COLUMNS, USER_ENUM_FIELDS),
         onError: handleDbError,
       }),
     }),
@@ -103,18 +102,21 @@ builder.queryField("users", (t) =>
         required: false,
         description: "Number of users to take",
         defaultValue: 10,
-        validate: UsersPayloadSchema.shape.take,
       }),
       skip: t.arg.int({
         required: false,
         description: "Number of users to skip",
         defaultValue: 0,
-        validate: UsersPayloadSchema.shape.skip,
       }),
-      search: t.arg.string({
+      filter: t.arg({
+        type: UserFilter,
         required: false,
-        description: "Search term for user name or email",
-        validate: UsersPayloadSchema.shape.search,
+        description: "Filter users by fields",
+      }),
+      sort: t.arg({
+        type: [UserSort],
+        required: false,
+        description: "Sort users by fields",
       }),
     },
     authScopes: {
@@ -126,7 +128,8 @@ builder.queryField("users", (t) =>
       return {
         take: args.take ?? 10,
         skip: args.skip ?? 0,
-        search: args.search?.trim() || undefined,
+        filter: args.filter ?? undefined,
+        sort: args.sort ?? undefined,
       };
     },
   }),

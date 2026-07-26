@@ -84,7 +84,9 @@ builder.mutationField("updateUser", (t) =>
           .set({
             ...(input.name !== undefined && { name: input.name }),
             ...(input.image !== undefined && { image: input.image }),
-            ...(input.role !== undefined && { role: input.role }),
+            ...(input.role !== undefined && {
+              role: input.role as "PUBLIC" | "COLLABORATOR" | "ADMIN",
+            }),
             updatedAt: new Date(),
           })
           .where(eq(users.id, String(id)))

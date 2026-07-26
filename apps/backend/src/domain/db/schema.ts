@@ -55,9 +55,7 @@ export const users = sqliteTable(
       .$defaultFn(() => new Date()),
     role: text("role", { enum: ROLE_VALUES }).notNull().default("PUBLIC"),
   },
-  (table) => ({
-    emailUnique: uniqueIndex("User_email_key").on(table.email),
-  }),
+  (table) => [uniqueIndex("User_email_key").on(table.email)],
 );
 
 export const sessions = sqliteTable(
@@ -78,10 +76,10 @@ export const sessions = sqliteTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
   },
-  (table) => ({
-    userIdIdx: index("session_userId_idx").on(table.userId),
-    tokenUnique: uniqueIndex("session_token_key").on(table.token),
-  }),
+  (table) => [
+    index("session_userId_idx").on(table.userId),
+    uniqueIndex("session_token_key").on(table.token),
+  ],
 );
 
 export const accounts = sqliteTable(
@@ -111,9 +109,7 @@ export const accounts = sqliteTable(
       .notNull()
       .$defaultFn(() => new Date()),
   },
-  (table) => ({
-    userIdIdx: index("account_userId_idx").on(table.userId),
-  }),
+  (table) => [index("account_userId_idx").on(table.userId)],
 );
 
 export const verifications = sqliteTable(
@@ -130,9 +126,7 @@ export const verifications = sqliteTable(
       .notNull()
       .$defaultFn(() => new Date()),
   },
-  (table) => ({
-    identifierIdx: index("verification_identifier_idx").on(table.identifier),
-  }),
+  (table) => [index("verification_identifier_idx").on(table.identifier)],
 );
 
 export const media = sqliteTable(
@@ -158,11 +152,11 @@ export const media = sqliteTable(
       onDelete: "set null",
     }),
   },
-  (table) => ({
-    objectKeyUnique: uniqueIndex("Media_objectKey_key").on(table.objectKey),
-    uploadedByIdx: index("Media_uploadedBy_idx").on(table.uploadedBy),
-    typeIdx: index("Media_type_idx").on(table.type),
-  }),
+  (table) => [
+    uniqueIndex("Media_objectKey_key").on(table.objectKey),
+    index("Media_uploadedBy_idx").on(table.uploadedBy),
+    index("Media_type_idx").on(table.type),
+  ],
 );
 
 export const courts = sqliteTable(
@@ -182,11 +176,11 @@ export const courts = sqliteTable(
       .notNull()
       .$defaultFn(() => new Date()),
   },
-  (table) => ({
-    nameUnique: uniqueIndex("Court_name_key").on(table.name),
-    typeIdx: index("Court_type_idx").on(table.type),
-    jurisdictionIdx: index("Court_jurisdiction_idx").on(table.jurisdiction),
-  }),
+  (table) => [
+    uniqueIndex("Court_name_key").on(table.name),
+    index("Court_type_idx").on(table.type),
+    index("Court_jurisdiction_idx").on(table.jurisdiction),
+  ],
 );
 
 export const caseTypes = sqliteTable(
@@ -209,12 +203,12 @@ export const caseTypes = sqliteTable(
       .notNull()
       .$defaultFn(() => new Date()),
   },
-  (table) => ({
-    nameUnique: uniqueIndex("CaseType_name_key").on(table.name),
-    slugUnique: uniqueIndex("CaseType_slug_key").on(table.slug),
-    slugIdx: index("CaseType_slug_idx").on(table.slug),
-    activeIdx: index("CaseType_active_idx").on(table.active),
-  }),
+  (table) => [
+    uniqueIndex("CaseType_name_key").on(table.name),
+    uniqueIndex("CaseType_slug_key").on(table.slug),
+    index("CaseType_slug_idx").on(table.slug),
+    index("CaseType_active_idx").on(table.active),
+  ],
 );
 
 export const legalCases = sqliteTable(
@@ -249,17 +243,15 @@ export const legalCases = sqliteTable(
     }),
     jurisdiction: text("jurisdiction", { enum: JURISDICTION_VALUES }),
   },
-  (table) => ({
-    caseNumberUnique: uniqueIndex("LegalCase_caseNumber_key").on(
-      table.caseNumber,
-    ),
-    slugUnique: uniqueIndex("LegalCase_slug_key").on(table.slug),
-    caseNumberIdx: index("LegalCase_caseNumber_idx").on(table.caseNumber),
-    slugIdx: index("LegalCase_slug_idx").on(table.slug),
-    courtIdIdx: index("LegalCase_courtId_idx").on(table.courtId),
-    jurisdictionIdx: index("LegalCase_jurisdiction_idx").on(table.jurisdiction),
-    caseTypeIdIdx: index("LegalCase_caseTypeId_idx").on(table.caseTypeId),
-  }),
+  (table) => [
+    uniqueIndex("LegalCase_caseNumber_key").on(table.caseNumber),
+    uniqueIndex("LegalCase_slug_key").on(table.slug),
+    index("LegalCase_caseNumber_idx").on(table.caseNumber),
+    index("LegalCase_slug_idx").on(table.slug),
+    index("LegalCase_courtId_idx").on(table.courtId),
+    index("LegalCase_jurisdiction_idx").on(table.jurisdiction),
+    index("LegalCase_caseTypeId_idx").on(table.caseTypeId),
+  ],
 );
 
 export const articles = sqliteTable(
@@ -291,13 +283,13 @@ export const articles = sqliteTable(
     views: integer("views").notNull().default(0),
     readingTimeMin: integer("readingTimeMin"),
   },
-  (table) => ({
-    slugUnique: uniqueIndex("Article_slug_key").on(table.slug),
-    authorIdIdx: index("Article_authorId_idx").on(table.authorId),
-    statusIdx: index("Article_status_idx").on(table.status),
-    publishedAtIdx: index("Article_publishedAt_idx").on(table.publishedAt),
-    slugIdx: index("Article_slug_idx").on(table.slug),
-  }),
+  (table) => [
+    uniqueIndex("Article_slug_key").on(table.slug),
+    index("Article_authorId_idx").on(table.authorId),
+    index("Article_status_idx").on(table.status),
+    index("Article_publishedAt_idx").on(table.publishedAt),
+    index("Article_slug_idx").on(table.slug),
+  ],
 );
 
 export const categories = sqliteTable(
@@ -316,11 +308,11 @@ export const categories = sqliteTable(
       .notNull()
       .$defaultFn(() => new Date()),
   },
-  (table) => ({
-    nameUnique: uniqueIndex("Category_name_key").on(table.name),
-    slugUnique: uniqueIndex("Category_slug_key").on(table.slug),
-    slugIdx: index("Category_slug_idx").on(table.slug),
-  }),
+  (table) => [
+    uniqueIndex("Category_name_key").on(table.name),
+    uniqueIndex("Category_slug_key").on(table.slug),
+    index("Category_slug_idx").on(table.slug),
+  ],
 );
 
 export const tags = sqliteTable(
@@ -338,11 +330,11 @@ export const tags = sqliteTable(
       .notNull()
       .$defaultFn(() => new Date()),
   },
-  (table) => ({
-    nameUnique: uniqueIndex("Tag_name_key").on(table.name),
-    slugUnique: uniqueIndex("Tag_slug_key").on(table.slug),
-    slugIdx: index("Tag_slug_idx").on(table.slug),
-  }),
+  (table) => [
+    uniqueIndex("Tag_name_key").on(table.name),
+    uniqueIndex("Tag_slug_key").on(table.slug),
+    index("Tag_slug_idx").on(table.slug),
+  ],
 );
 
 export const articleAttachments = sqliteTable(
@@ -355,13 +347,13 @@ export const articleAttachments = sqliteTable(
       .notNull()
       .references(() => media.id, { onDelete: "cascade" }),
   },
-  (table) => ({
-    pk: primaryKey({
+  (table) => [
+    primaryKey({
       columns: [table.articleId, table.mediaId],
       name: "_ArticleAttachments_AB_pkey",
     }),
-    mediaIdIdx: index("_ArticleAttachments_B_index").on(table.mediaId),
-  }),
+    index("_ArticleAttachments_B_index").on(table.mediaId),
+  ],
 );
 
 export const articleToCategories = sqliteTable(
@@ -374,13 +366,13 @@ export const articleToCategories = sqliteTable(
       .notNull()
       .references(() => categories.id, { onDelete: "cascade" }),
   },
-  (table) => ({
-    pk: primaryKey({
+  (table) => [
+    primaryKey({
       columns: [table.articleId, table.categoryId],
       name: "_ArticleToCategory_AB_pkey",
     }),
-    categoryIdIdx: index("_ArticleToCategory_B_index").on(table.categoryId),
-  }),
+    index("_ArticleToCategory_B_index").on(table.categoryId),
+  ],
 );
 
 export const articleToTags = sqliteTable(
@@ -393,13 +385,13 @@ export const articleToTags = sqliteTable(
       .notNull()
       .references(() => tags.id, { onDelete: "cascade" }),
   },
-  (table) => ({
-    pk: primaryKey({
+  (table) => [
+    primaryKey({
       columns: [table.articleId, table.tagId],
       name: "_ArticleToTag_AB_pkey",
     }),
-    tagIdIdx: index("_ArticleToTag_B_index").on(table.tagId),
-  }),
+    index("_ArticleToTag_B_index").on(table.tagId),
+  ],
 );
 
 export const articleToLegalCases = sqliteTable(
@@ -412,13 +404,13 @@ export const articleToLegalCases = sqliteTable(
       .notNull()
       .references(() => legalCases.id, { onDelete: "cascade" }),
   },
-  (table) => ({
-    pk: primaryKey({
+  (table) => [
+    primaryKey({
       columns: [table.articleId, table.legalCaseId],
       name: "_ArticleToLegalCase_AB_pkey",
     }),
-    legalCaseIdIdx: index("_ArticleToLegalCase_B_index").on(table.legalCaseId),
-  }),
+    index("_ArticleToLegalCase_B_index").on(table.legalCaseId),
+  ],
 );
 
 export const relations = defineRelations(

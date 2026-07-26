@@ -9,9 +9,10 @@ RUN bun install --frozen-lockfile
 COPY src ./src
 RUN bun run build
 
+
+
 FROM docker.io/oven/bun:slim AS runner
 WORKDIR /app
-
 
 COPY --from=builder /app/dist ./dist
 

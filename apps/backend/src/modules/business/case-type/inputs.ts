@@ -1,7 +1,12 @@
 import { createCaseTypeSchema, updateCaseTypeSchema } from "@repo/schemas";
 import { builder } from "@/shared/graphql/builder";
+import {
+  BooleanFilter,
+  IntFilter,
+  StringFilter,
+} from "@/shared/graphql/filters";
+import { SortDirection } from "@/shared/graphql/sorts";
 
-// Input for creating a case type
 export const CreateCaseTypeInput = builder.inputType("CreateCaseTypeInput", {
   fields: (t) => ({
     name: t.string({
@@ -33,9 +38,9 @@ export const CreateCaseTypeInput = builder.inputType("CreateCaseTypeInput", {
       description: "Whether this case type is active",
     }),
   }),
+  validate: createCaseTypeSchema,
 });
 
-// Input for updating a case type
 export const UpdateCaseTypeInput = builder.inputType("UpdateCaseTypeInput", {
   fields: (t) => ({
     name: t.string({
@@ -67,7 +72,56 @@ export const UpdateCaseTypeInput = builder.inputType("UpdateCaseTypeInput", {
       description: "Whether this case type is active",
     }),
   }),
+  validate: updateCaseTypeSchema,
 });
 
-// Export validation schemas for runtime validation
 export { createCaseTypeSchema, updateCaseTypeSchema };
+
+export const CaseTypeFilter = builder.inputType("CaseTypeFilter", {
+  description: "Filter case types by various fields",
+  fields: (t) => ({
+    name: t.field({ type: StringFilter, description: "Filter by name" }),
+    slug: t.field({ type: StringFilter, description: "Filter by slug" }),
+    description: t.field({
+      type: StringFilter,
+      description: "Filter by description",
+    }),
+    color: t.field({ type: StringFilter, description: "Filter by color" }),
+    icon: t.field({ type: StringFilter, description: "Filter by icon" }),
+    order: t.field({ type: IntFilter, description: "Filter by order" }),
+    active: t.field({
+      type: BooleanFilter,
+      description: "Filter by active status",
+    }),
+  }),
+});
+
+export const CaseTypeSortField = builder.enumType("CaseTypeSortField", {
+  description: "Fields to sort case types by",
+  values: ["NAME", "SLUG", "ORDER", "CREATED_AT"] as const,
+});
+
+export const CaseTypeSort = builder.inputType("CaseTypeSort", {
+  description: "Sort configuration for case types",
+  fields: (t) => ({
+    field: t.field({
+      type: CaseTypeSortField,
+      required: true,
+      description: "Field to sort by",
+    }),
+    direction: t.field({
+      type: SortDirection,
+      required: true,
+      description: "Sort direction",
+    }),
+  }),
+});
+
+export const CASE_TYPE_SORT_FIELD_MAP: Record<string, string> = {
+  NAME: "name",
+  SLUG: "slug",
+  ORDER: "order",
+  CREATED_AT: "createdAt",
+};
+
+export const CASE_TYPE_ENUM_FIELDS = new Set<string>();

@@ -1,18 +1,40 @@
-import { ilike, or } from "drizzle-orm";
 import { handleDbError } from "@/core/errors/db";
 import { NotFoundError } from "@/core/errors/gql";
 import { sanitize } from "@/core/utils/sanitize";
 import { articles } from "@/domain/db/schema";
+import {
+  ARTICLE_ENUM_FIELDS,
+  ARTICLE_SORT_FIELD_MAP,
+  ArticleFilter,
+  ArticleSort,
+} from "@/modules/business/article/inputs";
 import { builder } from "@/shared/graphql/builder";
+import {
+  buildDrizzleOrderBy,
+  buildDrizzleSqlWhere,
+  buildDrizzleWhere,
+} from "@/shared/graphql/filters";
 import {
   createDbCountPageInfoResolver,
   PaginationInfo,
 } from "@/shared/pagination/model";
 
+const ARTICLE_COLUMNS = {
+  title: articles.title,
+  slug: articles.slug,
+  content: articles.content,
+  excerpt: articles.excerpt,
+  authorId: articles.authorId,
+  status: articles.status,
+  publishedAt: articles.publishedAt,
+  readingTimeMin: articles.readingTimeMin,
+};
+
 interface ArticlesConnectionShape {
   take: number;
   skip: number;
-  search?: string;
+  filter?: Record<string, Record<string, unknown>>;
+  sort?: { field: string; direction: "ASC" | "DESC" }[];
 }
 
 const ArticlesConnection =
@@ -24,24 +46,11 @@ ArticlesConnection.implement({
     items: t.drizzleField({
       type: ["articles"],
       resolve: async (query, parent, _args, ctx) => {
-        const search = parent.search?.trim();
-        const searchTerm = search ? `%${search}%` : undefined;
-
         try {
           return await ctx.db.query.articles.findMany(
             query({
-              where: searchTerm
-                ? {
-                    OR: [
-                      { title: { ilike: searchTerm } },
-                      { content: { ilike: searchTerm } },
-                      { excerpt: { ilike: searchTerm } },
-                    ],
-                  }
-                : undefined,
-              orderBy: {
-                publishedAt: "desc",
-              },
+              where: buildDrizzleWhere(parent.filter, ARTICLE_ENUM_FIELDS),
+              orderBy: buildDrizzleOrderBy(parent.sort, ARTICLE_SORT_FIELD_MAP),
               limit: parent.take,
               offset: parent.skip,
             }),
@@ -55,18 +64,12 @@ ArticlesConnection.implement({
       type: PaginationInfo,
       resolve: createDbCountPageInfoResolver<ArticlesConnectionShape>({
         source: articles,
-        where: (parent) => {
-          const search = parent.search?.trim();
-          const searchTerm = search ? `%${search}%` : undefined;
-
-          return searchTerm
-            ? or(
-                ilike(articles.title, searchTerm),
-                ilike(articles.content, searchTerm),
-                ilike(articles.excerpt, searchTerm),
-              )
-            : undefined;
-        },
+        where: (parent) =>
+          buildDrizzleSqlWhere(
+            parent.filter,
+            ARTICLE_COLUMNS,
+            ARTICLE_ENUM_FIELDS,
+          ),
         onError: handleDbError,
       }),
     }),
@@ -87,9 +90,15 @@ builder.queryField("articles", (t) =>
         description: "Number of articles to skip",
         defaultValue: 0,
       }),
-      search: t.arg.string({
+      filter: t.arg({
+        type: ArticleFilter,
         required: false,
-        description: "Search term for title or content",
+        description: "Filter articles by fields",
+      }),
+      sort: t.arg({
+        type: [ArticleSort],
+        required: false,
+        description: "Sort articles by fields",
       }),
     },
     resolve: (_root, rawArgs) => {
@@ -98,7 +107,8 @@ builder.queryField("articles", (t) =>
       return {
         take: args.take ?? 10,
         skip: args.skip ?? 0,
-        search: args.search?.trim() || undefined,
+        filter: args.filter ?? undefined,
+        sort: args.sort ?? undefined,
       };
     },
   }),
@@ -107,6 +117,7 @@ builder.queryField("articles", (t) =>
 builder.queryField("article", (t) =>
   t.drizzleField({
     type: "articles",
+    nullable: true,
     args: {
       id: t.arg.string({
         required: false,
