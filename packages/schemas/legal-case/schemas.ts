@@ -88,11 +88,11 @@ export const createLegalCaseSchema = z.object({
 	jurisdiction: JurisdictionEnum.optional(),
 	caseTypeId: z
 		.string()
-		.cuid({ message: "El ID del tipo de caso debe ser un CUID válido" })
+		.min(1, { message: "El ID del tipo de caso es requerido" })
 		.optional(),
 	courtId: z
 		.string()
-		.cuid({ message: "El ID del tribunal debe ser un CUID válido" })
+		.min(1, { message: "El ID del tribunal es requerido" })
 		.optional(),
 });
 
@@ -154,12 +154,12 @@ export const updateLegalCaseSchema = z.object({
 	jurisdiction: JurisdictionEnum.optional().nullable(),
 	caseTypeId: z
 		.string()
-		.cuid({ message: "El ID del tipo de caso debe ser un CUID válido" })
+		.min(1, { message: "El ID del tipo de caso es requerido" })
 		.optional()
 		.nullable(),
 	courtId: z
 		.string()
-		.cuid({ message: "El ID del tribunal debe ser un CUID válido" })
+		.min(1, { message: "El ID del tribunal es requerido" })
 		.optional()
 		.nullable(),
 });

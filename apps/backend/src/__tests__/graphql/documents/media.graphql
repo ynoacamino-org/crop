@@ -13,6 +13,7 @@ query GetMedia($id: String!) {
     uploader {
       id
       name
+      email
     }
   }
 }

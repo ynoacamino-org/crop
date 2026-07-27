@@ -14,8 +14,8 @@ import {
 import { builder } from "@/shared/graphql/builder";
 
 builder.mutationField("updateMe", (t) =>
-  t.field({
-    type: "User",
+  t.drizzleField({
+    type: "users",
     args: {
       input: t.arg({
         type: UpdateUserInput,
@@ -26,21 +26,24 @@ builder.mutationField("updateMe", (t) =>
     authScopes: {
       public: true,
     },
-    resolve: async (_root, rawArgs, ctx) => {
+    resolve: async (query, _root, rawArgs, ctx) => {
       if (!ctx.user) throw new UnauthorizedError();
 
       const { input } = sanitize(rawArgs);
 
       try {
-        const [updatedUser] = await ctx.db
+        await ctx.db
           .update(users)
           .set({
             ...(input.name !== undefined && { name: input.name }),
             ...(input.image !== undefined && { image: input.image }),
             updatedAt: new Date(),
           })
-          .where(eq(users.id, ctx.user.id))
-          .returning();
+          .where(eq(users.id, ctx.user.id));
+
+        const updatedUser = await ctx.db.query.users.findFirst(
+          query({ where: { id: ctx.user.id } }),
+        );
 
         if (!updatedUser) {
           throw new Error("Usuario no encontrado");
@@ -58,8 +61,8 @@ builder.mutationField("updateMe", (t) =>
 );
 
 builder.mutationField("updateUser", (t) =>
-  t.field({
-    type: "User",
+  t.drizzleField({
+    type: "users",
     args: {
       id: t.arg.id({
         required: true,
@@ -75,11 +78,11 @@ builder.mutationField("updateUser", (t) =>
     authScopes: {
       admin: true,
     },
-    resolve: async (_root, rawArgs, ctx) => {
+    resolve: async (query, _root, rawArgs, ctx) => {
       const { id, input } = sanitize(rawArgs);
 
       try {
-        const [updatedUser] = await ctx.db
+        await ctx.db
           .update(users)
           .set({
             ...(input.name !== undefined && { name: input.name }),
@@ -89,8 +92,11 @@ builder.mutationField("updateUser", (t) =>
             }),
             updatedAt: new Date(),
           })
-          .where(eq(users.id, String(id)))
-          .returning();
+          .where(eq(users.id, String(id)));
+
+        const updatedUser = await ctx.db.query.users.findFirst(
+          query({ where: { id: String(id) } }),
+        );
 
         if (!updatedUser) {
           throw new Error("El usuario que intenta actualizar no existe");
@@ -108,25 +114,26 @@ builder.mutationField("updateUser", (t) =>
 );
 
 builder.mutationField("deleteMe", (t) =>
-  t.field({
-    type: "User",
+  t.drizzleField({
+    type: "users",
     authScopes: {
       public: true,
     },
-    resolve: async (_root, _args, ctx) => {
+    resolve: async (query, _root, _args, ctx) => {
       if (!ctx.user) throw new UnauthorizedError();
 
       try {
-        const [deletedUser] = await ctx.db
-          .delete(users)
-          .where(eq(users.id, ctx.user.id))
-          .returning();
+        const fullUser = await ctx.db.query.users.findFirst(
+          query({ where: { id: ctx.user.id } }),
+        );
 
-        if (!deletedUser) {
+        if (!fullUser) {
           throw new Error("Usuario no encontrado");
         }
 
-        return deletedUser;
+        await ctx.db.delete(users).where(eq(users.id, ctx.user.id));
+
+        return fullUser;
       } catch (error) {
         handleDbError(error, {
           notFound: "Usuario no encontrado",
@@ -139,8 +146,8 @@ builder.mutationField("deleteMe", (t) =>
 );
 
 builder.mutationField("deleteUser", (t) =>
-  t.field({
-    type: "User",
+  t.drizzleField({
+    type: "users",
     args: {
       id: t.arg.id({
         required: true,
@@ -151,20 +158,21 @@ builder.mutationField("deleteUser", (t) =>
     authScopes: {
       admin: true,
     },
-    resolve: async (_root, rawArgs, ctx) => {
+    resolve: async (query, _root, rawArgs, ctx) => {
       const { id } = sanitize(rawArgs);
 
       try {
-        const [deletedUser] = await ctx.db
-          .delete(users)
-          .where(eq(users.id, String(id)))
-          .returning();
+        const fullUser = await ctx.db.query.users.findFirst(
+          query({ where: { id: String(id) } }),
+        );
 
-        if (!deletedUser) {
+        if (!fullUser) {
           throw new Error("El usuario que intenta eliminar no existe");
         }
 
-        return deletedUser;
+        await ctx.db.delete(users).where(eq(users.id, String(id)));
+
+        return fullUser;
       } catch (error) {
         handleDbError(error, {
           notFound: "El usuario que intenta eliminar no existe",

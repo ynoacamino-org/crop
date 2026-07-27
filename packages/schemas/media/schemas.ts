@@ -55,7 +55,9 @@ const MediasPayloadSchema = z.object({
 });
 
 const MediaPayloadSchema = z.object({
-	id: z.cuid({ message: "Se espera que el identificador sea un CUID válido" }),
+	id: z
+		.string()
+		.min(1, { message: "Se espera que el identificador sea un CUID válido" }),
 });
 
 const CreateMediaPayloadSchema = z.object({
@@ -92,7 +94,9 @@ const CreateMediaPayloadSchema = z.object({
 });
 
 const UpdateMediaPayloadSchema = z.object({
-	id: z.cuid({ message: "Se espera que el identificador sea un CUID válido" }),
+	id: z
+		.string()
+		.min(1, { message: "Se espera que el identificador sea un CUID válido" }),
 	input: z.object({
 		alt: z
 			.string({
@@ -107,7 +111,9 @@ const UpdateMediaPayloadSchema = z.object({
 });
 
 const DeleteMediaPayloadSchema = z.object({
-	id: z.cuid({ message: "Se espera que el identificador sea un CUID válido" }),
+	id: z
+		.string()
+		.min(1, { message: "Se espera que el identificador sea un CUID válido" }),
 });
 
 export {

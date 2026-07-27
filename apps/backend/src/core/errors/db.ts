@@ -1,3 +1,4 @@
+import { GraphQLError } from "graphql";
 import {
   BadRequestError,
   DuplicateFieldError,
@@ -21,6 +22,10 @@ export function handleDbError(
     invalidInput?: string;
   },
 ): never {
+  if (error instanceof GraphQLError) {
+    throw error;
+  }
+
   if (error instanceof Error) {
     const message = error.message;
 

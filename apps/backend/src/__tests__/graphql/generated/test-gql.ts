@@ -52,6 +52,39 @@ export enum ArticleStatus {
   Published = "PUBLISHED",
 }
 
+export enum AuditAction {
+  Create = "CREATE",
+  Delete = "DELETE",
+  Update = "UPDATE",
+}
+
+/** Filter audit logs by various fields */
+export type AuditLogFilter = {
+  /** Filter by action (CREATE, UPDATE, DELETE) */
+  action?: StringFilter | null | undefined;
+  /** Filter by entity ID */
+  entityId?: StringFilter | null | undefined;
+  /** Filter by entity type (Article, LegalCase, User, Media, CaseType) */
+  entityType?: StringFilter | null | undefined;
+  /** Filter by user who performed the action */
+  userId?: StringFilter | null | undefined;
+};
+
+/** Sort configuration for audit logs */
+export type AuditLogSort = {
+  /** Sort direction */
+  direction: SortDirection;
+  /** Field to sort by */
+  field: AuditLogSortField;
+};
+
+/** Fields to sort audit logs by */
+export enum AuditLogSortField {
+  Action = "ACTION",
+  CreatedAt = "CREATED_AT",
+  EntityType = "ENTITY_TYPE",
+}
+
 /** Filter for boolean fields */
 export type BooleanFilter = {
   /** Exact match */
@@ -231,6 +264,14 @@ export type DateTimeFilter = {
   /** Less than or equal (ISO 8601) */
   lte?: string | null | undefined;
 };
+
+export enum EntityType {
+  Article = "Article",
+  CaseType = "CaseType",
+  LegalCase = "LegalCase",
+  Media = "Media",
+  User = "User",
+}
 
 /** Filter for integer fields with comparison operators */
 export type IntFilter = {
@@ -588,6 +629,36 @@ export type DeleteArticleMutation = {
   deleteArticle: { id: string; title: string };
 };
 
+export type GetAuditLogsQueryVariables = Exact<{
+  take?: number | null | undefined;
+  skip?: number | null | undefined;
+  filter?: AuditLogFilter | null | undefined;
+  sort?: Array<AuditLogSort> | AuditLogSort | null | undefined;
+}>;
+
+export type GetAuditLogsQuery = {
+  auditLogs: {
+    items: Array<{
+      id: string;
+      entityType: EntityType;
+      entityId: string;
+      action: AuditAction;
+      userName: string | null;
+      oldValues: string | null;
+      newValues: string | null;
+      ipAddress: string | null;
+      userAgent: string | null;
+      createdAt: Date;
+      user: { id: string; name: string | null; email: string };
+    }>;
+    pageInfo: {
+      totalCount: number;
+      hasNextPage: boolean;
+      hasPreviousPage: boolean;
+    };
+  };
+};
+
 export type GetCaseTypeQueryVariables = Exact<{
   id: string;
 }>;
@@ -842,7 +913,7 @@ export type GetMediaQuery = {
     filename: string;
     createdAt: Date;
     updatedAt: Date;
-    uploader: { id: string; name: string | null };
+    uploader: { id: string; name: string | null; email: string };
   } | null;
 };
 
@@ -1493,6 +1564,189 @@ export const DeleteArticleDocument = {
   DeleteArticleMutation,
   DeleteArticleMutationVariables
 >;
+export const GetAuditLogsDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "GetAuditLogs" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "take" } },
+          type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "skip" } },
+          type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "filter" },
+          },
+          type: {
+            kind: "NamedType",
+            name: { kind: "Name", value: "AuditLogFilter" },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "sort" } },
+          type: {
+            kind: "ListType",
+            type: {
+              kind: "NonNullType",
+              type: {
+                kind: "NamedType",
+                name: { kind: "Name", value: "AuditLogSort" },
+              },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "auditLogs" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "take" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "take" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "skip" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "skip" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "filter" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "filter" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "sort" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "sort" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "items" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "id" } },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "entityType" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "entityId" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "action" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "userName" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "oldValues" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "newValues" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "ipAddress" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "userAgent" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "createdAt" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "user" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "id" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "name" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "email" },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "pageInfo" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "totalCount" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "hasNextPage" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "hasPreviousPage" },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<GetAuditLogsQuery, GetAuditLogsQueryVariables>;
 export const GetCaseTypeDocument = {
   kind: "Document",
   definitions: [
@@ -2627,6 +2881,7 @@ export const GetMediaDocument = {
                     selections: [
                       { kind: "Field", name: { kind: "Name", value: "id" } },
                       { kind: "Field", name: { kind: "Name", value: "name" } },
+                      { kind: "Field", name: { kind: "Name", value: "email" } },
                     ],
                   },
                 },

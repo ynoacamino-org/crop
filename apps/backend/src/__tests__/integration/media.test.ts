@@ -25,7 +25,11 @@ describe("Media resolvers", () => {
   describe("media query", () => {
     it("returns media by id", async () => {
       const tc = await createTestContext({ user: testUser });
-      const user = await seedUser(tc.db, { id: testUser.id, role: "ADMIN" });
+      const user = await seedUser(tc.db, {
+        id: testUser.id,
+        email: testUser.email,
+        role: "ADMIN",
+      });
       const mediaRecord = await seedMedia(tc.db, {
         filename: "test-image.jpg",
         type: "IMAGE",
@@ -41,7 +45,11 @@ describe("Media resolvers", () => {
 
       expect(result.errors).toBeUndefined();
       const data = result.data as {
-        media: { filename: string; type: string; uploader: { email: string } };
+        media: {
+          filename: string;
+          type: string;
+          uploader: { id: string; name: string | null; email: string };
+        };
       };
       expect(data.media.filename).toBe("test-image.jpg");
       expect(data.media.type).toBe("IMAGE");
@@ -79,6 +87,7 @@ describe("Media resolvers", () => {
   describe("createMedia mutation", () => {
     it("creates media when authenticated", async () => {
       const tc = await createTestContext({ user: testUser });
+      await seedUser(tc.db, { id: testUser.id, role: "ADMIN" });
 
       const result = await graphql({
         schema,
@@ -86,6 +95,7 @@ describe("Media resolvers", () => {
         variableValues: {
           input: {
             objectKey: "uploads/new-file.jpg",
+            url: "https://example.com/uploads/new-file.jpg",
             filename: "new-file.jpg",
             mimeType: "image/jpeg",
             size: 2048,
@@ -113,6 +123,7 @@ describe("Media resolvers", () => {
         variableValues: {
           input: {
             objectKey: "uploads/file.jpg",
+            url: "https://example.com/uploads/file.jpg",
             filename: "file.jpg",
             mimeType: "image/jpeg",
             size: 1024,
@@ -131,6 +142,11 @@ describe("Media resolvers", () => {
   describe("deleteMedia mutation", () => {
     it("deletes media when authenticated", async () => {
       const tc = await createTestContext({ user: testUser });
+      await seedUser(tc.db, {
+        id: testUser.id,
+        email: testUser.email,
+        role: "ADMIN",
+      });
       const mediaRecord = await seedMedia(tc.db, { filename: "to-delete.jpg" });
 
       const result = await graphql({

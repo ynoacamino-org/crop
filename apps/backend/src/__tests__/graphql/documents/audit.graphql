@@ -1,0 +1,31 @@
+query GetAuditLogs(
+  $take: Int
+  $skip: Int
+  $filter: AuditLogFilter
+  $sort: [AuditLogSort!]
+) {
+  auditLogs(take: $take, skip: $skip, filter: $filter, sort: $sort) {
+    items {
+      id
+      entityType
+      entityId
+      action
+      userName
+      oldValues
+      newValues
+      ipAddress
+      userAgent
+      createdAt
+      user {
+        id
+        name
+        email
+      }
+    }
+    pageInfo {
+      totalCount
+      hasNextPage
+      hasPreviousPage
+    }
+  }
+}

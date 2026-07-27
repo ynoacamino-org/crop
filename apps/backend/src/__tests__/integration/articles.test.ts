@@ -171,7 +171,9 @@ describe("Article resolvers", () => {
         variableValues: {
           input: {
             title: "New Article",
-            content: "Article content here",
+            slug: "new-article",
+            content:
+              "This is the full content of the new article with enough text to pass the minimum length validation.",
           },
         },
         contextValue: tc.context,
@@ -182,7 +184,9 @@ describe("Article resolvers", () => {
         createArticle: { title: string; content: string; status: string };
       };
       expect(data.createArticle.title).toBe("New Article");
-      expect(data.createArticle.content).toBe("Article content here");
+      expect(data.createArticle.content).toBe(
+        "This is the full content of the new article with enough text to pass the minimum length validation.",
+      );
       expect(data.createArticle.status).toBe("DRAFT");
       closeTestDb(tc);
     });
@@ -196,7 +200,9 @@ describe("Article resolvers", () => {
         variableValues: {
           input: {
             title: "New Article",
-            content: "Article content here",
+            slug: "new-article-unauth",
+            content:
+              "This is the full content of the new article with enough text to pass the minimum length validation.",
           },
         },
         contextValue: tc.context,

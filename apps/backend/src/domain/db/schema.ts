@@ -413,6 +413,48 @@ export const articleToLegalCases = sqliteTable(
   ],
 );
 
+export const AUDIT_ACTION_VALUES = ["CREATE", "UPDATE", "DELETE"] as const;
+export const AUDITABLE_ENTITY_VALUES = [
+  "Article",
+  "LegalCase",
+  "User",
+  "Media",
+  "CaseType",
+] as const;
+
+export type AuditActionValue = (typeof AUDIT_ACTION_VALUES)[number];
+export type AuditableEntityValue = (typeof AUDITABLE_ENTITY_VALUES)[number];
+
+export const auditLogs = sqliteTable(
+  "AuditLog",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => createId()),
+    entityType: text("entityType", { enum: AUDITABLE_ENTITY_VALUES }).notNull(),
+    entityId: text("entityId").notNull(),
+    action: text("action", { enum: AUDIT_ACTION_VALUES }).notNull(),
+    userId: text("userId").references(() => users.id, { onDelete: "set null" }),
+    userName: text("userName"),
+    oldValues: text("oldValues"),
+    newValues: text("newValues"),
+    ipAddress: text("ipAddress"),
+    userAgent: text("userAgent"),
+    createdAt: integer("createdAt", { mode: "timestamp_ms" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+  },
+  (table) => [
+    index("AuditLog_entityType_entityId_idx").on(
+      table.entityType,
+      table.entityId,
+    ),
+    index("AuditLog_userId_idx").on(table.userId),
+    index("AuditLog_createdAt_idx").on(table.createdAt),
+    index("AuditLog_action_idx").on(table.action),
+  ],
+);
+
 export const EXPORT_STATUS_VALUES = [
   "pending",
   "processing",
@@ -471,6 +513,7 @@ export const relations = defineRelations(
     articleToTags,
     articleToLegalCases,
     exportJobs,
+    auditLogs,
   },
   (r) => ({
     users: {
@@ -493,6 +536,10 @@ export const relations = defineRelations(
       exportJobs: r.many.exportJobs({
         from: r.users.id,
         to: r.exportJobs.userId,
+      }),
+      auditLogs: r.many.auditLogs({
+        from: r.users.id,
+        to: r.auditLogs.userId,
       }),
     },
     sessions: {
@@ -671,6 +718,12 @@ export const relations = defineRelations(
         optional: false,
       }),
     },
+    auditLogs: {
+      user: r.one.users({
+        from: r.auditLogs.userId,
+        to: r.users.id,
+      }),
+    },
   }),
 );
 
@@ -683,6 +736,7 @@ export type LegalCaseModel = typeof legalCases.$inferSelect;
 export type CourtModel = typeof courts.$inferSelect;
 export type CaseTypeModel = typeof caseTypes.$inferSelect;
 export type ExportJobModel = typeof exportJobs.$inferSelect;
+export type AuditLogModel = typeof auditLogs.$inferSelect;
 
 export const authSchema = {
   user: users,

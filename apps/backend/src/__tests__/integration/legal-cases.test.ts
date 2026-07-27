@@ -13,6 +13,7 @@ import {
   seedCaseType,
   seedCourt,
   seedLegalCase,
+  seedUser,
 } from "@/__tests__/helpers";
 import type { CurrentUser } from "@/shared/graphql/builder";
 import { schema } from "@/shared/graphql/schema";
@@ -95,6 +96,11 @@ describe("LegalCase resolvers", () => {
   describe("createLegalCase mutation", () => {
     it("creates a legal case when authenticated", async () => {
       const tc = await createTestContext({ user: testUser });
+      await seedUser(tc.db, {
+        id: testUser.id,
+        email: testUser.email,
+        role: "ADMIN",
+      });
       const court = await seedCourt(tc.db, { name: "Corte" });
 
       const result = await graphql({
@@ -140,6 +146,11 @@ describe("LegalCase resolvers", () => {
   describe("updateLegalCase mutation", () => {
     it("updates a legal case when authenticated", async () => {
       const tc = await createTestContext({ user: testUser });
+      await seedUser(tc.db, {
+        id: testUser.id,
+        email: testUser.email,
+        role: "ADMIN",
+      });
       const legalCase = await seedLegalCase(tc.db, {
         caseNumber: "CASO-001",
         caseName: "Original",
@@ -165,6 +176,11 @@ describe("LegalCase resolvers", () => {
   describe("deleteLegalCase mutation", () => {
     it("deletes a legal case when authenticated", async () => {
       const tc = await createTestContext({ user: testUser });
+      await seedUser(tc.db, {
+        id: testUser.id,
+        email: testUser.email,
+        role: "ADMIN",
+      });
       const legalCase = await seedLegalCase(tc.db, {
         caseNumber: "CASO-DEL",
         caseName: "To Delete",

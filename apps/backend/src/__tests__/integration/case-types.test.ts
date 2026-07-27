@@ -11,6 +11,7 @@ import {
   closeTestDb,
   createTestContext,
   seedCaseType,
+  seedUser,
 } from "@/__tests__/helpers";
 import type { CurrentUser } from "@/shared/graphql/builder";
 import { schema } from "@/shared/graphql/schema";
@@ -85,6 +86,11 @@ describe("CaseType resolvers", () => {
   describe("createCaseType mutation", () => {
     it("creates a case type when authenticated", async () => {
       const tc = await createTestContext({ user: testUser });
+      await seedUser(tc.db, {
+        id: testUser.id,
+        email: testUser.email,
+        role: "ADMIN",
+      });
 
       const result = await graphql({
         schema,
@@ -126,6 +132,11 @@ describe("CaseType resolvers", () => {
   describe("updateCaseType mutation", () => {
     it("updates a case type when authenticated", async () => {
       const tc = await createTestContext({ user: testUser });
+      await seedUser(tc.db, {
+        id: testUser.id,
+        email: testUser.email,
+        role: "ADMIN",
+      });
       const caseType = await seedCaseType(tc.db, {
         name: "Original",
         slug: "original",
@@ -154,6 +165,11 @@ describe("CaseType resolvers", () => {
   describe("deleteCaseType mutation", () => {
     it("deletes a case type when authenticated", async () => {
       const tc = await createTestContext({ user: testUser });
+      await seedUser(tc.db, {
+        id: testUser.id,
+        email: testUser.email,
+        role: "ADMIN",
+      });
       const caseType = await seedCaseType(tc.db, {
         name: "To Delete",
         slug: "to-delete",

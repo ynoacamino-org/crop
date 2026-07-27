@@ -15,8 +15,8 @@ import {
 import { builder } from "@/shared/graphql/builder";
 
 builder.mutationField("createMedia", (t) =>
-  t.field({
-    type: "Media",
+  t.drizzleField({
+    type: "media",
     authScopes: { authenticated: true },
     args: {
       input: t.arg({
@@ -26,7 +26,7 @@ builder.mutationField("createMedia", (t) =>
         validate: CreateMediaPayloadSchema.shape.input,
       }),
     },
-    resolve: async (_root, rawArgs, ctx) => {
+    resolve: async (query, _root, rawArgs, ctx) => {
       if (!ctx.user) throw new UnauthorizedError();
 
       const { input } = sanitize(rawArgs);
@@ -44,13 +44,19 @@ builder.mutationField("createMedia", (t) =>
             filename: input.filename,
             uploadedBy: ctx.user.id,
           })
-          .returning();
+          .returning({ id: media.id });
 
         if (!createdMedia) {
           throw new Error("No se pudo crear el medio");
         }
 
-        return createdMedia;
+        const result = await ctx.db.query.media.findFirst(
+          query({ where: { id: createdMedia.id } }),
+        );
+
+        if (!result) throw new Error("No se pudo crear el medio");
+
+        return result;
       } catch (error) {
         handleDbError(error, {
           duplicate: "Ya existe un medio con el mismo bucketId",
@@ -61,8 +67,8 @@ builder.mutationField("createMedia", (t) =>
 );
 
 builder.mutationField("updateMedia", (t) =>
-  t.field({
-    type: "Media",
+  t.drizzleField({
+    type: "media",
     authScopes: { authenticated: true },
     args: {
       id: t.arg.string({
@@ -77,7 +83,7 @@ builder.mutationField("updateMedia", (t) =>
         validate: UpdateMediaPayloadSchema.shape.input,
       }),
     },
-    resolve: async (_root, rawArgs, ctx) => {
+    resolve: async (query, _root, rawArgs, ctx) => {
       if (!ctx.user) throw new UnauthorizedError();
 
       const { id, input } = sanitize(rawArgs);
@@ -97,19 +103,20 @@ builder.mutationField("updateMedia", (t) =>
           throw new UnauthorizedError();
         }
 
-        const [updatedMedia] = await ctx.db
+        await ctx.db
           .update(media)
           .set({
             ...(input.alt !== undefined && { alt: input.alt }),
             ...(input.url !== undefined && { url: input.url }),
             updatedAt: new Date(),
           })
-          .where(eq(media.id, id))
-          .returning();
+          .where(eq(media.id, id));
 
-        if (!updatedMedia) {
-          throw new NotFoundError("Medio no encontrado");
-        }
+        const updatedMedia = await ctx.db.query.media.findFirst(
+          query({ where: { id } }),
+        );
+
+        if (!updatedMedia) throw new NotFoundError("Medio no encontrado");
 
         return updatedMedia;
       } catch (error) {
@@ -120,8 +127,8 @@ builder.mutationField("updateMedia", (t) =>
 );
 
 builder.mutationField("deleteMedia", (t) =>
-  t.field({
-    type: "Media",
+  t.drizzleField({
+    type: "media",
     authScopes: { authenticated: true },
     args: {
       id: t.arg.string({
@@ -130,7 +137,7 @@ builder.mutationField("deleteMedia", (t) =>
         validate: DeleteMediaPayloadSchema.shape.id,
       }),
     },
-    resolve: async (_root, rawArgs, ctx) => {
+    resolve: async (query, _root, rawArgs, ctx) => {
       if (!ctx.user) throw new UnauthorizedError();
 
       const { id } = sanitize(rawArgs);
@@ -150,16 +157,17 @@ builder.mutationField("deleteMedia", (t) =>
           throw new UnauthorizedError();
         }
 
-        const [deletedMedia] = await ctx.db
-          .delete(media)
-          .where(eq(media.id, id))
-          .returning();
+        const fullMedia = await ctx.db.query.media.findFirst(
+          query({ where: { id } }),
+        );
 
-        if (!deletedMedia) {
+        if (!fullMedia) {
           throw new NotFoundError("Medio no encontrado");
         }
 
-        return deletedMedia;
+        await ctx.db.delete(media).where(eq(media.id, id));
+
+        return fullMedia;
       } catch (error) {
         handleDbError(error);
       }

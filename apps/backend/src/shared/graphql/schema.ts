@@ -17,6 +17,9 @@ import "@/modules/business/article/model";
 import "@/modules/business/article/inputs";
 import "@/modules/business/article/query";
 import "@/modules/business/article/mutation";
+import "@/modules/audit/model";
+import "@/modules/audit/inputs";
+import "@/modules/audit/query";
 import "@/shared/graphql/pagination";
 
 export const schema = builder.toSchema();

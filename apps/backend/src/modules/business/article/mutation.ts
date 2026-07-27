@@ -15,8 +15,8 @@ import {
 import { builder } from "@/shared/graphql/builder";
 
 builder.mutationField("createArticle", (t) =>
-  t.field({
-    type: "Article",
+  t.drizzleField({
+    type: "articles",
     authScopes: { authenticated: true },
     args: {
       input: t.arg({
@@ -25,7 +25,7 @@ builder.mutationField("createArticle", (t) =>
         description: "Data for creating a new article",
       }),
     },
-    resolve: async (_root, rawArgs, ctx) => {
+    resolve: async (query, _root, rawArgs, ctx) => {
       const currentUser = ctx.user;
 
       if (!currentUser) throw new UnauthorizedError();
@@ -49,7 +49,7 @@ builder.mutationField("createArticle", (t) =>
               featuredImageId: input.featuredImageId,
             }),
           })
-          .returning();
+          .returning({ id: articles.id });
 
         if (!createdArticle) {
           throw new Error("No se pudo crear el artículo");
@@ -82,7 +82,13 @@ builder.mutationField("createArticle", (t) =>
           );
         }
 
-        return createdArticle;
+        const result = await ctx.db.query.articles.findFirst(
+          query({ where: { id: createdArticle.id } }),
+        );
+
+        if (!result) throw new Error("No se pudo crear el artículo");
+
+        return result;
       } catch (error) {
         handleDbError(error, {
           duplicate: "Ya existe un artículo con el mismo slug",
@@ -93,8 +99,8 @@ builder.mutationField("createArticle", (t) =>
 );
 
 builder.mutationField("updateArticle", (t) =>
-  t.field({
-    type: "Article",
+  t.drizzleField({
+    type: "articles",
     authScopes: { authenticated: true },
     args: {
       id: t.arg.string({
@@ -107,7 +113,7 @@ builder.mutationField("updateArticle", (t) =>
         description: "Data for updating an existing article",
       }),
     },
-    resolve: async (_root, rawArgs, ctx) => {
+    resolve: async (query, _root, rawArgs, ctx) => {
       if (!ctx.user) throw new UnauthorizedError();
 
       const { id, input } = sanitize(rawArgs);
@@ -127,7 +133,7 @@ builder.mutationField("updateArticle", (t) =>
           throw new UnauthorizedError();
         }
 
-        const [updatedArticle] = await ctx.db
+        await ctx.db
           .update(articles)
           .set({
             ...(input.title && { title: input.title }),
@@ -150,12 +156,7 @@ builder.mutationField("updateArticle", (t) =>
             }),
             updatedAt: new Date(),
           })
-          .where(eq(articles.id, id))
-          .returning();
-
-        if (!updatedArticle) {
-          throw new NotFoundError("Artículo no encontrado");
-        }
+          .where(eq(articles.id, id));
 
         if (input.categoryIds !== undefined) {
           await ctx.db
@@ -202,6 +203,12 @@ builder.mutationField("updateArticle", (t) =>
           }
         }
 
+        const updatedArticle = await ctx.db.query.articles.findFirst(
+          query({ where: { id } }),
+        );
+
+        if (!updatedArticle) throw new NotFoundError("Artículo no encontrado");
+
         return updatedArticle;
       } catch (error) {
         handleDbError(error, {
@@ -213,8 +220,8 @@ builder.mutationField("updateArticle", (t) =>
 );
 
 builder.mutationField("deleteArticle", (t) =>
-  t.field({
-    type: "Article",
+  t.drizzleField({
+    type: "articles",
     authScopes: { authenticated: true },
     args: {
       id: t.arg.string({
@@ -222,7 +229,7 @@ builder.mutationField("deleteArticle", (t) =>
         description: "Article ID to delete",
       }),
     },
-    resolve: async (_root, rawArgs, ctx) => {
+    resolve: async (query, _root, rawArgs, ctx) => {
       if (!ctx.user) throw new UnauthorizedError();
 
       const { id } = sanitize(rawArgs);
@@ -242,16 +249,17 @@ builder.mutationField("deleteArticle", (t) =>
           throw new UnauthorizedError();
         }
 
-        const [deletedArticle] = await ctx.db
-          .delete(articles)
-          .where(eq(articles.id, id))
-          .returning();
+        const fullArticle = await ctx.db.query.articles.findFirst(
+          query({ where: { id } }),
+        );
 
-        if (!deletedArticle) {
+        if (!fullArticle) {
           throw new NotFoundError("Artículo no encontrado");
         }
 
-        return deletedArticle;
+        await ctx.db.delete(articles).where(eq(articles.id, id));
+
+        return fullArticle;
       } catch (error) {
         handleDbError(error);
       }

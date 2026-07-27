@@ -11,8 +11,8 @@ import {
 import { builder } from "@/shared/graphql/builder";
 
 builder.mutationField("createLegalCase", (t) =>
-  t.field({
-    type: "LegalCase",
+  t.drizzleField({
+    type: "legalCases",
     authScopes: { collaborator: true },
     args: {
       input: t.arg({
@@ -21,7 +21,7 @@ builder.mutationField("createLegalCase", (t) =>
         description: "Data for creating a new legal case",
       }),
     },
-    resolve: async (_root, rawArgs, ctx) => {
+    resolve: async (query, _root, rawArgs, ctx) => {
       if (!ctx.user) throw new UnauthorizedError();
 
       const { input } = sanitize(rawArgs);
@@ -71,13 +71,19 @@ builder.mutationField("createLegalCase", (t) =>
             caseTypeId: input.caseTypeId,
             courtId: input.courtId,
           })
-          .returning();
+          .returning({ id: legalCases.id });
 
         if (!createdCase) {
           throw new Error("No se pudo crear el caso legal");
         }
 
-        return createdCase;
+        const result = await ctx.db.query.legalCases.findFirst(
+          query({ where: { id: createdCase.id } }),
+        );
+
+        if (!result) throw new Error("No se pudo crear el caso legal");
+
+        return result;
       } catch (error) {
         handleDbError(error, {
           duplicate: "Ya existe un caso con el mismo número de expediente",
@@ -88,8 +94,8 @@ builder.mutationField("createLegalCase", (t) =>
 );
 
 builder.mutationField("updateLegalCase", (t) =>
-  t.field({
-    type: "LegalCase",
+  t.drizzleField({
+    type: "legalCases",
     authScopes: { collaborator: true },
     args: {
       id: t.arg.string({
@@ -102,7 +108,7 @@ builder.mutationField("updateLegalCase", (t) =>
         description: "Data for updating the legal case",
       }),
     },
-    resolve: async (_root, rawArgs, ctx) => {
+    resolve: async (query, _root, rawArgs, ctx) => {
       if (!ctx.user) throw new UnauthorizedError();
 
       const { id, input } = sanitize(rawArgs);
@@ -146,7 +152,7 @@ builder.mutationField("updateLegalCase", (t) =>
         const newCaseNumber = input.caseNumber ?? legalCase.caseNumber;
         const shouldUpdateSlug = input.caseName || input.caseNumber;
 
-        const [updatedCase] = await ctx.db
+        await ctx.db
           .update(legalCases)
           .set({
             ...(input.caseNumber && { caseNumber: input.caseNumber }),
@@ -183,12 +189,13 @@ builder.mutationField("updateLegalCase", (t) =>
             }),
             updatedAt: new Date(),
           })
-          .where(eq(legalCases.id, id))
-          .returning();
+          .where(eq(legalCases.id, id));
 
-        if (!updatedCase) {
-          throw new NotFoundError("Caso legal no encontrado");
-        }
+        const updatedCase = await ctx.db.query.legalCases.findFirst(
+          query({ where: { id } }),
+        );
+
+        if (!updatedCase) throw new NotFoundError("Caso legal no encontrado");
 
         return updatedCase;
       } catch (error) {
@@ -201,8 +208,8 @@ builder.mutationField("updateLegalCase", (t) =>
 );
 
 builder.mutationField("deleteLegalCase", (t) =>
-  t.field({
-    type: "LegalCase",
+  t.drizzleField({
+    type: "legalCases",
     authScopes: { admin: true },
     args: {
       id: t.arg.string({
@@ -210,32 +217,23 @@ builder.mutationField("deleteLegalCase", (t) =>
         description: "Legal case ID to delete",
       }),
     },
-    resolve: async (_root, rawArgs, ctx) => {
+    resolve: async (query, _root, rawArgs, ctx) => {
       if (!ctx.user) throw new UnauthorizedError();
 
       const { id } = sanitize(rawArgs);
 
       try {
-        const [legalCase] = await ctx.db
-          .select()
-          .from(legalCases)
-          .where(eq(legalCases.id, id))
-          .limit(1);
+        const fullCase = await ctx.db.query.legalCases.findFirst(
+          query({ where: { id } }),
+        );
 
-        if (!legalCase) {
+        if (!fullCase) {
           throw new NotFoundError("Caso legal no encontrado");
         }
 
-        const [deletedCase] = await ctx.db
-          .delete(legalCases)
-          .where(eq(legalCases.id, id))
-          .returning();
+        await ctx.db.delete(legalCases).where(eq(legalCases.id, id));
 
-        if (!deletedCase) {
-          throw new NotFoundError("Caso legal no encontrado");
-        }
-
-        return deletedCase;
+        return fullCase;
       } catch (error) {
         handleDbError(error);
       }

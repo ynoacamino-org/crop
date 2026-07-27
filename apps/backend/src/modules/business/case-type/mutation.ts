@@ -12,8 +12,8 @@ import {
 import { builder } from "@/shared/graphql/builder";
 
 builder.mutationField("createCaseType", (t) =>
-  t.field({
-    type: "CaseType",
+  t.drizzleField({
+    type: "caseTypes",
     authScopes: { admin: true },
     args: {
       input: t.arg({
@@ -22,7 +22,7 @@ builder.mutationField("createCaseType", (t) =>
         description: "Data for creating a new case type",
       }),
     },
-    resolve: async (_root, rawArgs, ctx) => {
+    resolve: async (query, _root, rawArgs, ctx) => {
       if (!ctx.user) throw new UnauthorizedError();
 
       const { input } = sanitize(rawArgs);
@@ -42,13 +42,19 @@ builder.mutationField("createCaseType", (t) =>
             order: validatedInput.order ?? 0,
             active: validatedInput.active ?? true,
           })
-          .returning();
+          .returning({ id: caseTypes.id });
 
         if (!createdCaseType) {
           throw new Error("No se pudo crear el tipo de caso");
         }
 
-        return createdCaseType;
+        const result = await ctx.db.query.caseTypes.findFirst(
+          query({ where: { id: createdCaseType.id } }),
+        );
+
+        if (!result) throw new Error("No se pudo crear el tipo de caso");
+
+        return result;
       } catch (error) {
         handleDbError(error, {
           duplicate: "Ya existe un tipo de caso con ese nombre o slug",
@@ -59,8 +65,8 @@ builder.mutationField("createCaseType", (t) =>
 );
 
 builder.mutationField("updateCaseType", (t) =>
-  t.field({
-    type: "CaseType",
+  t.drizzleField({
+    type: "caseTypes",
     authScopes: { admin: true },
     args: {
       id: t.arg.string({
@@ -73,7 +79,7 @@ builder.mutationField("updateCaseType", (t) =>
         description: "Data for updating the case type",
       }),
     },
-    resolve: async (_root, rawArgs, ctx) => {
+    resolve: async (query, _root, rawArgs, ctx) => {
       if (!ctx.user) throw new UnauthorizedError();
 
       const { id, input } = sanitize(rawArgs);
@@ -92,7 +98,7 @@ builder.mutationField("updateCaseType", (t) =>
           throw new NotFoundError("Tipo de caso no encontrado");
         }
 
-        const [updatedCaseType] = await ctx.db
+        await ctx.db
           .update(caseTypes)
           .set({
             ...(validatedInput.name !== undefined && {
@@ -118,12 +124,14 @@ builder.mutationField("updateCaseType", (t) =>
             }),
             updatedAt: new Date(),
           })
-          .where(eq(caseTypes.id, id))
-          .returning();
+          .where(eq(caseTypes.id, id));
 
-        if (!updatedCaseType) {
+        const updatedCaseType = await ctx.db.query.caseTypes.findFirst(
+          query({ where: { id } }),
+        );
+
+        if (!updatedCaseType)
           throw new NotFoundError("Tipo de caso no encontrado");
-        }
 
         return updatedCaseType;
       } catch (error) {
@@ -136,8 +144,8 @@ builder.mutationField("updateCaseType", (t) =>
 );
 
 builder.mutationField("deleteCaseType", (t) =>
-  t.field({
-    type: "CaseType",
+  t.drizzleField({
+    type: "caseTypes",
     authScopes: { admin: true },
     args: {
       id: t.arg.string({
@@ -145,24 +153,22 @@ builder.mutationField("deleteCaseType", (t) =>
         description: "Case type ID to delete",
       }),
     },
-    resolve: async (_root, rawArgs, ctx) => {
+    resolve: async (query, _root, rawArgs, ctx) => {
       if (!ctx.user) throw new UnauthorizedError();
 
       const { id } = sanitize(rawArgs);
 
       try {
-        const [caseType] = await ctx.db
-          .select()
-          .from(caseTypes)
-          .where(eq(caseTypes.id, id))
-          .limit(1);
+        const fullCaseType = await ctx.db.query.caseTypes.findFirst(
+          query({ where: { id } }),
+        );
 
-        if (!caseType) {
+        if (!fullCaseType) {
           throw new NotFoundError("Tipo de caso no encontrado");
         }
 
         const [legalCasesCountRow] = await ctx.db
-          .select({ legalCasesCount: sql<number>`count(*)::int` })
+          .select({ legalCasesCount: sql<number>`count(*)` })
           .from(legalCases)
           .where(eq(legalCases.caseTypeId, id));
 
@@ -175,16 +181,9 @@ builder.mutationField("deleteCaseType", (t) =>
           );
         }
 
-        const [deletedCaseType] = await ctx.db
-          .delete(caseTypes)
-          .where(eq(caseTypes.id, id))
-          .returning();
+        await ctx.db.delete(caseTypes).where(eq(caseTypes.id, id));
 
-        if (!deletedCaseType) {
-          throw new NotFoundError("Tipo de caso no encontrado");
-        }
-
-        return deletedCaseType;
+        return fullCaseType;
       } catch (error) {
         handleDbError(error);
       }

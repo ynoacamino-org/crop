@@ -1,8 +1,10 @@
 import SchemaBuilder from "@pothos/core";
 import DrizzlePlugin from "@pothos/plugin-drizzle";
 import ScopeAuthPlugin from "@pothos/plugin-scope-auth";
+import TracingPlugin from "@pothos/plugin-tracing";
 import ValidationPlugin from "@pothos/plugin-validation";
 import { getTableConfig } from "drizzle-orm/sqlite-core";
+import { GraphQLError } from "graphql";
 import { DateTimeResolver } from "graphql-scalars";
 import type { RuntimeEnv } from "@/bootstrap/types";
 import type {
@@ -17,6 +19,7 @@ import type {
   UserModel,
 } from "@/domain/db/schema";
 import { relations } from "@/domain/db/schema";
+import { createAuditTracingConfig } from "@/modules/audit/plugin";
 import type { D1Db } from "@/modules/database/ports/db";
 
 export interface CurrentUser {
@@ -65,11 +68,18 @@ export const builder = new SchemaBuilder<{
   Context: AppContextShape;
 }>({
   defaults: "v3",
-  plugins: [DrizzlePlugin, ValidationPlugin, ScopeAuthPlugin],
+  plugins: [DrizzlePlugin, ValidationPlugin, ScopeAuthPlugin, TracingPlugin],
   drizzle: {
     client: (ctx: AppContextShape) => ctx.db,
     getTableConfig,
     relations,
+  },
+  tracing: createAuditTracingConfig(),
+  scopeAuthOptions: {
+    unauthorizedError: () =>
+      new GraphQLError("Usted no esta autorizado para realizar esta acción", {
+        extensions: { code: "UNAUTHORIZED" },
+      }),
   },
   authScopes: (context) => ({
     public: true,
