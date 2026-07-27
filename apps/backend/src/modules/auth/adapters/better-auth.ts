@@ -39,13 +39,6 @@ export class BetterAuthAdapter implements AuthPort {
         minPasswordLength: 8,
         maxPasswordLength: 128,
       },
-      socialProviders: {
-        google: {
-          prompt: "select_account",
-          clientId: auth.googleClientId,
-          clientSecret: auth.googleClientSecret,
-        },
-      },
       session: {
         cookieCache: {
           enabled: true,

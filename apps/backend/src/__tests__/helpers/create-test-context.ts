@@ -49,8 +49,6 @@ function createMockRuntime(db: DatabaseClient): RuntimeEnv {
       port: 7000,
       auth: {
         secret: "test-secret",
-        googleClientId: "",
-        googleClientSecret: "",
       },
       database: { url: ":memory:" },
       s3: {

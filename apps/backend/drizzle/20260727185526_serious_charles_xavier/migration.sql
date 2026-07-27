@@ -97,6 +97,25 @@ CREATE TABLE `Court` (
 	`updatedAt` integer NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE `ExportJob` (
+	`id` text PRIMARY KEY,
+	`userId` text NOT NULL,
+	`type` text NOT NULL,
+	`status` text DEFAULT 'pending' NOT NULL,
+	`filters` text,
+	`columns` text,
+	`progress` integer DEFAULT 0 NOT NULL,
+	`totalRows` integer,
+	`processedRows` integer,
+	`fileKey` text,
+	`downloadUrl` text,
+	`error` text,
+	`createdAt` integer NOT NULL,
+	`startedAt` integer,
+	`completedAt` integer,
+	CONSTRAINT `fk_ExportJob_userId_User_id_fk` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE CASCADE
+);
+--> statement-breakpoint
 CREATE TABLE `LegalCase` (
 	`id` text PRIMARY KEY,
 	`caseNumber` text NOT NULL,
@@ -196,6 +215,9 @@ CREATE INDEX `Category_slug_idx` ON `Category` (`slug`);--> statement-breakpoint
 CREATE UNIQUE INDEX `Court_name_key` ON `Court` (`name`);--> statement-breakpoint
 CREATE INDEX `Court_type_idx` ON `Court` (`type`);--> statement-breakpoint
 CREATE INDEX `Court_jurisdiction_idx` ON `Court` (`jurisdiction`);--> statement-breakpoint
+CREATE INDEX `ExportJob_userId_idx` ON `ExportJob` (`userId`);--> statement-breakpoint
+CREATE INDEX `ExportJob_status_idx` ON `ExportJob` (`status`);--> statement-breakpoint
+CREATE INDEX `ExportJob_createdAt_idx` ON `ExportJob` (`createdAt`);--> statement-breakpoint
 CREATE UNIQUE INDEX `LegalCase_caseNumber_key` ON `LegalCase` (`caseNumber`);--> statement-breakpoint
 CREATE UNIQUE INDEX `LegalCase_slug_key` ON `LegalCase` (`slug`);--> statement-breakpoint
 CREATE INDEX `LegalCase_caseNumber_idx` ON `LegalCase` (`caseNumber`);--> statement-breakpoint

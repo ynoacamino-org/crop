@@ -8,8 +8,6 @@ export function createEnvConfig(env: EnvPort) {
 
     auth: {
       secret: env.getRequired("BETTER_AUTH_SECRET"),
-      googleClientId: env.get("GOOGLE_CLIENT_ID") ?? "",
-      googleClientSecret: env.get("GOOGLE_CLIENT_SECRET") ?? "",
     },
 
     database: {

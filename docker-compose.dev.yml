@@ -31,15 +31,14 @@ services:
     image: dxflrs/garage:v2.3.0
     container_name: crop-garage-dev
     restart: unless-stopped
+    env_file:
+      - ./storage/.env.dev
     environment:
       GARAGE_RPC_LISTEN_ADDR: "[::]:3901"
       GARAGE_RPC_PUBLIC_ADDR: "crop-garage-dev:3901"
       GARAGE_RPC_SECRET: "${GARAGE_RPC_SECRET:-d9316abbd839709669eeca2b449aba2a732949819ea933bab2a1514e9fe00a56}"
       GARAGE_S3_API_LISTEN_ADDR: "[::]:3900"
       GARAGE_S3_BUCKET_DEFAULT_ALLOW: "true"
-      GARAGE_DEFAULT_ACCESS_KEY: "GKc7b6103f2655e2b34cd0e659cada57c7"
-      GARAGE_DEFAULT_SECRET_KEY: "c5b3b89344ba4f7990045374e4fc7115df9f74e4162e05e760b16e6ca819cd91"
-      GARAGE_DEFAULT_BUCKET: "crop"
     volumes:
       - garage_data:/var/lib/garage
       - ./storage/garage.toml:/etc/garage.toml:ro

@@ -5,10 +5,8 @@ import {
   useNavigate,
   useSearch,
 } from "@tanstack/react-router";
-import { Lock } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -56,26 +54,6 @@ function IniciarSesionPage() {
         </CardHeader>
 
         <CardContent className="space-y-4">
-          <Button
-            className="w-full gap-3 py-6 text-base"
-            size="lg"
-            onClick={() => signIn.social({ provider: "google" })}
-          >
-            <Lock />
-            Continuar con Google
-          </Button>
-
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">
-                O continúa con email
-              </span>
-            </div>
-          </div>
-
           <LoginForm onSubmit={handleLogin} />
 
           <div className="text-center text-sm">

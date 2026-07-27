@@ -1,7 +1,7 @@
 {
   "version": "7",
   "dialect": "sqlite",
-  "id": "032b88c9-8347-41e6-95da-c82af8f7b1cb",
+  "id": "d22391ea-1b45-417d-b42b-cd33f2ec730d",
   "prevIds": ["00000000-0000-0000-0000-000000000000"],
   "ddl": [
     {
@@ -38,6 +38,10 @@
     },
     {
       "name": "Court",
+      "entityType": "tables"
+    },
+    {
+      "name": "ExportJob",
       "entityType": "tables"
     },
     {
@@ -633,6 +637,156 @@
       "name": "updatedAt",
       "entityType": "columns",
       "table": "Court"
+    },
+    {
+      "type": "text",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "id",
+      "entityType": "columns",
+      "table": "ExportJob"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "userId",
+      "entityType": "columns",
+      "table": "ExportJob"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "type",
+      "entityType": "columns",
+      "table": "ExportJob"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": "'pending'",
+      "generated": null,
+      "name": "status",
+      "entityType": "columns",
+      "table": "ExportJob"
+    },
+    {
+      "type": "text",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "filters",
+      "entityType": "columns",
+      "table": "ExportJob"
+    },
+    {
+      "type": "text",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "columns",
+      "entityType": "columns",
+      "table": "ExportJob"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": "0",
+      "generated": null,
+      "name": "progress",
+      "entityType": "columns",
+      "table": "ExportJob"
+    },
+    {
+      "type": "integer",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "totalRows",
+      "entityType": "columns",
+      "table": "ExportJob"
+    },
+    {
+      "type": "integer",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "processedRows",
+      "entityType": "columns",
+      "table": "ExportJob"
+    },
+    {
+      "type": "text",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "fileKey",
+      "entityType": "columns",
+      "table": "ExportJob"
+    },
+    {
+      "type": "text",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "downloadUrl",
+      "entityType": "columns",
+      "table": "ExportJob"
+    },
+    {
+      "type": "text",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "error",
+      "entityType": "columns",
+      "table": "ExportJob"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "createdAt",
+      "entityType": "columns",
+      "table": "ExportJob"
+    },
+    {
+      "type": "integer",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "startedAt",
+      "entityType": "columns",
+      "table": "ExportJob"
+    },
+    {
+      "type": "integer",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "completedAt",
+      "entityType": "columns",
+      "table": "ExportJob"
     },
     {
       "type": "text",
@@ -1326,6 +1480,17 @@
       "table": "Article"
     },
     {
+      "columns": ["userId"],
+      "tableTo": "User",
+      "columnsTo": ["id"],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "nameExplicit": false,
+      "name": "fk_ExportJob_userId_User_id_fk",
+      "entityType": "fks",
+      "table": "ExportJob"
+    },
+    {
       "columns": ["courtId"],
       "tableTo": "Court",
       "columnsTo": ["id"],
@@ -1430,6 +1595,13 @@
       "nameExplicit": false,
       "name": "Court_pk",
       "table": "Court",
+      "entityType": "pks"
+    },
+    {
+      "columns": ["id"],
+      "nameExplicit": false,
+      "name": "ExportJob_pk",
+      "table": "ExportJob",
       "entityType": "pks"
     },
     {
@@ -1753,6 +1925,48 @@
       "name": "Court_jurisdiction_idx",
       "entityType": "indexes",
       "table": "Court"
+    },
+    {
+      "columns": [
+        {
+          "value": "userId",
+          "isExpression": false
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "origin": "manual",
+      "name": "ExportJob_userId_idx",
+      "entityType": "indexes",
+      "table": "ExportJob"
+    },
+    {
+      "columns": [
+        {
+          "value": "status",
+          "isExpression": false
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "origin": "manual",
+      "name": "ExportJob_status_idx",
+      "entityType": "indexes",
+      "table": "ExportJob"
+    },
+    {
+      "columns": [
+        {
+          "value": "createdAt",
+          "isExpression": false
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "origin": "manual",
+      "name": "ExportJob_createdAt_idx",
+      "entityType": "indexes",
+      "table": "ExportJob"
     },
     {
       "columns": [
