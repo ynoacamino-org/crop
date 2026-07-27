@@ -1,0 +1,74 @@
+query GetCaseType($id: String!) {
+  caseType(id: $id) {
+    id
+    name
+    slug
+    description
+    color
+    icon
+    order
+    active
+    createdAt
+    updatedAt
+  }
+}
+
+query GetCaseTypes(
+  $take: Int
+  $skip: Int
+  $filter: CaseTypeFilter
+  $sort: [CaseTypeSort!]
+) {
+  caseTypes(take: $take, skip: $skip, filter: $filter, sort: $sort) {
+    items {
+      id
+      name
+      slug
+      description
+      color
+      icon
+      order
+      active
+    }
+    pageInfo {
+      totalCount
+      hasNextPage
+      hasPreviousPage
+    }
+  }
+}
+
+mutation CreateCaseType($input: CreateCaseTypeInput!) {
+  createCaseType(input: $input) {
+    id
+    name
+    slug
+    description
+    color
+    icon
+    order
+    active
+  }
+}
+
+mutation UpdateCaseType($id: String!, $input: UpdateCaseTypeInput!) {
+  updateCaseType(id: $id, input: $input) {
+    id
+    name
+    slug
+    description
+    color
+    icon
+    order
+    active
+    updatedAt
+  }
+}
+
+mutation DeleteCaseType($id: String!) {
+  deleteCaseType(id: $id) {
+    id
+    name
+    slug
+  }
+}

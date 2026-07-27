@@ -10,7 +10,8 @@
     "build:edge": "wrangler deploy --dry-run --outdir .output",
     "build:node": "bun build src/entries/node.ts --outdir .output --target bun",
     "start:node": "bun run .output/node.js",
-    "codegen": "bun run scripts/gen-schema.ts",
+    "schemagen": "bun run scripts/gen-schema.ts",
+    "codegen": "bun run schemagen && graphql-codegen --config codegen.ts",
     "typecheck": "tsgo --noEmit",
     "edgecheck": "wrangler deploy --dry-run",
     "db:seed": "bun run --env-file=.env.dev scripts/seed.ts",
@@ -18,22 +19,33 @@
     "db:migrate:container": "bun run --env-file=.env.dev drizzle-kit migrate --config=drizzle.config.container.ts",
     "db:migrate:edge": "drizzle-kit migrate --config=drizzle.config.edge.ts",
     "db:studio:container": "drizzle-kit studio --config=drizzle.config.container.ts",
-    "db:studio:edge": "drizzle-kit studio --config=drizzle.config.edge.ts"
+    "db:studio:edge": "drizzle-kit studio --config=drizzle.config.edge.ts",
+    "test": "vitest run",
+    "test:unit": "vitest run src/**/*.test.ts --dir src/core --dir src/modules --dir src/shared",
+    "test:integration": "vitest run src/__tests__/integration",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.4",
     "@faker-js/faker": "^10.1.0",
+    "@graphql-codegen/cli": "^7.2.0",
+    "@graphql-codegen/typed-document-node": "^7.1.0",
+    "@graphql-codegen/typescript-operations": "^6.1.2",
     "@rcmade/hono-docs": "^1.0.31",
     "@repo/biome-config": "workspace:^",
-    "@types/bun": "latest",
+    "@types/bun": "^1.3.14",
     "@typescript/native-preview": "latest",
     "drizzle-kit": "rc",
+    "sql.js": "^1.14.1",
+    "vitest": "^4.1.10",
     "wrangler": "^4.101.0"
   },
   "peerDependencies": {
     "typescript": "^5"
   },
   "dependencies": {
+    "@graphql-typed-document-node/core": "^3.2.0",
     "@hono/node-server": "^2.0.5",
     "@hono/zod-validator": "^0.4.1",
     "@libsql/client": "^0.17.4",

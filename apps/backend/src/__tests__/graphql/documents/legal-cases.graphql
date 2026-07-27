@@ -1,0 +1,83 @@
+query GetLegalCase($id: String!) {
+  legalCase(id: $id) {
+    id
+    caseNumber
+    caseName
+    slug
+    summary
+    parties
+    plaintiff
+    defendant
+    judges
+    verdict
+    legalBasis
+    jurisdiction
+    caseDate
+    resolutionDate
+    createdAt
+    updatedAt
+    court {
+      id
+      name
+    }
+    caseType {
+      id
+      name
+    }
+  }
+}
+
+query GetLegalCases(
+  $take: Int
+  $skip: Int
+  $filter: LegalCaseFilter
+  $sort: [LegalCaseSort!]
+) {
+  legalCases(take: $take, skip: $skip, filter: $filter, sort: $sort) {
+    items {
+      id
+      caseNumber
+      caseName
+      slug
+      jurisdiction
+      caseDate
+    }
+    pageInfo {
+      totalCount
+      hasNextPage
+      hasPreviousPage
+    }
+  }
+}
+
+mutation CreateLegalCase($input: CreateLegalCaseInput!) {
+  createLegalCase(input: $input) {
+    id
+    caseNumber
+    caseName
+    slug
+    jurisdiction
+    court {
+      id
+      name
+    }
+  }
+}
+
+mutation UpdateLegalCase($id: String!, $input: UpdateLegalCaseInput!) {
+  updateLegalCase(id: $id, input: $input) {
+    id
+    caseNumber
+    caseName
+    slug
+    updatedAt
+  }
+}
+
+mutation DeleteLegalCase($id: String!) {
+  deleteLegalCase(id: $id) {
+    id
+    caseNumber
+    caseName
+  }
+}

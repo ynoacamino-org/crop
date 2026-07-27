@@ -1,0 +1,33 @@
+query GetCourt($id: String!) {
+  court(id: $id) {
+    id
+    name
+    type
+    jurisdiction
+    description
+    createdAt
+    updatedAt
+  }
+}
+
+query GetCourts(
+  $take: Int
+  $skip: Int
+  $filter: CourtFilter
+  $sort: [CourtSort!]
+) {
+  courts(take: $take, skip: $skip, filter: $filter, sort: $sort) {
+    items {
+      id
+      name
+      type
+      jurisdiction
+      description
+    }
+    pageInfo {
+      totalCount
+      hasNextPage
+      hasPreviousPage
+    }
+  }
+}

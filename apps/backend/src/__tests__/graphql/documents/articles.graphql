@@ -1,0 +1,105 @@
+query GetArticleById($id: String!) {
+  article(id: $id) {
+    id
+    title
+    slug
+    content
+    excerpt
+    status
+    publishedAt
+    views
+    readingTimeMin
+    createdAt
+    updatedAt
+    author {
+      id
+      name
+      email
+      role
+    }
+    categories {
+      id
+      name
+      slug
+    }
+    tags {
+      id
+      name
+      slug
+    }
+    legalCases {
+      id
+      caseName
+      caseNumber
+    }
+  }
+}
+
+query GetArticleBySlug($slug: String!) {
+  article(slug: $slug) {
+    id
+    title
+    slug
+    content
+    status
+  }
+}
+
+query GetArticles(
+  $take: Int
+  $skip: Int
+  $filter: ArticleFilter
+  $sort: [ArticleSort!]
+) {
+  articles(take: $take, skip: $skip, filter: $filter, sort: $sort) {
+    items {
+      id
+      title
+      slug
+      status
+      publishedAt
+      views
+      author {
+        id
+        name
+      }
+    }
+    pageInfo {
+      totalCount
+      hasNextPage
+      hasPreviousPage
+    }
+  }
+}
+
+mutation CreateArticle($input: CreateArticleInput!) {
+  createArticle(input: $input) {
+    id
+    title
+    slug
+    content
+    status
+    author {
+      id
+      name
+    }
+  }
+}
+
+mutation UpdateArticle($id: String!, $input: UpdateArticleInput!) {
+  updateArticle(id: $id, input: $input) {
+    id
+    title
+    slug
+    content
+    status
+    updatedAt
+  }
+}
+
+mutation DeleteArticle($id: String!) {
+  deleteArticle(id: $id) {
+    id
+    title
+  }
+}

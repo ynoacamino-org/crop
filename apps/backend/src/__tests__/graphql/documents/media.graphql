@@ -1,0 +1,72 @@
+query GetMedia($id: String!) {
+  media(id: $id) {
+    id
+    objectKey
+    url
+    alt
+    type
+    size
+    mimeType
+    filename
+    createdAt
+    updatedAt
+    uploader {
+      id
+      name
+    }
+  }
+}
+
+query GetMedias(
+  $take: Int
+  $skip: Int
+  $filter: MediaFilter
+  $sort: [MediaSort!]
+) {
+  medias(take: $take, skip: $skip, filter: $filter, sort: $sort) {
+    items {
+      id
+      objectKey
+      url
+      filename
+      type
+      mimeType
+      size
+    }
+    pageInfo {
+      totalCount
+      hasNextPage
+      hasPreviousPage
+    }
+  }
+}
+
+mutation CreateMedia($input: CreateMediaInput!) {
+  createMedia(input: $input) {
+    id
+    objectKey
+    url
+    filename
+    type
+    mimeType
+    size
+  }
+}
+
+mutation UpdateMedia($id: String!, $input: UpdateMediaInput!) {
+  updateMedia(id: $id, input: $input) {
+    id
+    objectKey
+    url
+    alt
+    filename
+    updatedAt
+  }
+}
+
+mutation DeleteMedia($id: String!) {
+  deleteMedia(id: $id) {
+    id
+    filename
+  }
+}

@@ -1,0 +1,50 @@
+query GetMe {
+  me {
+    id
+    name
+    email
+    role
+    image
+    createdAt
+    updatedAt
+  }
+}
+
+query GetUsers(
+  $take: Int
+  $skip: Int
+  $filter: UserFilter
+  $sort: [UserSort!]
+) {
+  users(take: $take, skip: $skip, filter: $filter, sort: $sort) {
+    items {
+      id
+      name
+      email
+      role
+      createdAt
+    }
+    pageInfo {
+      totalCount
+      hasNextPage
+      hasPreviousPage
+    }
+  }
+}
+
+mutation UpdateMe($input: UpdateUserInput!) {
+  updateMe(input: $input) {
+    id
+    name
+    image
+    updatedAt
+  }
+}
+
+mutation DeleteMe {
+  deleteMe {
+    id
+    name
+    email
+  }
+}

@@ -99,20 +99,22 @@ export default function DragDropPastePlugin(): null {
       }
     };
 
-    const editorElement = editor.getRootElement();
-    if (editorElement) {
-      editorElement.addEventListener("paste", handlePaste);
-      editorElement.addEventListener("drop", handleDrop);
-      editorElement.addEventListener("dragover", (e) => e.preventDefault());
+    const handleDragOver = (event: DragEvent) => {
+      event.preventDefault();
+    };
 
-      return () => {
-        editorElement.removeEventListener("paste", handlePaste);
-        editorElement.removeEventListener("drop", handleDrop);
-        editorElement.removeEventListener("dragover", (e) =>
-          e.preventDefault(),
-        );
-      };
-    }
+    const editorElement = editor.getRootElement();
+    if (!editorElement) return;
+
+    editorElement.addEventListener("paste", handlePaste);
+    editorElement.addEventListener("drop", handleDrop);
+    editorElement.addEventListener("dragover", handleDragOver);
+
+    return () => {
+      editorElement.removeEventListener("paste", handlePaste);
+      editorElement.removeEventListener("drop", handleDrop);
+      editorElement.removeEventListener("dragover", handleDragOver);
+    };
   }, [editor]);
 
   return null;

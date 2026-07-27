@@ -1,5 +1,17 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.5.4/schema.json",
   "root": false,
-  "extends": ["@repo/biome-config/base", "@repo/biome-config/hono"]
+  "extends": ["@repo/biome-config/base", "@repo/biome-config/hono"],
+  "overrides": [
+    {
+      "includes": ["**/*.test.ts", "**/__tests__/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noNonNullAssertion": "off"
+          }
+        }
+      }
+    }
+  ]
 }

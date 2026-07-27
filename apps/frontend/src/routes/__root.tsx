@@ -31,6 +31,18 @@ export const getMe = createServerFn().handler(async () => {
 });
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
+  loader: async () => {
+    try {
+      const data = await getMe();
+      return {
+        user: data.user || null,
+      };
+    } catch {
+      return {
+        user: null,
+      };
+    }
+  },
   head: () => ({
     meta: [
       {
@@ -56,18 +68,6 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       },
     ],
   }),
-  loader: async () => {
-    try {
-      const data = await getMe();
-      return {
-        user: data.user || null,
-      };
-    } catch {
-      return {
-        user: null,
-      };
-    }
-  },
   component: RootComponent,
   shellComponent: RootDocument,
 });

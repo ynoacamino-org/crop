@@ -1,0 +1,18 @@
+query GetCategories {
+  categories {
+    id
+    name
+    slug
+    description
+    createdAt
+  }
+}
+
+query GetTags {
+  tags {
+    id
+    name
+    slug
+    createdAt
+  }
+}
