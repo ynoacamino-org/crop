@@ -24,42 +24,6 @@ const MediaTypeEnum = z.enum(["IMAGE", "VIDEO", "AUDIO", "FILE"], {
 	message: "El tipo de medio debe ser IMAGE, VIDEO, AUDIO o FILE",
 });
 
-const MediasPayloadSchema = z.object({
-	take: z
-		.number({
-			message:
-				"Se espera que el campo límite sea un número, no una cadena de texto",
-		})
-		.min(1, { message: "El campo límite debe ser al menos 1" })
-		.max(100, { message: "El campo límite no puede ser mayor a 100" })
-		.optional(),
-	skip: z
-		.number({
-			message:
-				"Se espera que el campo saltar sea un número, no una cadena de texto",
-		})
-		.min(0, { message: "El campo saltar debe ser al menos 0" })
-		.max(1000, { message: "El campo saltar no puede ser mayor a 1000" })
-		.optional(),
-	type: MediaTypeEnum.optional(),
-	search: z
-		.string({
-			message:
-				"Se espera que el campo búsqueda sea una cadena de texto, no un número",
-		})
-		.min(1, { message: "El campo búsqueda debe tener al menos 1 caracteres" })
-		.max(100, {
-			message: "El campo búsqueda no puede tener más de 100 caracteres",
-		})
-		.optional(),
-});
-
-const MediaPayloadSchema = z.object({
-	id: z
-		.string()
-		.min(1, { message: "Se espera que el identificador sea un CUID válido" }),
-});
-
 const CreateMediaPayloadSchema = z.object({
 	input: z.object({
 		objectKey: z
@@ -119,8 +83,6 @@ const DeleteMediaPayloadSchema = z.object({
 export {
 	CreateMediaPayloadSchema,
 	DeleteMediaPayloadSchema,
-	MediaPayloadSchema,
-	MediasPayloadSchema,
 	MediaTypeEnum,
 	UpdateMediaPayloadSchema,
 };

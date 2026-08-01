@@ -26,7 +26,7 @@ export const LegalAreaEnum = z.enum(
 	[
 		"CIVIL",
 		"CRIMINAL",
-		"CONSTITUTIONAL",
+		"CONSTITUCIONAL",
 		"ADMINISTRATIVE",
 		"LABOR",
 		"COMMERCIAL",
@@ -98,84 +98,16 @@ export const createLegalCaseSchema = z.object({
 
 // Schema for updating a legal case
 export const updateLegalCaseSchema = z.object({
-	caseNumber: z
-		.string()
-		.min(1, { message: "El número de caso es requerido" })
-		.max(100, {
-			message: "El número de caso no puede tener más de 100 caracteres",
-		})
-		.optional(),
-	caseName: z
-		.string()
-		.min(1, { message: "El nombre del caso es requerido" })
-		.max(500, {
-			message: "El nombre del caso no puede tener más de 500 caracteres",
-		})
-		.optional(),
-	summary: z
-		.string()
-		.max(2000, { message: "El resumen no puede tener más de 2000 caracteres" })
-		.optional()
-		.nullable(),
-	parties: z
-		.string()
-		.max(1000, { message: "Las partes no pueden tener más de 1000 caracteres" })
-		.optional()
-		.nullable(),
-	plaintiff: z
-		.string()
-		.max(300, { message: "El demandante no puede tener más de 300 caracteres" })
-		.optional()
-		.nullable(),
-	defendant: z
-		.string()
-		.max(300, { message: "El demandado no puede tener más de 300 caracteres" })
-		.optional()
-		.nullable(),
-	judges: z
-		.string()
-		.max(500, { message: "Los jueces no pueden tener más de 500 caracteres" })
-		.optional()
-		.nullable(),
-	verdict: z
-		.string()
-		.max(5000, {
-			message: "El veredicto no puede tener más de 5000 caracteres",
-		})
-		.optional()
-		.nullable(),
-	legalBasis: z
-		.string()
-		.max(5000, {
-			message: "La base legal no puede tener más de 5000 caracteres",
-		})
-		.optional()
-		.nullable(),
-	jurisdiction: JurisdictionEnum.optional().nullable(),
-	caseTypeId: z
-		.string()
-		.min(1, { message: "El ID del tipo de caso es requerido" })
-		.optional()
-		.nullable(),
-	courtId: z
-		.string()
-		.min(1, { message: "El ID del tribunal es requerido" })
-		.optional()
-		.nullable(),
-});
-
-// Query schema for fetching legal cases
-export const legalCasesQuerySchema = z.object({
-	jurisdiction: JurisdictionEnum.optional(),
-	caseTypeId: z.string().cuid().optional(),
-	courtId: z.string().cuid().optional(),
-	search: z
-		.string()
-		.min(1, { message: "El campo búsqueda debe tener al menos 1 carácter" })
-		.max(100, {
-			message: "El campo búsqueda no puede tener más de 100 caracteres",
-		})
-		.optional(),
-	take: z.number().min(1).max(100).optional(),
-	skip: z.number().min(0).optional(),
+	caseNumber: createLegalCaseSchema.shape.caseNumber.optional(),
+	caseName: createLegalCaseSchema.shape.caseName.optional(),
+	summary: createLegalCaseSchema.shape.summary.nullable(),
+	parties: createLegalCaseSchema.shape.parties.nullable(),
+	plaintiff: createLegalCaseSchema.shape.plaintiff.nullable(),
+	defendant: createLegalCaseSchema.shape.defendant.nullable(),
+	judges: createLegalCaseSchema.shape.judges.nullable(),
+	verdict: createLegalCaseSchema.shape.verdict.nullable(),
+	legalBasis: createLegalCaseSchema.shape.legalBasis.nullable(),
+	jurisdiction: createLegalCaseSchema.shape.jurisdiction.nullable(),
+	caseTypeId: createLegalCaseSchema.shape.caseTypeId.nullable(),
+	courtId: createLegalCaseSchema.shape.courtId.nullable(),
 });

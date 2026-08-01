@@ -1,4 +1,7 @@
-import { createCaseTypeSchema, updateCaseTypeSchema } from "@repo/schemas";
+import {
+  createCaseTypeSchema,
+  updateCaseTypeSchema,
+} from "@repo/schemas/case-type";
 import { builder } from "@/shared/graphql/builder";
 import {
   BooleanFilter,
@@ -74,8 +77,6 @@ export const UpdateCaseTypeInput = builder.inputType("UpdateCaseTypeInput", {
   }),
   validate: updateCaseTypeSchema,
 });
-
-export { createCaseTypeSchema, updateCaseTypeSchema };
 
 export const CaseTypeFilter = builder.inputType("CaseTypeFilter", {
   description: "Filter case types by various fields",

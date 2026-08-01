@@ -1,7 +1,7 @@
 import {
   DeleteUserPayloadSchema,
   UpdateUserPayloadSchema,
-} from "@repo/schemas";
+} from "@repo/schemas/user";
 import { eq } from "drizzle-orm";
 import { handleDbError } from "@/core/errors/db";
 import { UnauthorizedError } from "@/core/errors/gql";

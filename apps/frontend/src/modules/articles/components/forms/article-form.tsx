@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { CreateArticleInput } from "@repo/schemas";
-import { createArticleSchema } from "@repo/schemas";
+import type { CreateArticleInput } from "@repo/schemas/article";
+import { createArticleSchema } from "@repo/schemas/article";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { InferItem } from "@/components/form/infer-field";

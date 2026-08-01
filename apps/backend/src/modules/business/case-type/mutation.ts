@@ -1,3 +1,4 @@
+import { idSchema } from "@repo/schemas/common";
 import { eq, sql } from "drizzle-orm";
 import { handleDbError } from "@/core/errors/db";
 import { NotFoundError, UnauthorizedError } from "@/core/errors/gql";
@@ -5,9 +6,7 @@ import { sanitize } from "@/core/utils/sanitize";
 import { caseTypes, legalCases } from "@/domain/db/schema";
 import {
   CreateCaseTypeInput,
-  createCaseTypeSchema,
   UpdateCaseTypeInput,
-  updateCaseTypeSchema,
 } from "@/modules/business/case-type/inputs";
 import { builder } from "@/shared/graphql/builder";
 
@@ -27,20 +26,17 @@ builder.mutationField("createCaseType", (t) =>
 
       const { input } = sanitize(rawArgs);
 
-      // Validate with Zod schema
-      const validatedInput = createCaseTypeSchema.parse(input);
-
       try {
         const [createdCaseType] = await ctx.db
           .insert(caseTypes)
           .values({
-            name: validatedInput.name,
-            slug: validatedInput.slug,
-            description: validatedInput.description,
-            color: validatedInput.color,
-            icon: validatedInput.icon,
-            order: validatedInput.order ?? 0,
-            active: validatedInput.active ?? true,
+            name: input.name,
+            slug: input.slug,
+            description: input.description,
+            color: input.color,
+            icon: input.icon,
+            order: input.order ?? 0,
+            active: input.active ?? true,
           })
           .returning({ id: caseTypes.id });
 
@@ -84,9 +80,6 @@ builder.mutationField("updateCaseType", (t) =>
 
       const { id, input } = sanitize(rawArgs);
 
-      // Validate with Zod schema
-      const validatedInput = updateCaseTypeSchema.parse(input);
-
       try {
         const [caseType] = await ctx.db
           .select()
@@ -101,26 +94,26 @@ builder.mutationField("updateCaseType", (t) =>
         await ctx.db
           .update(caseTypes)
           .set({
-            ...(validatedInput.name !== undefined && {
-              name: validatedInput.name,
+            ...(input.name !== undefined && {
+              name: input.name,
             }),
-            ...(validatedInput.slug !== undefined && {
-              slug: validatedInput.slug,
+            ...(input.slug !== undefined && {
+              slug: input.slug,
             }),
-            ...(validatedInput.description !== undefined && {
-              description: validatedInput.description,
+            ...(input.description !== undefined && {
+              description: input.description,
             }),
-            ...(validatedInput.color !== undefined && {
-              color: validatedInput.color,
+            ...(input.color !== undefined && {
+              color: input.color,
             }),
-            ...(validatedInput.icon !== undefined && {
-              icon: validatedInput.icon,
+            ...(input.icon !== undefined && {
+              icon: input.icon,
             }),
-            ...(validatedInput.order !== undefined && {
-              order: validatedInput.order,
+            ...(input.order !== undefined && {
+              order: input.order,
             }),
-            ...(validatedInput.active !== undefined && {
-              active: validatedInput.active,
+            ...(input.active !== undefined && {
+              active: input.active,
             }),
             updatedAt: new Date(),
           })
@@ -151,6 +144,7 @@ builder.mutationField("deleteCaseType", (t) =>
       id: t.arg.string({
         required: true,
         description: "Case type ID to delete",
+        validate: idSchema,
       }),
     },
     resolve: async (query, _root, rawArgs, ctx) => {

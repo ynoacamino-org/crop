@@ -1,4 +1,4 @@
-import type { CreateArticleInput } from "@repo/schemas";
+import type { CreateArticleInput } from "@repo/schemas/article";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { FileText } from "lucide-react";
 import { toast } from "sonner";

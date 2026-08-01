@@ -26,41 +26,6 @@ const SignInPayloadSchema = z.object({
 		.min(1, { message: "La contraseña es requerida" }),
 });
 
-const UsersPayloadSchema = z.object({
-	take: z
-		.number({
-			message:
-				"Se espera que el campo límite sea un número, no una cadena de texto",
-		})
-		.min(1, { message: "El campo límite debe ser al menos 1" })
-		.max(100, { message: "El campo límite no puede ser mayor a 100" })
-		.optional(),
-	skip: z
-		.number({
-			message:
-				"Se espera que el campo saltar sea un número, no una cadena de texto",
-		})
-		.min(0, { message: "El campo saltar debe ser al menos 0" })
-		.optional(),
-	search: z
-		.string({
-			message:
-				"Se espera que el campo búsqueda sea una cadena de texto, no un número",
-		})
-		.min(3, { message: "El campo búsqueda debe tener al menos 3 caracteres" })
-		.max(50, {
-			message: "El campo búsqueda no puede tener más de 50 caracteres",
-		})
-		.optional(),
-});
-
-const UserPayloadSchema = z.object({
-	id: z.string({
-		message:
-			"Se espera que el identificador sea una cadena de texto, no un número",
-	}),
-});
-
 const UpdateMePayloadSchema = z.object({
 	input: z.object({
 		name: z
@@ -113,6 +78,4 @@ export {
 	SignUpPayloadSchema,
 	UpdateMePayloadSchema,
 	UpdateUserPayloadSchema,
-	UserPayloadSchema,
-	UsersPayloadSchema,
 };

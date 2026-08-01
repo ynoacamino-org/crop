@@ -1,3 +1,4 @@
+import { idSchema } from "@repo/schemas/common";
 import { eq } from "drizzle-orm";
 import { handleDbError } from "@/core/errors/db";
 import { NotFoundError, UnauthorizedError } from "@/core/errors/gql";
@@ -215,6 +216,7 @@ builder.mutationField("deleteLegalCase", (t) =>
       id: t.arg.string({
         required: true,
         description: "Legal case ID to delete",
+        validate: idSchema,
       }),
     },
     resolve: async (query, _root, rawArgs, ctx) => {

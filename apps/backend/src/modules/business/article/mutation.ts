@@ -1,3 +1,4 @@
+import { idSchema } from "@repo/schemas/common";
 import { eq } from "drizzle-orm";
 import { handleDbError } from "@/core/errors/db";
 import { NotFoundError, UnauthorizedError } from "@/core/errors/gql";
@@ -227,6 +228,7 @@ builder.mutationField("deleteArticle", (t) =>
       id: t.arg.string({
         required: true,
         description: "Article ID to delete",
+        validate: idSchema,
       }),
     },
     resolve: async (query, _root, rawArgs, ctx) => {

@@ -1,4 +1,4 @@
-import type { SignInPayload } from "@repo/schemas";
+import type { SignInPayload } from "@repo/schemas/user";
 import {
   createFileRoute,
   Link,

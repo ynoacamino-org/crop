@@ -1,4 +1,7 @@
-import { createArticleSchema, updateArticleSchema } from "@repo/schemas";
+import {
+  createArticleSchema,
+  updateArticleSchema,
+} from "@repo/schemas/article";
 import { builder } from "@/shared/graphql/builder";
 import {
   DateTimeFilter,

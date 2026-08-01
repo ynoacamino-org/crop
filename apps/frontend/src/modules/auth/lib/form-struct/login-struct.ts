@@ -1,4 +1,4 @@
-import type { SignInPayload } from "@repo/schemas";
+import type { SignInPayload } from "@repo/schemas/user";
 import { Lock, Mail } from "lucide-react";
 import type { FieldType } from "@/shared/types/form/field";
 import { SUPPORTED_FIELDS } from "@/shared/types/form/supported-fields";

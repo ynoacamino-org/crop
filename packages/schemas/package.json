@@ -2,15 +2,14 @@
 	"name": "@repo/schemas",
 	"version": "0.0.0",
 	"private": true,
-	"main": "./index.ts",
-	"types": "./index.ts",
 	"exports": {
-		".": "./index.ts",
-		"./article": "./article/schemas.ts",
-		"./case-type": "./case-type/schemas.ts",
-		"./legal-case": "./legal-case/schemas.ts",
-		"./user": "./user/schemas.ts",
-		"./media": "./media/schemas.ts"
+		"./api-key": "./api-key/index.ts",
+		"./article": "./article/index.ts",
+		"./case-type": "./case-type/index.ts",
+		"./common": "./common/index.ts",
+		"./legal-case": "./legal-case/index.ts",
+		"./media": "./media/index.ts",
+		"./user": "./user/index.ts"
 	},
 	"dependencies": {
 		"zod": "^4.3.6"

@@ -1,4 +1,4 @@
-import type { SignUpPayload } from "@repo/schemas";
+import type { SignUpPayload } from "@repo/schemas/user";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import {

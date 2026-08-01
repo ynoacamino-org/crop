@@ -1,4 +1,7 @@
-import { createLegalCaseSchema, updateLegalCaseSchema } from "@repo/schemas";
+import {
+  createLegalCaseSchema,
+  updateLegalCaseSchema,
+} from "@repo/schemas/legal-case";
 import { builder } from "@/shared/graphql/builder";
 import { DateTimeFilter, StringFilter } from "@/shared/graphql/filters";
 import { SortDirection } from "@/shared/graphql/sorts";

@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { SignInPayload } from "@repo/schemas";
-import { SignInPayloadSchema } from "@repo/schemas";
+import type { SignInPayload } from "@repo/schemas/user";
+import { SignInPayloadSchema } from "@repo/schemas/user";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type z from "zod";

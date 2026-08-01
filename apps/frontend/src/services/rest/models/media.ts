@@ -1,4 +1,4 @@
-import type { UploadMediaPayloadInput } from "@repo/schemas";
+import type { UploadMediaPayloadInput } from "@repo/schemas/media";
 
 type Media = {
   id: string;

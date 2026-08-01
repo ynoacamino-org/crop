@@ -1,4 +1,4 @@
-import type { CreateArticleInput } from "@repo/schemas";
+import type { CreateArticleInput } from "@repo/schemas/article";
 import { FileText, Hash, MessageSquare, Text } from "lucide-react";
 import type { FieldType } from "@/shared/types/form/field";
 import { SUPPORTED_FIELDS } from "@/shared/types/form/supported-fields";
