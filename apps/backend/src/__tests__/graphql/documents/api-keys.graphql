@@ -1,0 +1,23 @@
+query GetApiKeys {
+  apiKeys {
+    id
+    name
+    prefix
+    expiresAt
+    createdAt
+  }
+}
+
+mutation CreateApiKey($input: CreateApiKeyInput!) {
+  createApiKey(input: $input) {
+    id
+    name
+    prefix
+    expiresAt
+    createdAt
+  }
+}
+
+mutation DeleteApiKey($id: String!) {
+  deleteApiKey(id: $id)
+}

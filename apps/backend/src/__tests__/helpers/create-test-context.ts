@@ -3,6 +3,7 @@ import { createTestDb, type TestDb } from "@/__tests__/helpers/in-memory-db";
 import { InMemoryObjectStorage } from "@/__tests__/helpers/in-memory-objects";
 import type { RuntimeEnv } from "@/bootstrap/types";
 import type { AppContext } from "@/core/context";
+import { createBetterAuth } from "@/modules/auth/adapters/better-auth";
 import type { DatabaseClient } from "@/modules/database/ports/db";
 import type { CurrentUser } from "@/shared/graphql/builder";
 
@@ -26,6 +27,7 @@ export async function createTestContext(
     user: opts.user,
     db: testDb.db,
     runtime: mockRuntime,
+    request: new Request("http://localhost:7000"),
   };
 
   return {
@@ -36,8 +38,8 @@ export async function createTestContext(
 }
 
 function createMockRuntime(db: DatabaseClient): RuntimeEnv {
-  return {
-    mode: "node",
+  const mockRt = {
+    mode: "node" as const,
     env: {
       get: () => undefined,
       getRequired: () => "",
@@ -48,7 +50,7 @@ function createMockRuntime(db: DatabaseClient): RuntimeEnv {
       backendUrl: "http://localhost:7000",
       port: 7000,
       auth: {
-        secret: "test-secret",
+        secret: "test-secret-min-length-32-chars-key",
       },
       database: { url: ":memory:" },
       s3: {
@@ -69,11 +71,15 @@ function createMockRuntime(db: DatabaseClient): RuntimeEnv {
     },
     cache: new InMemoryCache(),
     objects: new InMemoryObjectStorage(),
+  };
+
+  const authInstance = createBetterAuth(mockRt as unknown as RuntimeEnv);
+
+  return {
+    ...mockRt,
     auth: {
-      api: {
-        getSession: async () => null,
-      },
-      handler: async () => new Response("Not implemented"),
+      api: authInstance.api,
+      handler: authInstance.handler,
     },
   };
 }

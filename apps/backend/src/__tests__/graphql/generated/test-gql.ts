@@ -161,6 +161,11 @@ export enum CourtType {
   Suprema = "SUPREMA",
 }
 
+export type CreateApiKeyInput = {
+  expiresIn?: number | null | undefined;
+  name: string;
+};
+
 export type CreateArticleInput = {
   /** Array of category IDs */
   categoryIds?: Array<string> | null | undefined;
@@ -525,6 +530,38 @@ export enum UserSortField {
   Name = "NAME",
   Role = "ROLE",
 }
+
+export type GetApiKeysQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetApiKeysQuery = {
+  apiKeys: Array<{
+    id: string;
+    name: string | null;
+    prefix: string | null;
+    expiresAt: Date | null;
+    createdAt: Date;
+  }>;
+};
+
+export type CreateApiKeyMutationVariables = Exact<{
+  input: CreateApiKeyInput;
+}>;
+
+export type CreateApiKeyMutation = {
+  createApiKey: {
+    id: string;
+    name: string | null;
+    prefix: string | null;
+    expiresAt: Date | null;
+    createdAt: Date;
+  };
+};
+
+export type DeleteApiKeyMutationVariables = Exact<{
+  id: string;
+}>;
+
+export type DeleteApiKeyMutation = { deleteApiKey: boolean };
 
 export type GetArticleByIdQueryVariables = Exact<{
   id: string;
@@ -1040,6 +1077,138 @@ export type DeleteMeMutation = {
   deleteMe: { id: string; name: string | null; email: string };
 };
 
+export const GetApiKeysDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "GetApiKeys" },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "apiKeys" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "name" } },
+                { kind: "Field", name: { kind: "Name", value: "prefix" } },
+                { kind: "Field", name: { kind: "Name", value: "expiresAt" } },
+                { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<GetApiKeysQuery, GetApiKeysQueryVariables>;
+export const CreateApiKeyDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "CreateApiKey" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "input" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "CreateApiKeyInput" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "createApiKey" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "input" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "input" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "name" } },
+                { kind: "Field", name: { kind: "Name", value: "prefix" } },
+                { kind: "Field", name: { kind: "Name", value: "expiresAt" } },
+                { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  CreateApiKeyMutation,
+  CreateApiKeyMutationVariables
+>;
+export const DeleteApiKeyDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "DeleteApiKey" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "String" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "deleteApiKey" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "id" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "id" },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  DeleteApiKeyMutation,
+  DeleteApiKeyMutationVariables
+>;
 export const GetArticleByIdDocument = {
   kind: "Document",
   definitions: [

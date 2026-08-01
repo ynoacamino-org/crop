@@ -1,7 +1,9 @@
+import { defaultKeyHasher } from "@better-auth/api-key";
 import { createId } from "@paralleldrive/cuid2";
 import { z } from "zod";
 import {
   ARTICLE_STATUS_VALUES,
+  apikeys,
   articles,
   COURT_TYPE_VALUES,
   caseTypes,
@@ -12,6 +14,7 @@ import {
   MEDIA_TYPE_VALUES,
   media,
   ROLE_VALUES,
+  sessions,
   tags,
   users,
 } from "@/domain/db/schema";
@@ -208,4 +211,64 @@ export async function seedMedia(
   const mediaRecord = SeedMediaSchema.parse(opts);
   await db.insert(media).values(mediaRecord);
   return mediaRecord;
+}
+
+export const SeedSessionSchema = z.object({
+  id: z.string().default(() => createId()),
+  token: z.string().default(() => createId()),
+  userId: z.string(),
+  expiresAt: z.date().default(() => new Date(Date.now() + 86400000)),
+  createdAt: z.date().default(now),
+  updatedAt: z.date().default(now),
+  ipAddress: z.string().nullable().default(null),
+  userAgent: z.string().nullable().default(null),
+});
+
+export type SeedSessionInput = z.input<typeof SeedSessionSchema>;
+
+export async function seedSession(
+  db: DatabaseClient,
+  opts: SeedSessionInput,
+): Promise<z.output<typeof SeedSessionSchema>> {
+  const sessionRecord = SeedSessionSchema.parse(opts);
+  await db.insert(sessions).values(sessionRecord);
+  return sessionRecord;
+}
+
+export async function seedApiKey(
+  db: DatabaseClient,
+  opts: {
+    userId: string;
+    name?: string;
+    key?: string;
+    prefix?: string;
+    expiresAt?: Date | null;
+  },
+) {
+  const plainKey = opts.key ?? `crop_testkey_${createId()}${createId()}`;
+  const hashedKey = await defaultKeyHasher(plainKey);
+  const prefix = opts.prefix ?? "crop_";
+  const start = plainKey.slice(0, 8);
+  const id = createId();
+
+  await db.insert(apikeys).values({
+    id,
+    configId: "default",
+    name: opts.name ?? "Test API Key",
+    start,
+    prefix,
+    key: hashedKey,
+    referenceId: opts.userId,
+    enabled: true,
+    expiresAt: opts.expiresAt ?? null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  });
+
+  return {
+    id,
+    key: plainKey,
+    hashedKey,
+    name: opts.name ?? "Test API Key",
+  };
 }
