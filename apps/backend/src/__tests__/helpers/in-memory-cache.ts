@@ -1,21 +1,39 @@
+import RedisMock from "ioredis-mock";
 import type { CachePort } from "@/modules/cache/ports/cache";
 
 export class InMemoryCache implements CachePort {
-  #store = new Map<string, string>();
+  private readonly client: InstanceType<typeof RedisMock>;
 
-  async get(key: string): Promise<string | null> {
-    return this.#store.get(key) ?? null;
+  constructor(client?: InstanceType<typeof RedisMock>) {
+    this.client = client ?? new RedisMock();
   }
 
-  async put(key: string, value: string): Promise<void> {
-    this.#store.set(key, value);
+  async get(key: string): Promise<string | null> {
+    return this.client.get(key);
+  }
+
+  async put(
+    key: string,
+    value: string,
+    opts?: { ttl?: number },
+  ): Promise<void> {
+    if (opts?.ttl) {
+      await this.client.set(key, value, "EX", opts.ttl);
+    } else {
+      await this.client.set(key, value);
+    }
   }
 
   async delete(key: string): Promise<void> {
-    this.#store.delete(key);
+    await this.client.del(key);
   }
 
   async list(prefix = ""): Promise<string[]> {
-    return [...this.#store.keys()].filter((k) => k.startsWith(prefix));
+    const keys = await this.client.keys(`${prefix}*`);
+    return keys;
+  }
+
+  async flushall(): Promise<void> {
+    await this.client.flushall();
   }
 }
