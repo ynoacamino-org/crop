@@ -20,6 +20,10 @@ import "@/modules/business/article/mutation";
 import "@/modules/audit/model";
 import "@/modules/audit/inputs";
 import "@/modules/audit/query";
+import "@/modules/api-key/model";
+import "@/modules/api-key/inputs";
+import "@/modules/api-key/query";
+import "@/modules/api-key/mutation";
 import "@/shared/graphql/pagination";
 
 export const schema = builder.toSchema();

@@ -727,6 +727,43 @@ export const relations = defineRelations(
   }),
 );
 
+export const apikeys = sqliteTable(
+  "apikey",
+  {
+    id: text("id").primaryKey(),
+    configId: text("configId").notNull().default("default"),
+    name: text("name"),
+    start: text("start"),
+    referenceId: text("referenceId").notNull(),
+    prefix: text("prefix"),
+    key: text("key").notNull(),
+    refillInterval: integer("refillInterval"),
+    refillAmount: integer("refillAmount"),
+    lastRefillAt: integer("lastRefillAt", { mode: "timestamp_ms" }),
+    enabled: integer("enabled", { mode: "boolean" }).notNull().default(true),
+    rateLimitEnabled: integer("rateLimitEnabled", { mode: "boolean" }),
+    rateLimitTimeWindow: integer("rateLimitTimeWindow"),
+    rateLimitMax: integer("rateLimitMax"),
+    requestCount: integer("requestCount").notNull().default(0),
+    remaining: integer("remaining"),
+    lastRequest: integer("lastRequest", { mode: "timestamp_ms" }),
+    expiresAt: integer("expiresAt", { mode: "timestamp_ms" }),
+    createdAt: integer("createdAt", { mode: "timestamp_ms" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    updatedAt: integer("updatedAt", { mode: "timestamp_ms" })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    permissions: text("permissions"),
+    metadata: text("metadata"),
+  },
+  (table) => [
+    index("apikey_configId_idx").on(table.configId),
+    index("apikey_referenceId_idx").on(table.referenceId),
+    index("apikey_key_idx").on(table.key),
+  ],
+);
+
 export type UserModel = typeof users.$inferSelect;
 export type MediaModel = typeof media.$inferSelect;
 export type ArticleModel = typeof articles.$inferSelect;
@@ -737,6 +774,7 @@ export type CourtModel = typeof courts.$inferSelect;
 export type CaseTypeModel = typeof caseTypes.$inferSelect;
 export type ExportJobModel = typeof exportJobs.$inferSelect;
 export type AuditLogModel = typeof auditLogs.$inferSelect;
+export type ApiKeyModel = typeof apikeys.$inferSelect;
 
 export const authSchema = {
   user: users,
@@ -744,4 +782,6 @@ export const authSchema = {
   session: sessions,
   account: accounts,
   verification: verifications,
+  apikey: apikeys,
+  ApiKey: apikeys,
 };

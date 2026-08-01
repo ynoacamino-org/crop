@@ -1,14 +1,6 @@
+import type { BetterAuthApi } from "@/modules/auth/adapters/better-auth";
+
 export interface AuthPort {
-  api: {
-    getSession: (opts: { headers: Headers }) => Promise<{
-      user?: {
-        id: string;
-        email: string;
-        name?: string | null;
-        role?: string;
-      };
-      session?: unknown;
-    } | null>;
-  };
+  api: BetterAuthApi;
   handler: (request: Request) => Promise<Response>;
 }

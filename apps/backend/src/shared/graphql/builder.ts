@@ -32,6 +32,7 @@ export interface AppContextShape {
   user?: CurrentUser;
   db: D1Db;
   runtime: RuntimeEnv;
+  request?: Request;
 }
 
 type DrizzleRelations = typeof relations;
