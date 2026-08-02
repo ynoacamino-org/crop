@@ -54,7 +54,9 @@ export function ArticleCard({
             <img
               src={featuredImage.url}
               alt={featuredImage.alt || title}
-              className="object-cover transition-transform duration-700 group-hover:scale-103"
+              loading="lazy"
+              decoding="async"
+              className="object-cover transition-transform duration-700 group-hover:scale-103 motion-reduce:transform-none motion-reduce:transition-none"
             />
           </div>
         ) : (

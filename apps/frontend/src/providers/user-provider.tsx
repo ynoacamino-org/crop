@@ -3,7 +3,11 @@ import type { MeQuery } from "@/services/gql/generated/gql.client";
 
 type UserType = NonNullable<MeQuery["me"]>;
 
-const UserContext = createContext<UserType | undefined>(undefined);
+interface UserContextType {
+  user: UserType | null;
+}
+
+const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserProvider({
   user,
@@ -13,7 +17,7 @@ export function UserProvider({
   children: React.ReactNode;
 }) {
   return (
-    <UserContext.Provider value={user || undefined}>
+    <UserContext.Provider value={{ user: user ?? null }}>
       {children}
     </UserContext.Provider>
   );
@@ -24,9 +28,10 @@ export function useUser() {
   if (context === undefined) {
     throw new Error("useUser must be used within a UserProvider");
   }
-  return context;
+  return context.user;
 }
 
 export function useOptionalUser() {
-  return useContext(UserContext);
+  const context = useContext(UserContext);
+  return context?.user ?? null;
 }

@@ -130,6 +130,8 @@ function ArticleDetailPage() {
           <img
             src={article.featuredImage.url}
             alt={article.featuredImage.alt || article.title}
+            loading="lazy"
+            decoding="async"
             className="h-full w-full object-cover"
           />
         </div>

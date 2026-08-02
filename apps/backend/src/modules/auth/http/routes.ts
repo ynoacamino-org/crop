@@ -4,7 +4,7 @@ import { runtime } from "@/bootstrap/runtime";
 export function authRouter(): Hono<{ Bindings: Cloudflare.Env }> {
   const router = new Hono<{ Bindings: Cloudflare.Env }>({ strict: false });
 
-  router.on(["POST", "GET"], "/**", (c) => {
+  router.all("*", (c) => {
     const rt = runtime.create({ cf: c.env });
     return rt.auth.handler(c.req.raw);
   });

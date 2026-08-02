@@ -57,6 +57,8 @@ function LazyImage({
       className={className || undefined}
       src={src}
       alt={altText}
+      loading="lazy"
+      decoding="async"
       ref={imageRef}
       style={{
         height,

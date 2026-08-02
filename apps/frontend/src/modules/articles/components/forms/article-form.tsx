@@ -46,7 +46,9 @@ export function ArticleForm({
         .trim()
         .replace(/\s+/g, "-")
         .replace(/-+/g, "-");
-      form.setValue("slug", slug);
+      if (form.getValues("slug") !== slug) {
+        form.setValue("slug", slug, { shouldValidate: true });
+      }
     }
   }, [titleValue, form, mode]);
 

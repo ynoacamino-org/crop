@@ -336,10 +336,10 @@ export const FileInput = forwardRef<
         className={cn(
           `w-full rounded-lg duration-300 ease-in-out ${
             dropzoneState.isDragAccept
-              ? "border-green-500"
+              ? "border-primary"
               : dropzoneState.isDragReject || isFileTooBig
-                ? "border-red-500"
-                : "border-gray-300"
+                ? "border-destructive"
+                : "border-border"
           }`,
           className,
         )}

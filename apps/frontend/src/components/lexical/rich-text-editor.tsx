@@ -22,7 +22,8 @@ import { ToolbarPlugin } from "@/components/lexical/plugins/toolbar-plugin";
 
 const theme: EditorThemeClasses = {
   paragraph: "mb-1 relative",
-  quote: "border-l-4 border-gray-300 pl-4 italic my-2",
+  quote:
+    "border-l border-border/80 pl-4 italic my-2 text-muted-foreground bg-muted/30 py-1 rounded-r",
   heading: {
     h1: "text-4xl font-bold my-3",
     h2: "text-3xl font-bold my-2",
@@ -43,7 +44,7 @@ const theme: EditorThemeClasses = {
     italic: "italic",
     underline: "underline",
     strikethrough: "line-through",
-    code: "bg-gray-900 dark:bg-gray-100 text-background px-1 py-0.5 rounded font-mono text-sm",
+    code: "bg-muted text-foreground px-1.5 py-0.5 rounded font-mono text-sm border border-border/50",
   },
   image: "editor-image",
 };

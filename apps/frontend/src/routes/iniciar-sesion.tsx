@@ -3,6 +3,7 @@ import {
   createFileRoute,
   Link,
   useNavigate,
+  useRouter,
   useSearch,
 } from "@tanstack/react-router";
 import { toast } from "sonner";
@@ -27,6 +28,7 @@ export const Route = createFileRoute("/iniciar-sesion")({
 
 function IniciarSesionPage() {
   const navigate = useNavigate();
+  const router = useRouter();
   const { redirect } = useSearch({ from: "/iniciar-sesion" });
 
   const handleLogin = async (data: SignInPayload) => {
@@ -40,6 +42,7 @@ function IniciarSesionPage() {
       return;
     }
     toast.success("¡Bienvenido de vuelta!");
+    await router.invalidate();
     navigate({ to: redirect || "/" });
   };
 

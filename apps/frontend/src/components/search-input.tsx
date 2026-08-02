@@ -66,21 +66,23 @@ export function SearchInput({
         value={searchValue}
         onChange={(e) => setSearchValue(e.target.value)}
         onKeyDown={handleKeyDown}
-        className="pr-9 pl-9"
+        className="pr-10 pl-9"
+        aria-label={placeholder || "Buscar jurisprudencia o artículos"}
       />
       {searchValue && (
         <Button
           type="button"
           variant="ghost"
           size="icon"
-          className="absolute right-1 h-7 w-7"
+          className="touch-target absolute right-1 h-9 min-h-[36px] w-9 min-w-[36px]"
           onClick={handleClear}
+          aria-label="Limpiar búsqueda"
         >
           <X className="h-4 w-4" />
         </Button>
       )}
       {isPending && (
-        <div className="absolute right-3 h-4 w-4 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent" />
+        <div className="absolute right-3 h-4 w-4 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent motion-reduce:animate-none" />
       )}
     </div>
   );
