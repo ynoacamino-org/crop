@@ -17,6 +17,8 @@ interface CreateTestContextOptions {
   user?: CurrentUser;
 }
 
+const sharedObjectStorage = new InMemoryObjectStorage();
+
 export async function createTestContext(
   opts: CreateTestContextOptions = {},
 ): Promise<TestContext> {
@@ -33,7 +35,9 @@ export async function createTestContext(
   return {
     db: testDb.db,
     context,
-    close: testDb.close,
+    close: async () => {
+      await testDb.close();
+    },
   };
 }
 
@@ -70,7 +74,7 @@ function createMockRuntime(db: DatabaseClient): RuntimeEnv {
       close: async () => {},
     },
     cache: new InMemoryCache(),
-    objects: new InMemoryObjectStorage(),
+    objects: sharedObjectStorage,
   };
 
   const authInstance = createBetterAuth(mockRt as unknown as RuntimeEnv);

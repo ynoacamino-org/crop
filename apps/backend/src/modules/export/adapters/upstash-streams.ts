@@ -23,10 +23,13 @@ export class UpstashStreamsAdapter
   private pollInterval: ReturnType<typeof setInterval> | null = null;
   private consumerName: string;
 
+  private readonly hasRedis: boolean;
+
   constructor(config: EnvConfig, db: DbPort, consumerName?: string) {
+    this.hasRedis = Boolean(config.redis.url && config.redis.token);
     this.redis = new Redis({
-      url: config.redis.url ?? "",
-      token: config.redis.token ?? "",
+      url: config.redis.url || "https://localhost:8080",
+      token: config.redis.token || "mock-token",
     });
     this.db = db;
     this.consumerName = consumerName ?? DEFAULT_CONSUMER_NAME;
@@ -148,14 +151,20 @@ export class UpstashStreamsAdapter
   // --- ExportProcessorPort implementation ---
 
   async enqueueJob(jobId: string, jobType: string): Promise<void> {
-    await this.redis.xadd(STREAM_KEY, "*", {
-      jobId,
-      jobType,
-      enqueuedAt: Date.now().toString(),
-    });
+    if (!this.hasRedis) return;
+    try {
+      await this.redis.xadd(STREAM_KEY, "*", {
+        jobId,
+        jobType,
+        enqueuedAt: Date.now().toString(),
+      });
+    } catch {
+      // Ignore queue error if Redis is unreachable
+    }
   }
 
   async processNextJob(): Promise<{ jobId: string; jobType: string } | null> {
+    if (!this.hasRedis) return null;
     try {
       const result = await this.redis.xreadgroup(
         CONSUMER_GROUP,
@@ -185,6 +194,7 @@ export class UpstashStreamsAdapter
   }
 
   async startWorker(onJob: (jobId: string) => Promise<void>): Promise<void> {
+    if (!this.hasRedis) return;
     try {
       await this.redis.xgroup(STREAM_KEY, {
         type: "CREATE",

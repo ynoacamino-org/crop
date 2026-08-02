@@ -14,8 +14,11 @@ export interface ExportResult {
 }
 
 export interface DataFetcher {
-  fetchAll(
+  count(queryKey: string, filters?: Record<string, unknown>): Promise<number>;
+  fetchBatch(
     queryKey: string,
+    limit: number,
+    offset: number,
     filters?: Record<string, unknown>,
   ): Promise<Record<string, unknown>[]>;
 }
@@ -61,9 +64,21 @@ export class ExportService {
     return this.jobPort.getUserJobs(userId, limit);
   }
 
+  async deleteJob(jobId: string): Promise<void> {
+    const job = await this.jobPort.getJob(jobId);
+    if (!job) return;
+
+    if (job.fileKey) {
+      await this.objects.delete(job.fileKey).catch(() => {});
+    }
+
+    await this.jobPort.deleteJob(jobId);
+  }
+
   async processJob(jobId: string): Promise<void> {
     const job = await this.jobPort.getJob(jobId);
     if (!job) throw new Error("Job no encontrado");
+    if (job.status === "completed" || job.status === "processing") return;
 
     const template = EXPORT_TEMPLATES[job.type];
     if (!template) throw new Error("Template no encontrado");
@@ -71,21 +86,62 @@ export class ExportService {
     await this.jobPort.startJob(jobId);
 
     try {
-      const rows = await this.dataFetcher.fetchAll(
+      const totalRows = await this.dataFetcher.count(
         template.queryKey,
         job.filters,
       );
 
-      await this.jobPort.setTotalRows(jobId, rows.length);
+      await this.jobPort.setTotalRows(jobId, totalRows);
 
       const columns = job.columns ?? template.defaultColumns;
       const columnDefs = template.columns.filter((c) =>
         columns.includes(c.key),
       );
 
-      const csv = this.generateCsv(rows, columns, columnDefs);
+      const headerLine = columnDefs
+        .map((c) => this.escapeCsvField(c.label))
+        .join(",");
 
-      const csvBuffer = new TextEncoder().encode(csv);
+      const csvLines: string[] = [headerLine];
+      const BATCH_SIZE = 500;
+      let processedRows = 0;
+
+      if (totalRows > 0) {
+        while (processedRows < totalRows) {
+          const rows = await this.dataFetcher.fetchBatch(
+            template.queryKey,
+            BATCH_SIZE,
+            processedRows,
+            job.filters,
+          );
+
+          if (rows.length === 0) break;
+
+          for (const row of rows) {
+            const line = columns
+              .map((col) => {
+                const value = row[col];
+                return this.escapeCsvField(this.formatValue(value));
+              })
+              .join(",");
+            csvLines.push(line);
+          }
+
+          processedRows += rows.length;
+          const progressPercent = Math.min(
+            99,
+            Math.floor((processedRows / totalRows) * 100),
+          );
+          await this.jobPort.updateProgress(
+            jobId,
+            progressPercent,
+            processedRows,
+          );
+        }
+      }
+
+      const csvContent = csvLines.join("\n");
+      const csvBuffer = new TextEncoder().encode(csvContent);
       const fileKey = this.objects.generateKey(`exports/${jobId}`);
 
       await this.objects.put(fileKey, csvBuffer, {
@@ -112,27 +168,6 @@ export class ExportService {
 
     const signedUrl = await this.objects.getSignedUrl(job.fileKey, 3600);
     return signedUrl;
-  }
-
-  private generateCsv(
-    rows: Record<string, unknown>[],
-    columns: string[],
-    columnDefs: { key: string; label: string }[],
-  ): string {
-    const header = columnDefs
-      .map((c) => this.escapeCsvField(c.label))
-      .join(",");
-
-    const dataRows = rows.map((row) =>
-      columns
-        .map((col) => {
-          const value = row[col];
-          return this.escapeCsvField(this.formatValue(value));
-        })
-        .join(","),
-    );
-
-    return [header, ...dataRows].join("\n");
   }
 
   private escapeCsvField(field: string): string {

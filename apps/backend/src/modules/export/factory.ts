@@ -1,3 +1,4 @@
+import { count } from "drizzle-orm";
 import type { RuntimeEnv } from "@/bootstrap/types";
 import { articles, courts, legalCases } from "@/domain/db/schema";
 import { UpstashStreamsAdapter } from "@/modules/export/adapters/upstash-streams";
@@ -19,31 +20,54 @@ export function createExportProcessorAdapter(
 }
 
 export function createDataFetcher(rt: RuntimeEnv): DataFetcher {
-  return {
-    async fetchAll(queryKey: string, _filters?: Record<string, unknown>) {
-      const tableMap: Record<string, unknown> = {
-        legalCases,
-        articles,
-        courts,
-      };
+  const tableMap: Record<
+    string,
+    typeof legalCases | typeof articles | typeof courts
+  > = {
+    legalCases,
+    articles,
+    courts,
+  };
 
+  return {
+    async count(queryKey: string, _filters?: Record<string, unknown>) {
       const dbTable = tableMap[queryKey];
       if (!dbTable) {
         throw new Error(`Tabla no soportada: ${queryKey}`);
       }
 
-      return rt.db.client
+      const [result] = await rt.db.client
+        .select({ value: count() })
+        .from(dbTable as typeof legalCases);
+
+      return result?.value ?? 0;
+    },
+
+    async fetchBatch(
+      queryKey: string,
+      limit: number,
+      offset: number,
+      _filters?: Record<string, unknown>,
+    ) {
+      const dbTable = tableMap[queryKey];
+      if (!dbTable) {
+        throw new Error(`Tabla no soportada: ${queryKey}`);
+      }
+
+      const rows = await rt.db.client
         .select()
         .from(dbTable as typeof legalCases)
-        .then((rows) => rows as Record<string, unknown>[]);
+        .limit(limit)
+        .offset(offset);
+
+      return rows as Record<string, unknown>[];
     },
   };
 }
 
 export function createExportService(rt: RuntimeEnv): ExportService {
-  const jobPort = createExportJobAdapter(rt);
-  const processorPort = createExportProcessorAdapter(rt);
+  const adapter = new UpstashStreamsAdapter(rt.config, rt.db);
   const dataFetcher = createDataFetcher(rt);
 
-  return new ExportService(jobPort, processorPort, rt.objects, dataFetcher);
+  return new ExportService(adapter, adapter, rt.objects, dataFetcher);
 }

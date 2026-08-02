@@ -455,6 +455,13 @@ export const auditLogs = sqliteTable(
   ],
 );
 
+export const EXPORT_TYPE_VALUES = [
+  "legal-cases-csv",
+  "articles-csv",
+  "courts-csv",
+] as const;
+export type ExportTypeValue = (typeof EXPORT_TYPE_VALUES)[number];
+
 export const EXPORT_STATUS_VALUES = [
   "pending",
   "processing",
@@ -470,7 +477,7 @@ export const exportJobs = sqliteTable(
     userId: text("userId")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    type: text("type").notNull(),
+    type: text("type", { enum: EXPORT_TYPE_VALUES }).notNull(),
     status: text("status", { enum: EXPORT_STATUS_VALUES })
       .notNull()
       .default("pending"),

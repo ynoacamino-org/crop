@@ -30,6 +30,18 @@ export function exportRouter(): Hono<{ Bindings: Cloudflare.Env }> {
       userId: session.user.id,
     });
 
+    const bgProcess = service.processJob(result.jobId).catch((err) => {
+      // biome-ignore lint/suspicious/noConsole: Background task error logging
+      console.error(
+        `[ExportService] Error procesando job ${result.jobId}:`,
+        err,
+      );
+    });
+
+    if (c.executionCtx?.waitUntil) {
+      c.executionCtx.waitUntil(bgProcess);
+    }
+
     return c.json({ success: true, data: result }, 201);
   });
 
@@ -96,6 +108,8 @@ export function exportRouter(): Hono<{ Bindings: Cloudflare.Env }> {
     if (job.userId !== session.user.id) {
       throw new UnauthorizedError();
     }
+
+    await service.deleteJob(jobId);
 
     return c.json({ success: true, message: "Exportación eliminada" });
   });

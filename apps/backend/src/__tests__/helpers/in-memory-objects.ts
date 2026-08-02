@@ -13,7 +13,7 @@ export class InMemoryObjectStorage implements ObjectPort {
   private server?: S3rver;
   private adapter?: S3ObjectPort;
   private readonly dir: string;
-  private readonly port: number;
+  private port = 0;
   private readonly bucket: string;
 
   constructor(opts?: { port?: number; bucket?: string }) {
@@ -105,7 +105,7 @@ export class InMemoryObjectStorage implements ObjectPort {
     if (this.adapter) {
       return this.adapter.getPublicUrl(key);
     }
-    return `http://127.0.0.1:${this.port}/${this.bucket}/${key}`;
+    return `http://127.0.0.1:${this.port || 4569}/${this.bucket}/${key}`;
   }
 
   generateKey(prefix: string): string {
