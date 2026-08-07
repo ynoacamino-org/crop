@@ -1,15 +1,19 @@
 import { Shield } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import Link from "@/components/ui/link";
+import { LoginButton } from "@/modules/auth/components/ui/login-button";
+import { LogoutButton } from "@/modules/auth/components/ui/logout-button";
+import { useUser } from "@/providers/user-provider";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/shared/components/ui/avatar";
+import { Button } from "@/shared/components/ui/button";
+import Link from "@/shared/components/ui/link";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { LoginButton } from "@/modules/auth/components/ui/login-button";
-import { LogoutButton } from "@/modules/auth/components/ui/logout-button";
-import { useUser } from "@/providers/user-provider";
+} from "@/shared/components/ui/popover";
 import { getInitials } from "@/shared/lib/utils";
 
 export function AccountPopover() {

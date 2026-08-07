@@ -8,14 +8,14 @@ import {
 } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { z } from "zod";
+import { LoginForm, signIn } from "@/modules/auth";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { LoginForm, signIn } from "@/modules/auth";
+} from "@/shared/components/ui/card";
 
 const searchSchema = z.object({
   redirect: z.string().optional(),

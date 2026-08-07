@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button";
-import Link from "@/components/ui/link";
+import { Button } from "@/shared/components/ui/button";
+import Link from "@/shared/components/ui/link";
 
 export function LoginButton() {
   return (

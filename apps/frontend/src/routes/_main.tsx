@@ -1,7 +1,7 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
-import { DynamicBreadcrumb } from "@/components/layout/dynamic-breadcrumb";
-import { Navbar } from "@/components/layout/navbar";
 import { getMe } from "@/routes/__root";
+import { DynamicBreadcrumb } from "@/shared/components/layout/dynamic-breadcrumb";
+import { Navbar } from "@/shared/components/layout/navbar";
 
 export const Route = createFileRoute("/_main")({
   beforeLoad: async ({ context, location }) => {

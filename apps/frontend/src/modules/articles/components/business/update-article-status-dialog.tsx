@@ -2,7 +2,12 @@ import { useRouter } from "@tanstack/react-router";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
+import type {
+  AdminArticlesQuery,
+  ArticleStatus,
+} from "@/services/gql/generated/gql.client";
+import { useUpdateArticleStatusMutation } from "@/services/gql/generated/gql.client";
+import { Button } from "@/shared/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -10,19 +15,14 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@/shared/components/ui/dialog";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import type {
-  AdminArticlesQuery,
-  ArticleStatus,
-} from "@/services/gql/generated/gql.client";
-import { useUpdateArticleStatusMutation } from "@/services/gql/generated/gql.client";
+} from "@/shared/components/ui/select";
 
 type Article = AdminArticlesQuery["articles"]["items"][number];
 

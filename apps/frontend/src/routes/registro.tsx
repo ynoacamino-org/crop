@@ -1,14 +1,14 @@
 import type { SignUpPayload } from "@repo/schemas/user";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
+import { authClient, RegisterForm } from "@/modules/auth";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { authClient, RegisterForm } from "@/modules/auth";
+} from "@/shared/components/ui/card";
 
 export const Route = createFileRoute("/registro")({
   component: RegistroPage,

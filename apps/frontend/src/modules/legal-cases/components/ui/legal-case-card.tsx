@@ -1,13 +1,13 @@
 import { Calendar, FileText, Scale } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/shared/components/ui/badge";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import Link from "@/components/ui/link";
+} from "@/shared/components/ui/card";
+import Link from "@/shared/components/ui/link";
 import { JURISDICTION_LABELS } from "@/shared/config/constants";
 import { formatLongDate } from "@/shared/lib/format-date";
 

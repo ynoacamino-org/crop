@@ -4,10 +4,10 @@ import { SignInPayloadSchema } from "@repo/schemas/user";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type z from "zod";
-import { InferItem } from "@/components/form/infer-field";
-import { Button } from "@/components/ui/button";
-import { Form, FormField } from "@/components/ui/form";
 import { loginFormStruct } from "@/modules/auth/lib/form-struct/login-struct";
+import { InferItem } from "@/shared/components/form/infer-field";
+import { Button } from "@/shared/components/ui/button";
+import { Form, FormField } from "@/shared/components/ui/form";
 
 interface LoginFormProps {
   onSubmit?: (data: z.infer<typeof SignInPayloadSchema>) => Promise<void>;

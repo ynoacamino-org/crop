@@ -1,15 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { EmptyState } from "@/components/empty-state";
-import { PaginationSection } from "@/components/pagination-controls";
-import { SearchInput } from "@/components/search-input";
 import { ArticleCard } from "@/modules/articles";
 import {
   RecentArticlesDocument,
   type RecentArticlesQuery,
 } from "@/services/gql/generated/gql.node";
 import { createServerService } from "@/services/service.server";
+import { EmptyState } from "@/shared/components/empty-state";
+import { PaginationSection } from "@/shared/components/pagination-controls";
+import { SearchInput } from "@/shared/components/search-input";
 
 const searchSchema = z.object({
   limit: z.number().optional().catch(12),

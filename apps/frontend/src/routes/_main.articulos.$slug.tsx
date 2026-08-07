@@ -9,15 +9,19 @@ import {
   Tag,
   User,
 } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import { RelatedLegalCaseCard } from "@/modules/legal-cases";
 import {
   ArticleDocument,
   type ArticleQuery,
 } from "@/services/gql/generated/gql.node";
 import { createServerService } from "@/services/service.server";
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "@/shared/components/ui/alert";
+import { Badge } from "@/shared/components/ui/badge";
+import { Separator } from "@/shared/components/ui/separator";
 import { formatLongDate } from "@/shared/lib/format-date";
 import { lexicalToHtml } from "@/shared/lib/lexical-to-html";
 

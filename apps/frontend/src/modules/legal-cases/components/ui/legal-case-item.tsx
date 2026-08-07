@@ -1,6 +1,6 @@
 import { Calendar, Gavel, MapPin } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import Link from "@/components/ui/link";
+import { Badge } from "@/shared/components/ui/badge";
+import Link from "@/shared/components/ui/link";
 import { JURISDICTION_LABELS } from "@/shared/config/constants";
 import { formatMediumDate } from "@/shared/lib/format-date";
 

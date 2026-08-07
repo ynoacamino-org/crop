@@ -5,7 +5,12 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-import { Button } from "@/components/ui/button";
+import {
+  Role,
+  type UsersQuery,
+  useUpdateUserMutation,
+} from "@/services/gql/generated/gql.client";
+import { Button } from "@/shared/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -13,7 +18,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@/shared/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -21,19 +26,14 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
+} from "@/shared/components/ui/form";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import {
-  Role,
-  type UsersQuery,
-  useUpdateUserMutation,
-} from "@/services/gql/generated/gql.client";
+} from "@/shared/components/ui/select";
 
 type User = UsersQuery["users"]["items"][number];
 

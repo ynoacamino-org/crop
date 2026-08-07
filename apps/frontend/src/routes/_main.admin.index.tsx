@@ -1,15 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { Scale, Users } from "lucide-react";
+import { AdminStatsDocument } from "@/services/gql/generated/gql.node";
+import { createServerService } from "@/services/service.server";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { AdminStatsDocument } from "@/services/gql/generated/gql.node";
-import { createServerService } from "@/services/service.server";
+} from "@/shared/components/ui/card";
 
 const getAdminStats = createServerFn().handler(async () => {
   const { gql } = createServerService();

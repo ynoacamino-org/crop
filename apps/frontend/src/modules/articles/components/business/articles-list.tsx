@@ -1,17 +1,23 @@
 import { useNavigate } from "@tanstack/react-router";
 import { Edit, MoreVertical, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { PaginationSection } from "@/components/pagination-controls";
-import { SearchInput } from "@/components/search-input";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { DeleteArticleDialog } from "@/modules/articles/components/business/delete-article-dialog";
+import { UpdateArticleStatusDialog } from "@/modules/articles/components/business/update-article-status-dialog";
+import {
+  type AdminArticlesQuery,
+  ArticleStatus,
+} from "@/services/gql/generated/gql.client";
+import { PaginationSection } from "@/shared/components/pagination-controls";
+import { SearchInput } from "@/shared/components/search-input";
+import { Badge } from "@/shared/components/ui/badge";
+import { Button } from "@/shared/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import Link from "@/components/ui/link";
+} from "@/shared/components/ui/dropdown-menu";
+import Link from "@/shared/components/ui/link";
 import {
   Table,
   TableBody,
@@ -19,13 +25,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { DeleteArticleDialog } from "@/modules/articles/components/business/delete-article-dialog";
-import { UpdateArticleStatusDialog } from "@/modules/articles/components/business/update-article-status-dialog";
-import {
-  type AdminArticlesQuery,
-  ArticleStatus,
-} from "@/services/gql/generated/gql.client";
+} from "@/shared/components/ui/table";
 import { formatMediumDate } from "@/shared/lib/format-date";
 
 type Article = AdminArticlesQuery["articles"]["items"][number];

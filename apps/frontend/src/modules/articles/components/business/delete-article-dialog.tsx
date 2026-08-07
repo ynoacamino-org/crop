@@ -2,6 +2,8 @@ import { useRouter } from "@tanstack/react-router";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import type { AdminArticlesQuery } from "@/services/gql/generated/gql.client";
+import { useDeleteArticleMutation } from "@/services/gql/generated/gql.client";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -9,10 +11,8 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
-import type { AdminArticlesQuery } from "@/services/gql/generated/gql.client";
-import { useDeleteArticleMutation } from "@/services/gql/generated/gql.client";
+} from "@/shared/components/ui/alert-dialog";
+import { Button } from "@/shared/components/ui/button";
 
 type Article = AdminArticlesQuery["articles"]["items"][number];
 
